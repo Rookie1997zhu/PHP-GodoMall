@@ -1799,6 +1799,7 @@ class OrderAdminGrid
                 'goodsCd', // 상품코드(자체상품코드)
                 'goodsTaxInfo', // 상품 부가세
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'orderGoodsNmGlobal', // 주문상품(해외상점)
                 'goodsCnt', // 수량
@@ -1852,6 +1853,7 @@ class OrderAdminGrid
                 'goodsCd', // 상품코드(자체상품코드)
                 'goodsTaxInfo', // 상품 부가세
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'orderGoodsNmGlobal', // 주문상품(해외상점)
                 'goodsCnt', // 수량
@@ -1887,6 +1889,7 @@ class OrderAdminGrid
                 'no', // 번호
                 'orderGoodsNo', // 상품주문번호
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'goodsCnt', // 수량
                 'goodsPrice', // 상품금액
@@ -1902,6 +1905,7 @@ class OrderAdminGrid
                 'goodsCd', // 상품코드(자체상품코드)
                 'goodsTaxInfo', // 상품 부가세
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'orderGoodsNmGlobal', // 주문상품(해외상점)
                 'goodsCnt', // 수량
@@ -1934,6 +1938,7 @@ class OrderAdminGrid
                 'no', // 번호
                 'orderGoodsNo', // 상품주문번호
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'goodsCnt', // 수량
                 'goodsPrice', // 상품금액
@@ -1949,6 +1954,7 @@ class OrderAdminGrid
                 'goodsCd', // 상품코드(자체상품코드)
                 'goodsTaxInfo', // 상품 부가세
                 'goodsImage', // 이미지
+                'customizationImage', // 맞춤 이미지
                 'orderGoodsNm', // 주문상품
                 'orderGoodsNmGlobal', // 주문상품(해외상점)
                 'goodsCnt', // 수량
@@ -3860,6 +3866,7 @@ class OrderAdminGrid
         'userHandleOrderStatus' => '주문상태',
         'userHandleGoodsCnt' => '신청수량',
         'goodsImage' => '이미지',
+        'customizationImage' => '맞춤 이미지',
         'multiShippingCd' => '배송지',
         'phoneNumber' => '주문자휴대폰번호',
 

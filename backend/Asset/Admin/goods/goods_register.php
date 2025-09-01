@@ -1839,7 +1839,7 @@ if ($data['mode'] == 'modify') {
         if(fieldID == 'imageFbGoods' || fieldID == 'imageFbGoodsURL') {
             var canAdd = $('#'+fieldID).find(".form-inline").length;
             if (canAdd > 9) {
-                alert('페이스북 피드 이미지 업로드는 10개까지 가능합니다.');
+                alert('메타 FBE 피드 이미지 업로드는 10개까지 가능합니다.');
                 return;
             }
         }
@@ -1863,7 +1863,7 @@ if ($data['mode'] == 'modify') {
         var imageInfo = '';
         if (urlType == 'y') {
             imageInfo = '<span id="' + fieldID + 'PreView' + fieldNoChk + '"></span>';
-            if(fieldID == 'imageFbGoods' || fieldID == 'imageFbGoodsURL') { // 페이스북 피드 이미지 입력하는 경우
+            if(fieldID == 'imageFbGoods' || fieldID == 'imageFbGoodsURL') { // 메타 FBE 피드 이미지 입력하는 경우
                 addHtml += '<input type="text" id="' + fieldID + 'URL' + fieldNoChk + '" name="imageFb[' + fieldID + '][]" value="" class="form-control width60p" />' + imageInfo;
             } else {
                 addHtml += '<input type="text" id="' + fieldID + 'URL' + fieldNoChk + '" name="image[' + fieldID + '][]" value="" class="form-control width60p" />' + imageInfo;
@@ -1875,7 +1875,7 @@ if ($data['mode'] == 'modify') {
             } else {
                 imageInfo = '<span id="' + fieldID + 'PreView' + fieldNoChk + '"></span>';
             }
-            if(fieldID == 'imageFbGoods'){ // 페이스북 피드 이미지 입력하는 경우
+            if(fieldID == 'imageFbGoods'){ // 메타 FBE 피드 이미지 입력하는 경우
                 addHtml += '<input type="file" name="imageFb[' + fieldID + '][]" class="form-control" ' + clickCheck + ' />' + imageInfo;
             }else {
                 addHtml += '<input type="file" name="image[' + fieldID + '][]" class="form-control <?=$disabled['imageDisabled']['manageClass']?>"' + clickCheck + ' />' + imageInfo;
@@ -1986,7 +1986,7 @@ if ($data['mode'] == 'modify') {
     }
 
     /**
-     * 페이스북 상품 피드 이미지 URL직접입력 추가 사용
+     * 메타 FBE 상품 피드 이미지 URL직접입력 추가 사용
      *
      */
     function facebook_image_add_url() {
@@ -3170,216 +3170,6 @@ if ($data['mode'] == 'modify') {
 </script>
 <style>
     .obs-display-none { display: none !important; }
-    
-    /* 商品定制功能样式 */
-    .custom-pattern-container {
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-    
-    .pattern-filter-section {
-        margin-bottom: 20px;
-        padding: 15px;
-        background: white;
-        border-radius: 6px;
-        border: 1px solid #dee2e6;
-    }
-    
-    .pattern-library-section {
-        margin-bottom: 20px;
-    }
-    
-    .pattern-library-section h5 {
-        color: #495057;
-        margin-bottom: 15px;
-        font-weight: 600;
-    }
-    
-    .pattern-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .pattern-item {
-        background: white;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .pattern-item:hover {
-        border-color: #007bff;
-        box-shadow: 0 4px 8px rgba(0,123,255,0.2);
-        transform: translateY(-2px);
-    }
-    
-    .pattern-item.selected {
-        border-color: #28a745;
-        background: #f8fff9;
-    }
-    
-    .pattern-preview {
-        margin-bottom: 8px;
-    }
-    
-    .pattern-preview img {
-        width: 60px;
-        height: 60px;
-        object-fit: contain;
-        border-radius: 4px;
-    }
-    
-    .pattern-info {
-        margin-bottom: 8px;
-    }
-    
-    .pattern-name {
-        font-weight: 600;
-        font-size: 12px;
-        color: #495057;
-        margin-bottom: 4px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .pattern-category {
-        font-size: 11px;
-        color: #6c757d;
-        margin-bottom: 2px;
-    }
-    
-    .pattern-tags {
-        font-size: 10px;
-        color: #adb5bd;
-        font-style: italic;
-    }
-    
-    .pattern-actions {
-        margin-top: 8px;
-    }
-    
-    .pattern-actions .btn {
-        font-size: 11px;
-        padding: 4px 8px;
-    }
-    
-    .selected-patterns-section {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        padding: 15px;
-    }
-    
-    .selected-patterns-section h5 {
-        color: #495057;
-        margin-bottom: 15px;
-        font-weight: 600;
-    }
-    
-    .selected-patterns-list {
-        max-height: 300px;
-        overflow-y: auto;
-        margin-bottom: 15px;
-    }
-    
-    .selected-pattern-item {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        border: 1px solid #e9ecef;
-        border-radius: 6px;
-        margin-bottom: 8px;
-        background: #f8f9fa;
-        transition: all 0.2s ease;
-    }
-    
-    .selected-pattern-item:hover {
-        background: #e9ecef;
-        border-color: #adb5bd;
-    }
-    
-    .pattern-preview-small {
-        margin-right: 12px;
-    }
-    
-    .pattern-preview-small img {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
-        border-radius: 4px;
-        border: 1px solid #dee2e6;
-    }
-    
-    .pattern-info {
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .pattern-order {
-        font-size: 11px;
-        color: #6c757d;
-        font-style: italic;
-    }
-    
-    .pattern-actions {
-        display: flex;
-        gap: 4px;
-    }
-    
-    .pattern-actions .btn {
-        font-size: 10px;
-        padding: 2px 6px;
-    }
-    
-    .selected-patterns-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-    }
-    
-    .selected-patterns-actions .btn {
-        min-width: 120px;
-    }
-    
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-        .pattern-grid {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-        }
-        
-        .pattern-item {
-            padding: 8px;
-        }
-        
-        .pattern-preview img {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .selected-pattern-item {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .pattern-preview-small {
-            margin-right: 0;
-            margin-bottom: 8px;
-        }
-        
-        .pattern-actions {
-            justify-content: center;
-            margin-top: 8px;
-        }
-    }
 </style>
 <form id="frmGoods" name="frmGoods" action="./goods_ps.php" method="post" enctype="multipart/form-data">
     <input type="hidden" name="mode" value="<?=$data['mode']; ?>"/>
@@ -5809,158 +5599,6 @@ if ($data['mode'] == 'modify') {
     </div>
 
 
-    <div class="table-title gd-help-manual" id="goodsCustomization">
-        상품定制 설정
-        <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="goodsCustomization"><span>닫힘</span></button></span>
-    </div>
-
-    <input type="hidden" id="depth-toggle-hidden-goodsCustomization" value="<?=$toggle['goodsCustomization_'.$SessScmNo]?>">
-    <div id="depth-toggle-line-goodsCustomization" class="depth-toggle-line display-none"></div>
-    <div id="depth-toggle-layer-goodsCustomization">
-                <table class="table table-cols">
-                    <colgroup>
-                        <col class="width-lg"/>
-                <col class="width-2xl"/>
-                <col class="width-md"/>
-                        <col/>
-                    </colgroup>
-                    <tr>
-                <th>定制 지원</th>
-                <td colspan="3">
-                                <label class="checkbox-inline">
-                        <input type="checkbox" name="is_customizable" value="1" <?=gd_isset($checked['is_customizable']['1']); ?> onclick="toggleCustomizationOptions(this)"/>
-                        이 상품은 사용자 정의가 가능합니다
-                                </label>
-                            <div class="notice-info">
-                        체크하면 사용자가 이 상품에 대해 패턴, 텍스트 등을 추가하여 개인화할 수 있습니다.
-                            </div>
-                        </td>
-                    </tr>
-            <tr id="customizationOptions" style="display: none;">
-                        <th>기본 색상</th>
-                        <td>
-                                <select name="default_color" class="form-control width-md">
-                                    <option value="">색상 선택</option>
-                        <option value="navy" <?=gd_isset($selected['default_color']['navy']); ?>>Navy</option>
-                        <option value="red" <?=gd_isset($selected['default_color']['red']); ?>>Red</option>
-                        <option value="beige" <?=gd_isset($selected['default_color']['beige']); ?>>Beige</option>
-                        <option value="black" <?=gd_isset($selected['default_color']['black']); ?>>Black</option>
-                        <option value="pink" <?=gd_isset($selected['default_color']['pink']); ?>>Pink</option>
-                        <option value="white" <?=gd_isset($selected['default_color']['white']); ?>>White</option>
-                        <option value="green" <?=gd_isset($selected['default_color']['green']); ?>>Green</option>
-                                </select>
-                        </td>
-                        <th>기본 크기</th>
-                        <td>
-                                <select name="default_size" class="form-control width-md">
-                                    <option value="">크기 선택</option>
-                        <option value="4.7x2.8" <?=gd_isset($selected['default_size']['4.7x2.8']); ?>>4.7 x 2.8 inch</option>
-                        <option value="5.0x3.0" <?=gd_isset($selected['default_size']['5.0x3.0']); ?>>5.0 x 3.0 inch</option>
-                        <option value="5.5x3.5" <?=gd_isset($selected['default_size']['5.5x3.5']); ?>>5.5 x 3.5 inch</option>
-                                </select>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-    <div class="table-title gd-help-manual" id="goodsCustomPattern">
-        상품定制图案
-        <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="goodsCustomPattern"><span>닫힘</span></button></span>
-        </div>
-
-    <input type="hidden" id="depth-toggle-hidden-goodsCustomPattern" value="<?=$toggle['goodsCustomPattern_'.$SessScmNo]?>">
-    <div id="depth-toggle-line-goodsCustomPattern" class="depth-toggle-line display-none"></div>
-    <div id="depth-toggle-layer-goodsCustomPattern">
-        <!-- 标签页导航 -->
-        <div class="custom-pattern-tabs">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="pattern-list-tab" data-toggle="tab" href="#pattern-list" role="tab" aria-controls="pattern-list" aria-selected="true">
-                        🎨 图案管理
-                    </a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="category-manage-tab" data-toggle="tab" href="#category-manage" role="tab" aria-controls="category-manage" aria-selected="false">
-                        📂 分类管理
-                    </a>
-                </li>
-            </ul>
-    </div>
-
-        <!-- 标签页内容 -->
-        <div class="tab-content">
-            <!-- 图案管理标签页 -->
-            <div class="tab-pane fade show active" id="pattern-list" role="tabpanel" aria-labelledby="pattern-list-tab">
-                <div class="custom-pattern-container">
-                    <!-- 图案搜索和分类筛选 -->
-                    <div class="pattern-filter-section">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="patternSearch">🔍 图案搜索</label>
-                                    <input type="text" id="patternSearch" class="form-control" placeholder="图案名称或标签 검색...">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="patternCategory">📂 图案分类</label>
-                                    <select id="patternCategory" class="form-control">
-                                        <option value="">전체 분류</option>
-                                        <option value="几何">기하학적</option>
-                                        <option value="爱心">사랑/감정</option>
-                                        <option value="自然">자연/환경</option>
-                                        <option value="动物">동물</option>
-                                        <option value="文字">텍스트/문자</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button type="button" class="btn btn-primary btn-block" onclick="refreshPatternLibrary()">
-                                        🔄 새로고침
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 图案库选择 -->
-                    <div class="pattern-library-section">
-                        <h5>🎨 图案库 선택</h5>
-                        <div id="patternGrid" class="pattern-grid">
-                            <!-- 图案将通过JavaScript动态加载 -->
-                        </div>
-                    </div>
-
-                    <!-- 已选图案管理 -->
-                    <div class="selected-patterns-section">
-                        <h5>📋 已选图案 (<span id="selectedPatternCount">0</span>개)</h5>
-                        <div id="selectedPatternsList" class="selected-patterns-list">
-                            <!-- 已选图案将通过JavaScript动态显示 -->
-                        </div>
-                        <div class="selected-patterns-actions">
-                            <button type="button" class="btn btn-success" onclick="saveGoodsPatterns()">
-                                💾 저장图案选择
-                            </button>
-                            <button type="button" class="btn btn-warning" onclick="clearAllPatterns()">
-                                🗑️ 전체 삭제
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 隐藏字段存储已选图案 -->
-                    <input type="hidden" name="selected_patterns" id="selectedPatternsData" value="">
-                </div>
-            </div>
-
-            <!-- 分类管理标签页 -->
-            <div class="tab-pane fade" id="category-manage" role="tabpanel" aria-labelledby="category-manage-tab">
-                <?php includeEngine('custom/pattern_category_manage.php'); ?>
-            </div>
-        </div>
-    </div>
-
     <div class="table-title gd-help-manual" id="goodsImage">
         상품 이미지
         <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="goodsImage"><span>닫힘</span></button></span>
@@ -7185,8 +6823,9 @@ if ($data['mode'] == 'modify') {
             </table>
         </div>
     <?php } ?>
+
     <div class="table-title gd-help-manual">
-        페이스북 광고 설정
+        메타 FBE 광고 설정
         <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="facebookDa"><span>닫힘</span></button></span>
     </div>
     <input type="hidden" id="depth-toggle-hidden-facebookDa" value="<?=$toggle['facebookDa_'.$SessScmNo]?>">
@@ -7195,26 +6834,24 @@ if ($data['mode'] == 'modify') {
         <table class="table table-cols">
             <colgroup>
                 <col class="width-lg">
-                <col class="width-2xl">
-                <col class="width-md">
                 <col>
             </colgroup>
             <tr>
-                <th>페이스북 제품 피드 설정</th>
+                <th>메타 FBE 피드 설정</th>
                 <td colspan="3">
                     <label class="radio-inline">
-                        <input type="radio" name="fbUseFl" value="n" <?=gd_isset($checked['fbUseFl']['n']); ?>>피드 생성 안함
+                        <input type="radio" name="fbUseFl" value="y" <?=gd_isset($checked['fbUseFl']['y']); ?>>설정함
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="fbUseFl" value="y" <?=gd_isset($checked['fbUseFl']['y']); ?>>피드 생성
+                        <input type="radio" name="fbUseFl" value="n" <?=gd_isset($checked['fbUseFl']['n']); ?>>설정안함
                     </label>
                     <div class="notice-info">
-                        피드 생성으로 설정을 하면 페이스북 제품 피드 다운로드 시 해당 상품의 피드를 생성 및 다운로드 하실 수 있습니다.
+                        피드 생성으로 설정을 하면 메타 FBE 제품 피드 다운로드 시 해당 상품의 피드를 생성 및 다운로드 하실 수 있습니다.
                     </div>
                 </td>
             </tr>
             <tr>
-                <th>페이스북 광고 제품 피드 이미지</th>
+                <th>메타 FBE 피드 이미지</th>
                 <td colspan="3">
 
                     <div id="facebookImg">
@@ -7286,11 +6923,11 @@ if ($data['mode'] == 'modify') {
                     }
                     ?>
 
-                    <div class="notice-info">페이스북 카탈로그 피드에 사용되는 이미지는 상품 등록에 사용하는 대표 이미지입니다.</div>
+                    <div class="notice-info">메타 FBE 카탈로그 피드에 사용되는 이미지는 상품 등록에 사용하는 대표 이미지입니다.</div>
                     <div class="notice-info">
-                        페이스북 광고를 할 경우 제품 피드 이미지를 등록하셔야 합니다. 이미지 사이즈는 600*600px 를 권장합니다.
+                        메타 FBE 광고를 할 경우 제품 피드 이미지를 등록하셔야 합니다. 이미지 사이즈는 600*600px 를 권장합니다.
                     </div>
-                    <div class="notice-info">대표 이미지 등을 gif 형태로 등록한 경우 페이스북 카탈로그를 사용하기 위한 페이스북 정책에 의거, 제품 피드 검수가 거부되거나 불가합니다.</div>
+                    <div class="notice-info">대표 이미지 등을 gif 형태로 등록한 경우 메타 FBE 카탈로그를 사용하기 위한 메타 정책에 의거, 제품 피드 검수가 거부되거나 불가합니다.</div>
                 </td>
             </tr>
         </table>
@@ -7984,518 +7621,6 @@ if ($data['mode'] == 'modify') {
         });
 
         <?php }?>
-
-        // 상품定制 기능 JavaScript
-        function toggleCustomizationOptions(checkbox) {
-            var optionsRow = document.getElementById('customizationOptions');
-            var patternSection = document.getElementById('depth-toggle-layer-goodsCustomPattern');
-            
-            if (checkbox.checked) {
-                optionsRow.style.display = 'table-row';
-                patternSection.style.display = 'block';
-            } else {
-                optionsRow.style.display = 'none';
-                patternSection.style.display = 'none';
-                // 체크 해제 시 기본값 초기화
-                document.querySelector('select[name="default_color"]').value = '';
-                document.querySelector('select[name="default_size"]').value = '';
-                // 图案选择도 초기화
-                selectedPatterns = [];
-                updateSelectedPatternsDisplay();
-                renderPatternGrid();
-            }
-        }
-
-        // 페이지 로드 시 기존 값에 따라 옵션 표시/숨김
-        $(document).ready(function() {
-            var isCustomizable = $('input[name="is_customizable"]:checked').val();
-            if (isCustomizable == '1') {
-                $('#customizationOptions').show();
-                $('#depth-toggle-layer-goodsCustomPattern').show();
-            } else {
-                $('#depth-toggle-layer-goodsCustomPattern').hide();
-            }
-            
-            // 图案库 초기화
-            initializePatternLibrary();
-        });
-
-        // 图案库 관리 JavaScript
-        var patternLibrary = [];
-        var selectedPatterns = [];
-        var currentGoodsId = <?=gd_isset($data['goods_no'], '0')?>;
-
-        // 图案库 초기화
-        function initializePatternLibrary() {
-            loadPatternLibrary();
-            bindPatternEvents();
-        }
-
-        // 图案库 로드
-        function loadPatternLibrary() {
-            // 显示加载状态
-            $('#patternGrid').html('<div class="text-center p-4"><i class="fa fa-spinner fa-spin"></i> 图案库 로딩 중...</div>');
-            
-            // 调用API获取图案库数据
-            $.ajax({
-                url: '/admin/custom/pattern/getPatternListAPI',
-                method: 'GET',
-                data: {
-                    page: 1,
-                    limit: 100, // 获取更多图案
-                    status: 'active'
-                },
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        // 转换API数据格式为前端格式
-                        patternLibrary = response.data.patterns.map(function(pattern) {
-                            return {
-                                id: pattern.pattern_id,
-                                name: pattern.pattern_name,
-                                url: pattern.pattern_url,
-                                category: pattern.category,
-                                tags: pattern.tags,
-                                description: pattern.description,
-                                sort_order: pattern.sort_order
-                            };
-                        });
-                        
-                        renderPatternGrid();
-                        loadSelectedPatterns();
-                        
-                        console.log('图案库 로드 성공:', patternLibrary.length + '개 패턴');
-                } else {
-                        console.error('图案库 로드 실패:', response.message);
-                        $('#patternGrid').html('<div class="text-center text-danger p-4">图案库 로드 실패: ' + response.message + '</div>');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('图案库 API 호출 실패:', error);
-                    $('#patternGrid').html('<div class="text-center text-danger p-4">图案库 로드 실패: 네트워크 오류</div>');
-                    
-                    // 如果API失败，使用备用数据
-                    loadFallbackPatternData();
-                }
-            });
-        }
-
-        // 备用图案 데이터（API 실패 시 사용）
-        function loadFallbackPatternData() {
-            patternLibrary = [
-                {
-                    id: 1,
-                    name: '星星',
-                    url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><polygon points="25,5 30,20 45,20 35,30 40,45 25,35 10,45 15,30 5,20 20,20" fill="%23ffd700"/></svg>',
-                    category: '几何',
-                    tags: 'star,几何,金色',
-                    description: '金色星星图案',
-                    sort_order: 1
-                },
-                {
-                    id: 2,
-                    name: '心形',
-                    url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><path d="M25,15 C25,15 20,10 15,15 C10,20 15,30 25,35 C35,30 40,20 35,15 C30,10 25,15 25,15 Z" fill="%23ff6b6b"/></svg>',
-                    category: '爱心',
-                    tags: 'heart,爱心,红色',
-                    description: '红色爱心图案',
-                    sort_order: 2
-                }
-            ];
-            
-            renderPatternGrid();
-            loadSelectedPatterns();
-        }
-
-        // 图案网格 렌더링
-        function renderPatternGrid() {
-            var searchTerm = $('#patternSearch').val().toLowerCase();
-            var selectedCategory = $('#patternCategory').val();
-            
-            var filteredPatterns = patternLibrary.filter(function(pattern) {
-                var matchesSearch = pattern.name.toLowerCase().includes(searchTerm) || 
-                                  pattern.tags.toLowerCase().includes(searchTerm) ||
-                                  pattern.description.toLowerCase().includes(searchTerm);
-                var matchesCategory = !selectedCategory || pattern.category === selectedCategory;
-                return matchesSearch && matchesCategory;
-            });
-            
-            if (filteredPatterns.length === 0) {
-                $('#patternGrid').html('<div class="text-center text-muted p-4">🔍 검색 결과가 없습니다. 다른 검색어를 시도해보세요.</div>');
-                return;
-            }
-            
-            var html = '';
-            filteredPatterns.forEach(function(pattern) {
-                var isSelected = selectedPatterns.some(function(sp) { return sp.id === pattern.id; });
-                html += '<div class="pattern-item ' + (isSelected ? 'selected' : '') + '" data-pattern-id="' + pattern.id + '">';
-                html += '<div class="pattern-preview">';
-                html += '<img src="' + pattern.url + '" alt="' + pattern.name + '" title="' + pattern.description + '" onerror="this.src=\'data:image/svg+xml,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"50\\\" height=\\\"50\\\" viewBox=\\\"0 0 50 50\\\"><rect width=\\\"50\\\" height=\\\"50\\\" fill=\\\"%23f0f0f0\\\"/><text x=\\\"25\\\" y=\\\"25\\\" text-anchor=\\\"middle\\\" dy=\\\".3em\\\" font-size=\\\"10\\\">이미지 오류</text></svg>\'">';
-                html += '</div>';
-                html += '<div class="pattern-info">';
-                html += '<div class="pattern-name" title="' + pattern.name + '">' + pattern.name + '</div>';
-                html += '<div class="pattern-category">' + pattern.category + '</div>';
-                if (pattern.tags) {
-                    html += '<div class="pattern-tags">' + pattern.tags.split(',').slice(0, 3).join(', ') + '</div>';
-                }
-                html += '</div>';
-                html += '<div class="pattern-actions">';
-                if (isSelected) {
-                    html += '<button type="button" class="btn btn-sm btn-danger" onclick="removePattern(' + pattern.id + ')" title="선택된 패턴 제거">제거</button>';
-                } else {
-                    html += '<button type="button" class="btn btn-sm btn-success" onclick="addPattern(' + pattern.id + ')" title="패턴 선택">선택</button>';
-                }
-                html += '</div>';
-                html += '</div>';
-            });
-            
-            $('#patternGrid').html(html);
-            
-            // 显示搜索结果统计
-            var totalCount = patternLibrary.length;
-            var filteredCount = filteredPatterns.length;
-            if (searchTerm || selectedCategory) {
-                $('#patternGrid').prepend('<div class="text-muted mb-2"><small>검색 결과: ' + filteredCount + '개 / 전체: ' + totalCount + '개</small></div>');
-            }
-        }
-
-        // 图案 추가
-        function addPattern(patternId) {
-            var pattern = patternLibrary.find(function(p) { return p.id === patternId; });
-            if (pattern && !selectedPatterns.some(function(sp) { return sp.id === patternId; })) {
-                selectedPatterns.push(pattern);
-                updateSelectedPatternsDisplay();
-                renderPatternGrid();
-            }
-        }
-
-        // 图案 제거
-        function removePattern(patternId) {
-            selectedPatterns = selectedPatterns.filter(function(p) { return p.id !== patternId; });
-            updateSelectedPatternsDisplay();
-            renderPatternGrid();
-        }
-
-        // 已选图案 표시 업데이트
-        function updateSelectedPatternsDisplay() {
-            if (selectedPatterns.length === 0) {
-                $('#selectedPatternsList').html('<div class="text-center text-muted p-3">선택된 패턴이 없습니다. 위의 패턴库에서 패턴을 선택해주세요.</div>');
-                $('#selectedPatternCount').text('0');
-                updateSelectedPatternsData();
-                return;
-            }
-            
-            var html = '';
-            selectedPatterns.forEach(function(pattern, index) {
-                html += '<div class="selected-pattern-item" data-pattern-id="' + pattern.id + '">';
-                html += '<div class="pattern-preview-small">';
-                html += '<img src="' + pattern.url + '" alt="' + pattern.name + '" onerror="this.src=\'data:image/svg+xml,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"30\\\" height=\\\"30\\\" viewBox=\\\"0 0 30 30\\\"><rect width=\\\"30\\\" height=\\\"30\\\" fill=\\\"%23f0f0f0\\\"/><text x=\\\"15\\\" y=\\\"15\\\" text-anchor=\\\"middle\\\" dy=\\\".3em\\\" font-size=\\\"8\\\">오류</text></svg>\'">';
-                html += '</div>';
-                html += '<div class="pattern-info">';
-                html += '<div class="pattern-name" title="' + pattern.name + '">' + pattern.name + '</div>';
-                html += '<div class="pattern-category">' + pattern.category + '</div>';
-                html += '<div class="pattern-order">순서: ' + (index + 1) + '</div>';
-                html += '</div>';
-                html += '<div class="pattern-actions">';
-                html += '<button type="button" class="btn btn-xs btn-info" onclick="movePatternUp(' + index + ')" ' + (index === 0 ? 'disabled' : '') + ' title="위로 이동">↑</button>';
-                html += '<button type="button" class="btn btn-xs btn-info" onclick="movePatternDown(' + index + ')" ' + (index === selectedPatterns.length - 1 ? 'disabled' : '') + ' title="아래로 이동">↓</button>';
-                html += '<button type="button" class="btn btn-xs btn-danger" onclick="removePattern(' + pattern.id + ')" title="패턴 제거">❌</button>';
-                html += '</div>';
-                html += '</div>';
-            });
-            
-            $('#selectedPatternsList').html(html);
-            $('#selectedPatternCount').text(selectedPatterns.length);
-            updateSelectedPatternsData();
-            
-            // 更新按钮状态
-            updateActionButtonsState();
-        }
-        
-        // 更新操作按钮状态
-        function updateActionButtonsState() {
-            var hasPatterns = selectedPatterns.length > 0;
-            var saveBtn = $('button[onclick="saveGoodsPatterns()"]');
-            var clearBtn = $('button[onclick="clearAllPatterns()"]');
-            
-            // 保存按钮状态
-            if (hasPatterns) {
-                saveBtn.removeClass('btn-secondary').addClass('btn-success').prop('disabled', false);
-                saveBtn.html('💾 저장图案选择 (' + selectedPatterns.length + '개)');
-            } else {
-                saveBtn.removeClass('btn-success').addClass('btn-secondary').prop('disabled', true);
-                saveBtn.html('💾 저장图案选择');
-            }
-            
-            // 清除按钮状态
-            clearBtn.prop('disabled', !hasPatterns);
-            if (!hasPatterns) {
-                clearBtn.removeClass('btn-warning').addClass('btn-secondary');
-            } else {
-                clearBtn.removeClass('btn-secondary').addClass('btn-warning');
-            }
-        }
-
-        // 图案 순서 변경
-        function movePatternUp(index) {
-            if (index > 0) {
-                var temp = selectedPatterns[index];
-                selectedPatterns[index] = selectedPatterns[index - 1];
-                selectedPatterns[index - 1] = temp;
-                updateSelectedPatternsDisplay();
-            }
-        }
-
-        function movePatternDown(index) {
-            if (index < selectedPatterns.length - 1) {
-                var temp = selectedPatterns[index];
-                selectedPatterns[index] = selectedPatterns[index + 1];
-                selectedPatterns[index + 1] = temp;
-                updateSelectedPatternsDisplay();
-            }
-        }
-
-        // 已选图案 데이터 업데이트
-        function updateSelectedPatternsData() {
-            var patternIds = selectedPatterns.map(function(p) { return p.id; });
-            $('#selectedPatternsData').val(JSON.stringify(patternIds));
-        }
-
-        // 图案库 새로고침
-        function refreshPatternLibrary() {
-            loadPatternLibrary();
-        }
-
-        // 图案 저장
-        function saveGoodsPatterns() {
-            if (selectedPatterns.length === 0) {
-                showErrorMessage('선택된 패턴이 없습니다.');
-                return;
-            }
-
-            // 获取商品ID（从URL或隐藏字段）
-            const goodsId = getGoodsId();
-            if (!goodsId) {
-                showErrorMessage('상품 ID를 가져올 수 없습니다. 페이지를 새로고침해주세요!');
-                return;
-            }
-
-            // 显示保存中状态
-            const saveBtn = document.querySelector('button[onclick="saveGoodsPatterns()"]');
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 저장 중...';
-            saveBtn.disabled = true;
-
-            // 准备数据
-            const patternIds = selectedPatterns.map(function(p) { return p.id; });
-            const postData = {
-                goods_id: goodsId,
-                pattern_ids: patternIds,
-                operation: 'set',
-                csrf_token: getCsrfToken()
-            };
-
-            // 调用API保存
-            $.ajax({
-                url: '/admin/custom/goods/setGoodsPatternsAPI',
-                method: 'POST',
-                data: postData,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.success) {
-                        console.log('저장 성공:', response.data);
-                
-                // 更新隐藏字段
-                        updateSelectedPatternsData();
-                        
-                        // 显示成功消息
-                        showSuccessMessage('패턴 선택이 저장되었습니다. 총 ' + response.data.pattern_count + ' 개의 패턴');
-                        
-                        // 更新按钮状态
-                        updateActionButtonsState();
-                } else {
-                        showErrorMessage('저장 실패: ' + response.message);
-                        console.error('저장 실패:', response);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    showErrorMessage('저장 실패: 네트워크 오류');
-                    console.error('저장 실패:', error);
-                },
-                complete: function() {
-                    // 恢复按钮状态
-                    saveBtn.innerHTML = originalText;
-                    saveBtn.disabled = false;
-                }
-            });
-        }
-
-        // 获取商品ID
-        function getGoodsId() {
-            // 从URL参数获取
-            const urlParams = new URLSearchParams(window.location.search);
-            let goodsId = urlParams.get('goods_no') || urlParams.get('goods_id');
-            
-            // 如果URL中没有，尝试从隐藏字段获取
-            if (!goodsId) {
-                const goodsIdField = document.querySelector('input[name="goods_no"]');
-                if (goodsIdField) {
-                    goodsId = goodsIdField.value;
-                }
-            }
-            
-            return goodsId;
-        }
-
-        // 获取CSRF Token
-        function getCsrfToken() {
-            // 从meta标签或隐藏字段获取
-            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            if (csrfMeta) {
-                return csrfMeta.getAttribute('content');
-            }
-            
-            const csrfField = document.querySelector('input[name="csrf_token"]');
-            if (csrfField) {
-                return csrfField.value;
-            }
-            
-            // 如果没有找到，返回空字符串（后端会处理）
-            return '';
-        }
-
-        // 显示成功消息
-        function showSuccessMessage(message) {
-            // 创建成功消息元素
-            const successDiv = document.createElement('div');
-            successDiv.className = 'alert alert-success alert-dismissible fade show';
-            successDiv.innerHTML = `
-                <strong>성공!</strong> ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            `;
-            
-            // 插入到页面顶部
-            const container = document.querySelector('.container-fluid') || document.querySelector('.container');
-            if (container) {
-                container.insertBefore(successDiv, container.firstChild);
-                
-                // 3秒后自动隐藏
-                setTimeout(() => {
-                    successDiv.remove();
-                }, 3000);
-            }
-        }
-        
-        // 显示错误消息
-        function showErrorMessage(message) {
-            // 创建错误消息元素
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'alert alert-danger alert-dismissible fade show';
-            errorDiv.innerHTML = `
-                <strong>오류!</strong> ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            `;
-            
-            // 插入到页面顶部
-            const container = document.querySelector('.container-fluid') || document.querySelector('.container');
-            if (container) {
-                container.insertBefore(errorDiv, container.firstChild);
-                
-                // 5秒后自动隐藏
-                setTimeout(() => {
-                    errorDiv.remove();
-                }, 5000);
-            }
-        }
-
-        // 全部图案 삭제
-        function clearAllPatterns() {
-            if (selectedPatterns.length === 0) {
-                showErrorMessage('삭제할 패턴이 없습니다.');
-                return;
-            }
-            
-            if (confirm('모든 선택된 패턴을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.')) {
-                selectedPatterns = [];
-                updateSelectedPatternsDisplay();
-                renderPatternGrid();
-                
-                // 显示成功消息
-                showSuccessMessage('모든 패턴이 삭제되었습니다.');
-            }
-        }
-
-        // 已选图案 로드（编辑模式）
-        function loadSelectedPatterns() {
-            if (currentGoodsId > 0) {
-                // 从API获取已选图案
-                $.ajax({
-                    url: '/admin/custom/goods/getGoodsPatternsAPI',
-                    method: 'GET',
-                    data: {
-                        goods_id: currentGoodsId
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success && response.data.patterns) {
-                            // 将API数据转换为前端格式
-                            selectedPatterns = response.data.patterns.map(function(pattern) {
-                                return {
-                                    id: pattern.pattern_id,
-                                    name: pattern.pattern_name,
-                                    url: pattern.pattern_url,
-                                    category: pattern.category,
-                                    tags: pattern.tags,
-                                    description: pattern.description,
-                                    sort_order: pattern.sort_order
-                                };
-                            });
-                            console.log('已选图案 로드 성공:', selectedPatterns.length + '개 패턴');
-                        } else {
-                            selectedPatterns = [];
-                            console.log('已选图案 없음 또는 로드 실패');
-                        }
-                        updateSelectedPatternsDisplay();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('已选图案 로드 실패:', error);
-                        selectedPatterns = [];
-                        updateSelectedPatternsDisplay();
-                    }
-                });
-            } else {
-                selectedPatterns = [];
-                updateSelectedPatternsDisplay();
-            }
-        }
-
-        // 图案 이벤트 바인딩
-        function bindPatternEvents() {
-            // 实时搜索（防抖处理）
-            var searchTimeout;
-            $('#patternSearch').on('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(function() {
-                    renderPatternGrid();
-                }, 300);
-            });
-            
-            // 分类筛选
-            $('#patternCategory').on('change', function() {
-                renderPatternGrid();
-            });
-            
-            // 回车键搜索
-            $('#patternSearch').on('keypress', function(e) {
-                if (e.which === 13) {
-                    renderPatternGrid();
-                }
-            });
-        }
 
         $(document).on('change', 'input[name="maxOrderChk"]', function () {
             maxOrderCheckWithId();

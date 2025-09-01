@@ -1,0 +1,192 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* /상단 수정부분/ */
+.order_wrap .order_tit {padding:70px 0 0 0; margin: 0 0 20px; font-size: 14px; text-align:center; border-bottom:none;}
+.order_wrap .order_tit h2{ 
+	float:none;
+	padding: 0 0 8px 0;
+    display: inline-block;
+    color: #333;
+	font-size:24px;
+}
+@media screen and (max-width:1240px){
+	.order_wrap .order_tit {padding:50px 5px 0;}
+}
+@media screen and (max-width:760px){
+	.order_wrap .order_tit h2{ font-size:18px; }
+	.order_wrap .order_tit ol {display:none}
+}
+@media screen and (max-width:560px){
+	.order_wrap .order_tit {padding:30px 5px 0;}
+}
+@media screen and (max-width:400px){
+	.order_wrap .order_tit h2{ font-size:15px; }
+}
+.order_wrap .order_tit ol{float:right; line-height: 24px; display:none;}
+.order_wrap .order_tit .page_on{color:#000; font-weight:normal;}
+
+.cart_cont,.order_cont {width:100%; overflow:hidden; margin-top:50px;}
+/* ------------- 테이블 공통(텍스트 센터 기본) ------------- */
+.order_table_type td{height: auto;}
+
+/* left type */
+.order_table_type .table_left th{padding:9px 10px 10px 10px; }
+.order_table_type .table_left td{height: auto; padding:15px 10px 14px 10px;}
+.order_table_type .table_left textarea{width:95%;}
+.tax_invoice_box .order_table_type .table_left th {padding: 16px 10px 10px 24px; background:#fff;}
+.tax_invoice_box .order_table_type .table_left td {padding: 10px 10px 9px 15px;}
+@media screen and (max-width:960px){
+	.tax_invoice_box .order_table_type .table_left {width:100%;}
+}
+/* 반드시 입력 표시 */
+th > .important{padding:0 0 0 15px; background:url('../../img/member/icon_dot_03.png') no-repeat 6px center;}
+
+/* 업체 리스트 */
+.cart_cont_list{margin:0 0 10px 0;}
+.cart_cont_list .order_cart_tit{padding:0 0 10px; font-size:13px;}
+.cart_cont_list .order_cart_tit h3 {font-size:13px; color:#000;}
+.order_zone_tit h4 {font-size:13px; color:#000;}
+
+/* 추가 박스 */
+.order_table_type .order_num_link{color:#cf213c; border-bottom:1px solid #cf213c;}
+
+/* 테이블 총가격 */
+.order_table_type .price_sum_cont .price_sum_list dl{font-size:13px;}
+.order_table_type .price_sum_cont .price_sum_list dd strong{font-size:14px;}
+.order_table_type .price_sum_cont .price_sum_list .price_total dd{font-size:13px;}
+
+/* 총가격 */
+.price_sum{border:1px solid #dcdcdc;}
+.price_sum_cont .price_sum_list:after{clear:both; display:block; content:"";}
+.price_sum_cont .price_sum_list dl{font-size:13px;}
+.price_sum_cont .price_sum_list dd{color:#000;}
+.price_sum_cont .price_sum_list dd strong{font-size:16px; color:#000;}
+.price_sum_cont .price_sum_list .price_total dd{font-size:18px;}
+.price_sum_cont .tobe_mileage{display:block; width: auto; }
+
+/* --------- 사은품 선택 --------- */
+.order_freebie_list dt{width:25%;}
+
+/* 이용약관 동의 */
+.order_agree_cont strong{color:#000;}
+
+/* --------- 배송정보 --------- */
+/* 배송지확인 */
+.order_cont table li{padding:0 20px 0 0;}
+/* 받으실 곳 */
+#contents .member_address:after{clear:both; display:block; content:"";}
+#contents .member_address .address_postcode{overflow: auto;}
+/* 회원정보 반영 */
+.order_cont .order_table_type .member_info_delivery em{color:#000;}
+
+/* --------- 결제 정보 > 할인 및 적립 --------- */
+.order_payment_sum{ font-size:16px;}
+.order_cont .order_benefit_list .order_benefit_sale em{display:inline-block; background:url("../../img/icon/goods_icon/icon_discount.gif") no-repeat 0 0;}
+.order_cont .order_benefit_list .order_benefit_mileage em{display:inline-block; background:url("../../img/icon/goods_icon/icon_mileage.gif") no-repeat 0 0;}
+
+/* 마일리지사용, 예치금 사용 */
+.order_money_use .money_use_sum{color:#000;}
+.order_money_use .money_use_txt{color:#000;}
+
+/* --------- 결제수단 선택/결제 --------- */
+.payment_progress .order_zone_tit > p{color:#000;}
+
+/* ----- 페이코결제 ----- */
+.payco_payment .form_element label.choice_payco span{position:relative;}
+.payco_payment .form_element label.choice_payco span img{position:absolute; top:0; vertical-align:middle;}
+.payco_payment .form_element label.choice_payco.on span img{position:absolute;}
+
+/* ----- 현금영수증 / 계산서 발행 ----- */
+/* 결제금액, 필수체크 */
+.payment_final_total{padding:13px 46px 13px 0; border:1px solid #dcdcdc;}
+.payment_final_total dd{font-size:20px; color:#000;}
+.payment_final .form_element label.check_s em b{color:#000;}
+
+/* ------------- 주문완료 ------------- */
+.order_end_completion strong{font-size:16px;}
+.payment_progress_list dt {font-size:12px;}
+
+.order_wrap .order_tit ol li {font-size:12px;}
+@media screen and (max-width:760px){	
+	.order_wrap .cart_cont{ margin:0 5px; width:auto;}
+	.order_view_info > .join_agreement_box {margin-top:35px !important;}
+	.order_view_info > .order_agree {margin-top:35px;}
+
+	/* ------------- 테이블 공통(텍스트 센터 기본) ------------- */
+	.order_table_type td{padding:10px 4px 9px 4px !important;}
+	.order_table_type .coupon_price{color:#333333; font-size:12px !important;}
+	.order_table_type .coupon_price b{font-size:13px !important;}
+	.order_table_type .order_sum_txt{font-size:13px !important; color:#000; margin-top:5px;}
+	.order_table_type .time_sale_cost{ font-size:13px !important;}
+	.widthDisplayTotal {width:20% !important;}
+	.order_goods_num {color:#000;}
+
+	.order_table_type table.Respo th {display:block !important; padding:8px 10px 8px 15px !important;}
+	.order_table_type table.Respo td {display:block !important; padding:8px 10px 8px 10px !important;}
+	
+	/* 총가격 */
+	.price_sum {padding:15px 20px 15px 20px;}
+	.price_sum_cont {float:none; clear:both; text-align:left; width:100%;}
+	.price_sum_cont .price_sum_list dl { display:block; clear:both; font-size:14px;}
+	.price_sum_cont .price_sum_list dt {float:left; width:50%; text-align:left;}
+	.price_sum_cont .price_sum_list dd {float:right; width:50%; text-align:right;}
+	.price_sum_cont .price_sum_list .price_total dd,
+	.price_sum_cont .price_sum_list dd strong{font-size:15px;}
+	.price_sum_cont .price_sum_list .price_total {padding-right:10px;}
+	.price_sum_cont .price_sum_list span {display:none;}
+	.price_sum_cont .tobe_mileage {text-align:right; padding:5px 10px 0 0;}
+
+	/* 장바구니 버튼 영역 */
+	.btn_order_box { padding:20px 0 0 0; }
+	.btn_order_box .btn_left_box{float:none; display:block; clear:both; text-align:center;}
+	.btn_order_box .btn_right_box{float:none; display:block; clear:both; text-align:center; margin-top:10px;}
+
+
+	.order_wrap .order_cont{ margin:0 5px; width:auto;}
+
+	/* ------------- 주문서작성/결제 ------------- */
+	.order_view_info h4{margin:30px 0 0 0;}
+	.order_agree .order_zone_tit h4 {margin:15px 0 0 0;}
+	.order_cont .table_left th{padding:15px 10px 14px 10px;}
+	.order_cont .member_email select{width:80px;}
+	.order_cont .member_email input[type="text"]{width:150px;}
+	.order_cont input[type="text"]{width:200px;}
+
+	/* --------- 사은품 선택 --------- */
+	.order_freebie .order_zone_tit{margin:30px 0 0 0;}
+
+	/* --------- 배송정보 --------- */
+	/* 받으실 곳 */
+	#contents .member_address .address_postcode input {width:120px !important;}
+	#contents .member_address .address_postcode .btn_post_search {padding:5px;}
+	#contents .member_address .address_input input:first-child{width:270px;}
+	#contents .member_address .address_input input{width:200px; margin:10px 0 0 0;}
+
+	/* --------- 결제수단 선택/결제 --------- */
+	.payment_progress_list dt {width:19%; padding:0 0 0 1%;}
+	/* 라디오 버튼  선택 */
+	.payment_progress .payment_progress_select li{margin:0 0 0 20px;}
+
+	/* ----- 일반결제 ----- */
+	.general_payment dd{min-width:auto !important; width:80%;}
+	.pay_bankbook_box ul li select{width:200px;}
+
+	/* ----- 해외PG ----- */
+	.pg_payment dd{min-width:auto !important; width:80%;}
+	.pay_pg_box ul li select{width:200px;}
+
+	/* ----- 현금영수증 / 계산서 발행 ----- */
+	/* 결제금액, 필수체크 */
+	.payment_final_total dd{font-size:20px;}
+}
+@media screen and (max-width:560px){
+	.order_view_info > .join_agreement_box {margin-top:20px !important; font-size: 13px;}
+	.order_view_info > .join_agreement_box h3 {font-size: 14px;}
+	.order_view_info > .order_agree {margin-top:30px;}
+}
+@media screen and (max-width:400px){
+	.order_wrap h3 {font-size:14px !important;}
+	.order_wrap h4 {font-size:14px !important;}
+	
+}

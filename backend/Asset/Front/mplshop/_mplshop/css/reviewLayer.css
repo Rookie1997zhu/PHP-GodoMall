@@ -1,0 +1,156 @@
+.detailViewContent { position: absolute; display: none; text-indent: -9999; overflow: hidden; z-index: -1;}
+
+#reviewDetailLayer { position: fixed; top: 0; left: 0; width: 90%; max-width: 950px; height: 75%; padding: 40px 0; box-sizing:border-box; background: #fff; z-index: 210; border-radius:10px;}
+#reviewDetailLayer .detailLayerClose { position: fixed; top: 20px; right: 20px; width: 60px; height: 60px; background:url('../images/all_close_w60.png') no-repeat center; z-index: 210; background-size:80%;}
+#reviewDetailLayer .js_detail { overflow-y: auto; width: 100%; height: 100%; padding: 0 40px; box-sizing:border-box; }
+#reviewDetailLayer .js_detail .board_cont {}
+
+#reviewDetailLayer .detailProduct { width: 100%; padding: 20px; margin: 15px 0; border: 4px solid #f5f5f5; box-sizing:border-box; overflow: hidden; }
+#reviewDetailLayer .detailProduct .detailProductImage { float: left; width: 85px; padding-right: 20px; border-right: 1px solid #f0f0f0; }
+#reviewDetailLayer .detailProduct .detailProductImage img { width: 100%; }
+#reviewDetailLayer .detailProduct .detailProductContent { margin-left: 125px; }
+#reviewDetailLayer .detailProduct .detailProductContent .goodsName { color: #000; font-size: 15px;}
+#reviewDetailLayer .detailProduct .detailProductContent .goodsPrice {margin-top: 5px;}
+#reviewDetailLayer .detailProduct .detailProductContent .goodsView { width: 90px; line-height: 25px; margin-top: 5px; border: 1px solid #ddd; text-align: center;}
+#reviewDetailLayer .detailProduct .detailProductContent .goodsView a { color: #000;}
+
+#reviewDetailLayer .detailContentsImages { width: 100%; border-radius:10px; overflow: hidden; }
+#reviewDetailLayer .detailContentsImages .slick-slide img {max-width:100%; height:auto;}
+#reviewDetailLayer .detailContentsImages .js-smart-img { max-width: 100%;}
+#reviewDetailLayer .detailContentsImages .slick-prev { top: 47%; left: 5%; background:url('../images/common/arrow_prev2.png') no-repeat; }
+#reviewDetailLayer .detailContentsImages .slick-next { top: 47%; right: 5%; background:url('../images/common/arrow_next2.png') no-repeat; }
+#reviewDetailLayer .detailContentsImages .slick-dots {bottom:30px;}
+
+#reviewDetailLayer .detailView { width: 100%; padding: 25px; margin: 0 0 15px 0; border: 1px solid #ddd; box-sizing:border-box; overflow: hidden; }
+#reviewDetailLayer .detailView .detailViewSubject { font-size: 15px; color: #000; font-weight: bold;}
+#reviewDetailLayer .detailView .detailViewRating { width: 60px; height: 10px; margin: 12px 0 12px; background: url('../../img/icon/board/icon_star_bg.png') no-repeat; background-size: 60px 10px; vertical-align: middle; text-indent: -9999px; }
+#reviewDetailLayer .detailView .detailViewRating > div { background: url('../../img/icon/board/icon_star_fill.png') no-repeat left top; background-size: 60px 10px; }
+#reviewDetailLayer .detailView .detailViewInfo { width: 100%; padding: 0 0 20px 0; margin: 0 0 20px 0; border-bottom: 1px solid #ddd;}
+#reviewDetailLayer .detailView .detailViewInfo span { padding-left: 10px; margin-left: 10px; border-left: 1px solid #ddd;}
+#reviewDetailLayer .detailView .detailViewInfo span:first-child { padding: 0; margin: 0; border: 0; }
+
+#reviewDetailLayer .detailView .detailViewContents {}
+#reviewDetailLayer .detailView .detailViewContents img {max-width:100%; height:auto;}
+#reviewDetailLayer .view_comment { border: 0;}
+#reviewDetailLayer .view_comment .view_comment_top { border: 1px solid #ddd; border-width: 0 0 1px 0;}
+#reviewDetailLayer .view_comment .view_comment_list ul li:first-child { border: 0;}
+#reviewDetailLayer .view_comment .comment-write { margin: 15px 0 10px 5px; }
+#reviewDetailLayer .view_comment .js_form_write .board_comment_write { border-top: 1px solid #ddd;}
+
+#reviewDetailLayer .board_commen_agree a { font-size: 11px; text-decoration: underline;}
+
+#reviewDetailLayer .board_comment_write .btn_comment_box{position:absolute; top:0px; right:0px; padding:0 0 0 10px; border-left:1px solid #d6d6d6; background:#f8f8f8;}
+
+/* 동록된 게시글 없음 */
+#reviewDetailLayer .no_data{padding:30px 30px 30px 30px; text-align:center;}
+#reviewDetailLayer .board_cont{}
+#reviewDetailLayer .board_view{line-height:1.8;}
+#reviewDetailLayer .board_view .img_attach{margin:10px 0 10px 0;}
+/* 답글 쓰기 확인 버튼 */
+#reviewDetailLayer .btn_comment_ok{display:inline-block; width:82px; height:82px; padding:0 5px 0 5px; color:#ffffff; font-size:12px; border:1px solid #383838; background:#383838; text-align:center; cursor:pointer;}
+/* 개인정보 수집항목 동의 */
+#reviewDetailLayer .board_commen_agree{margin:10px 0 0 0; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .board_commen_agree h5{font-size:12px;}
+#reviewDetailLayer .board_commen_agree .form_element{display:block;}
+#reviewDetailLayer .board_commen_agree textarea{display:inline-block; width:100%; margin:10px 0 0 0; padding:10px 10px 10px 10px;}
+#reviewDetailLayer .board_commen_agree .agree_choice_box{padding:10px 0 10px 0; color:#777777; font-size:11px;}
+#reviewDetailLayer .board_commen_agree .link_agree_go{font-size:11px; text-decoration:underline;}
+
+#reviewDetailLayer  .select_item_info .text_type_cont{display:block; padding:3px 0 3px 0; color:#a9a9a9; font-size:11px; line-height:1;}
+
+/* ------------- view 페이지 ------------- */
+#reviewDetailLayer .board_view_tit{overflow:hidden; padding:15px 15px 15px 15px; border-top:1px solid #999999; border-bottom:1px solid #dbdbdb; background:#f7f7f7;}
+#reviewDetailLayer .board_view_tit h3{display:inline-block; color:#111111; font-size:14px;}
+#reviewDetailLayer .board_view_tit strong{float:right; font-size:14px;}
+#reviewDetailLayer 
+#reviewDetailLayer .board_zone_view .board_view_info{overflow:hidden; padding:10px 15px 10px 15px; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .board_view_info .view_info_idip{display:inline-block;}
+#reviewDetailLayer .board_view_info .view_info_idip em{color:#acacac; font-size:11px;}
+#reviewDetailLayer .board_view_info .view_info_day{display:inline-block; height:10px; margin:0 0 0 7px; font-size:11px; border-left:1px solid #dbdbdb; vertical-align:middle;}
+#reviewDetailLayer .board_view_info .view_info_day em{position:relative; display:block;  top:-3px; padding:0 0 0 10px;}
+#reviewDetailLayer .board_view_info .view_info_hits{display:inline-block; float:right; text-align:right;}
+#reviewDetailLayer 
+#reviewDetailLayer .board_zone_view .board_view_event_day{overflow:hidden; padding:10px 15px 10px 15px; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .board_zone_view .board_view_attach{overflow:hidden; padding:10px 15px 10px 15px; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .board_zone_view .board_view_link{overflow:hidden; padding:10px 15px 10px 15px; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .board_view_link a:hover{text-decoration:underline;}
+/* 게시판 내용 노출 */
+#reviewDetailLayer .board_view_content{min-height:350px;}
+#reviewDetailLayer .board_view_content img{max-width:100%;}
+#reviewDetailLayer .board_view_content .seem_cont{padding:30px 15px 30px 15px; line-height:1.8;}
+/* 상품노출 */
+#reviewDetailLayer .view_goods_select{margin:1px 0 0 0;}
+#reviewDetailLayer .view_goods_select_item{margin:10px 0 3px 0; padding:20px 20px 30px 20px ; font-size:0; border-bottom:1px dotted #dbdbdb;}
+#reviewDetailLayer .view_select_item_img{display:inline-block; width:120px; height:auto; vertical-align:top;}
+#reviewDetailLayer .view_select_item_img img{width:100%; border:1px solid #dbdbdb; vertical-align:middle;}
+#reviewDetailLayer .view_select_item_info{display:inline-block; position:relative; padding:0px 0 0 20px; font-size:14px;}
+#reviewDetailLayer .view_select_item_info em{display:block; font-weight:bold;}
+#reviewDetailLayer .view_select_item_info .text_type_cont{display:block; padding:3px 0 3px 0; color:#a9a9a9; font-size:12px; line-height:1;}
+#reviewDetailLayer .view_select_item_info > strong{display:block; padding:5px 0 0 0; font-size:12px; color:#ab3e55;}
+
+/* 답글 박스 */
+#reviewDetailLayer .board_view_comment{padding:10px 0 10px 0;}
+#reviewDetailLayer .view_comment{padding:0 0 0 0; border-bottom:1px solid #dbdbdb; background:#ffffff;}
+#reviewDetailLayer .view_comment_top{overflow:hidden; /*width:100%;*/ padding:15px 20px 15px 20px; border-top:1px solid #dbdbdb; border-bottom:1px solid #dbdbdb;}
+#reviewDetailLayer .view_comment_top .comment_num{padding:0 20px 0 0;}
+#reviewDetailLayer .view_comment_top .comment_best_num{}
+#reviewDetailLayer .view_comment_top .btn_view_comment_box{float:right;}
+#reviewDetailLayer .view_comment_top .rating_star_box{margin:0 0 0 20px;}
+#reviewDetailLayer .view_comment_top .rating_star_box .rating_star{margin:-5px 0 0 5px;}
+/* 답글 리스트 */
+#reviewDetailLayer .view_comment_list{padding:0 20px 0 20px; background:#f8f8f8;}
+#reviewDetailLayer .view_comment_list ul{}
+#reviewDetailLayer .view_comment_list ul li{padding:15px 0 15px 0; border-top:1px solid #dbdbdb;}
+#reviewDetailLayer .view_comment_list ul li:first-child{border-top:1px solid #dbdbdb;}
+#reviewDetailLayer .view_comment_list .comment_name{padding:0 20px 0 5px; color:#444; word-wrap:break-word;}
+#reviewDetailLayer .view_comment_list p{padding:0 0 10px 0;}
+#reviewDetailLayer .view_comment_list p > em{display:block; padding:10px 10px 10px 5px;}
+#reviewDetailLayer .view_comment_list .board_comment_box{margin:10px 0 0 0; padding:0 0 0px 0; border-top:1px dotted #dbdbdb; border-bottom:none 0;}
+#reviewDetailLayer .view_comment_list p > em img{margin:0 4px 0 2px;vertical-align:middle;}
+/* 답글에 답글 리스트 */
+#reviewDetailLayer .view_comment_list .comment_reply{padding:15px 0 15px 10px;}
+#reviewDetailLayer .view_comment_list .comment_reply .comment_name{padding:0 20px 0 20px; background:url("../../img/icon/board/icon_comment_reply.png") no-repeat 8px 4px;}
+/* 답글쓰기 */
+#reviewDetailLayer .board_comment_box{padding:0px 20px 20px 20px; /*border-bottom:1px solid #dbdbdb;*/ background:#f8f8f8;}
+#reviewDetailLayer .board_day_time{display:inline-block; padding:0 5px 0 5px; color:#a1a1a1; font-size:11px;}
+#reviewDetailLayer .board_comment_write{position:relative; padding:15px 0 0 0;}
+#reviewDetailLayer .board_comment_write input[type="text"]{width:105px; margin-bottom:10px;}
+#reviewDetailLayer .board_comment_write input[type="password"]{width:152px; margin-bottom:10px;}
+#reviewDetailLayer .board_comment_write .comment_textarea{position:relative; width:100%;}
+#reviewDetailLayer .board_comment_write textarea{display:inline-block; width:100%; height:82px; padding:10px 95px 10px 10px;}
+
+#reviewLayerDim {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 200;
+	background: rgba(0,0,0,0.6);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000,endColorstr=#99000000)";
+	background-image: url('../images/loading/loading.gif');
+	background-position:center;
+	background-repeat: no-repeat;
+	background-size:100px;
+}
+
+.reviewBtnViewPop { cursor:pointer; }
+
+.bestTop3 {color:#000; font-size:18px; padding:20px 0 40px;}
+@media screen and (max-width:1024px){
+	#reviewDetailLayer {height: 90%;}
+}
+@media screen and (max-width:560px){
+	#reviewDetailLayer {width: 100%; border-radius:0; padding: 20px 0;}
+	#reviewDetailLayer .detailLayerClose { top: 10px; right: 10px; width: 25px; height: 25px; }
+	#reviewDetailLayer .js_detail {padding: 0 10px;}
+	#reviewDetailLayer .detailView {padding: 20px;}
+
+	#reviewDetailLayer .view_comment_top {padding:15px 10px 15px 10px;}
+	#reviewDetailLayer .view_comment_list{padding:0 10px 0 10px !important;}
+	#reviewDetailLayer .view_comment_list .comment_reply .comment_name{padding:0 10px 0 10px;}
+	#reviewDetailLayer .board_comment_box{padding:0px 10px 20px 10px;}
+
+	.bestTop3 {font-size:16px; padding:10px 0 30px;}
+}

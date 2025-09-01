@@ -1,0 +1,143 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* 하단영역 */
+.attend_reply_wrap + .addition_zone,
+.attend_stamp_wrap + .addition_zone{width:100%; max-width:1240px;}
+
+/* ------------- 출석체트 > 댓글 ------------- */
+.attend_reply_wrap{width:100%; max-width:1240px; margin:30px auto 0;}
+.attend_reply_box .attend_reply_check{padding: 30px 20px;}
+/* 댓글 색반전 */
+.attend_reply_box .attend_reply_comment textarea{width:75%; max-width:930px;}
+.attend_reply_box .attend_reply_comment .btn_attend_check{width:22%; padding:0; background:#383838; border:1px solid #383838; font-weight:normal;}
+.attend_reply_box .attend_reply_comment .btn_attend_check:hover{background:#000; border:1px solid #000;}
+@media screen and (max-width: 560px){
+	.attend_reply_box .attend_reply_check {padding: 30px 10px; border:1px solid #f4f4f4; }
+	.attend_reply_box .attend_reply_comment {padding:0 10px;}
+}
+.attend_reply_sec table colgroup col:nth-child(1) {width:8% !important;}
+.attend_reply_sec table colgroup col:nth-child(2) {width:20% !important;}
+.attend_reply_sec table colgroup col:nth-child(4) {width:20% !important;}
+
+/* ------------- 출석체크 > 스템프 ------------- */
+.attend_stamp_wrap{width:100%; max-width:1240px; margin:30px auto 0;}
+.attend_reply_wrap > .attend_top_banner,
+.attend_stamp_wrap > .attend_top_banner {text-align:center;}
+.attend_reply_wrap > .attend_top_banner img, 
+.attend_stamp_wrap > .attend_top_banner img {max-width:100%;}
+.attend_reply_box .attend_reply_check{border:3px solid #f4f4f4;}
+.stamp_calendar_box .stamp_calendar{border:3px solid #f4f4f4;}
+.stamp_calendar_type2 .attend_states {color:#fff;}
+.stamp_calendar .calendar_sec > table{margin:0 auto;}
+@media screen and (max-width: 1150px){
+	.stamp_calendar_box .stamp_calendar {padding: 25px 30px;}
+	.stamp_calendar .calendar_month{font-size:22px;}
+	.stamp_calendar .calendar_sec table {width:100%;}
+	.stamp_calendar .calendar_sec table th,
+	.stamp_calendar .calendar_sec table td{padding:0; width:14.28% !important; font-size:14px;}
+	.addition_zone p img {width:100%;}
+}
+@media screen and (max-width: 760px){
+	.stamp_calendar .attend_states{font-size:13px;}
+	.stamp_calendar .calendar_sec table th,
+	.stamp_calendar .calendar_sec table td{font-size:12px;}
+	.stamp_calendar_box .stamp_calendar {padding:15px;}
+	.stamp_calendar .calendar_sec .attend{background-size:60%; background-position:center center;}
+}
+/* 캘린더 색반전 */
+
+.stamp_calendar_box .btn_attend_check{height:45px; background:#383838 url('../../img/event/btn_point_check.png') no-repeat 55px 14px; border:1px solid #383838;font-size:14px; font-weight:normal;}
+.stamp_calendar_box .btn_attend_check:hover{background:#383838 url('../../img/event/btn_point_check.png') no-repeat 55px 14px; border:1px solid #383838;}
+
+
+/* ------------- 타임세일 ------------- */
+.time_sale_cont{}
+.time_sale_tit { margin:0 0 20px; padding:20px 0 30px 0; font-size: 14px; border-bottom: 1px solid #eaeaea;}
+.time_sale_tit h2{padding: 0 0 8px 0; display: inline-block; color: #333; border-bottom: 3px solid #333; font-size:16px;}
+.time_sale_tit strong{ bottom:5px; right:auto; left:0; color:#58a7a7;}
+
+/* 상단 타임보드 */
+.sale_clock{margin:10px 0; border:none; padding:0; background-color:#f8f8f8; border:1px solid #dcdcdc;}
+.sale_clock .clock_cont {}
+.sale_clock .clock_cont .clock_tit {display:none;}
+.sale_clock .clock_box{line-height:36px; margin-top:10px;}
+.sale_clock .clock_box strong,
+.sale_clock .clock_box span{font-size:18px;}
+.sale_clock .clock_box em{height:auto; margin:0; font-size:0;}
+.sale_clock .clock_box em strong{height:36px; line-height:36px; font-size:22px; margin:0 1px; background-image:none; background-color:#383838; border-radius:0;}
+.sale_clock .sale_buy_num strong{color:#80AFA7;}
+@media screen and (max-width:1240px){
+	.time_sale_tit {padding:20px 5px 30px;}
+	.time_sale_tit strong {left:5px;}
+}
+@media screen and (max-width:760px){
+	.time_sale_tit h2{ font-size:14px;}
+	.sale_clock{overflow:hidden; vertical-align:middle;}
+	.sale_clock .clock_box{margin-top:8px;}
+	.sale_clock .clock_box strong,
+	.sale_clock .clock_box span{font-size:16px;}
+	.sale_clock .clock_box em + span{padding:0 8px 0 4px;}
+	.sale_clock .clock_box em strong{width:28px; height:30px; line-height:30px; font-size:16px;}
+	.sale_clock .sale_buy_num{font-size:16px;}
+	.sale_clock .sale_buy_num strong{font-size:18px;}
+}
+@media screen and (max-width:560px){
+	.sale_clock{overflow:hidden; vertical-align:middle;}
+	.sale_clock .clock_box{margin-top:5px;}
+	.sale_clock .clock_box strong,
+	.sale_clock .clock_box span{font-size:14px;}
+	.sale_clock .clock_box em{font-size:14px;}
+	.sale_clock .clock_box em + span{padding:0 6px 0 3px;}
+	.sale_clock .clock_box em strong{width:20px; height:25px; line-height:25px; font-size:13px;}
+	.sale_clock .sale_buy_num{font-size:13px;}
+	.sale_clock .sale_buy_num strong{font-size:13px;}
+}
+@media screen and (max-width:400px){
+	.time_sale_tit h2{ font-size:13px; }
+}
+/* /상단 수정부분/ */
+.coupon_tit{margin:0 0 20px; padding:70px 0 0 0; font-size: 14px; border-bottom:none; text-align:center;}            
+.coupon_tit h2{padding: 0 0 8px 0; display: inline-block; color: #333; font-size:24px;}            
+.coupon_content .cp_zone_wrap{margin-top:12px;}    
+.coupon_content .cp_zone_wrap img {max-width:100%;}       
+.coupon_content .cp_list_wrap{margin-top:20px;}  
+.coupon_content .cp_list_wrap .cp_down{border:1px solid #333;}            
+.coupon_content .cp_list_wrap .cp_down span{padding-right:0;background:none;color:#333;}            
+.coupon_content .cp_list_wrap .cp_list{width:100%;text-align:center;}    
+.coupon_content .cp_list_wrap .cp_list li{float:none;display:inline-block;width:23%;margin:0 1%;}                      
+.coupon_content .cp_list_wrap .cp_list li .box_coupon{width:100%;min-height:auto;margin-bottom:5px;}            
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .img_cp{min-height:auto;}              
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap{visibility:hidden;}            
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap .text_info{padding:5%;}
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap .text_info .dis{font-size:22px;color:#333;line-height:25px;}            
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap .text_info .txt{font-size:18px;color:#333;line-height:20px;}            
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap .text_info .date{margin-top:15px;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_2{height:44px;line-height:44px;margin-top:0;background:#333;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_2 span{padding-right:0;font-size:13px;background:none;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_3{height:42px;line-height:42px;margin-top:0;border:1px solid #333;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_3 span{font-size:13px;color:#333;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_4{height:44px;line-height:44px;margin-top:0;}            
+.coupon_content .cp_list_wrap .cp_list li .cp_down_4 span{font-size:13px;}            
+.coupon_content .cp_list_none{display:none; margin-top:60px;border:1px solid #e1e1e1;text-align:center;padding:78px 0;}            
+.coupon_content .cp_list_none p{font-size:16px;letter-spacing:-0.05em;color:#666;}
+
+@media screen and (max-width:1240px){
+	.coupon_tit {padding:20px 5px 0;}
+}
+@media screen and (max-width:1150px){
+	.coupon_content .cp_list_wrap .cp_list li {width:31.33%;}
+	.coupon_content .cp_list_wrap .cp_list li .box_coupon .img_cp img {width:100%;}
+}
+@media screen and (max-width:760px){
+	.coupon_tit h2{ font-size:18px;}
+	.coupon_content .cp_list_wrap {margin-top:30px;}
+	.coupon_content .cp_list_wrap .cp_list li {width:48%;}
+}
+@media screen and (max-width:460px){
+	.coupon_content .cp_list_wrap {margin-top:20px;}
+	.coupon_content .cp_list_wrap .cp_list li {width:80%; margin-bottom:30px;}
+}
+@media screen and (max-width:400px){
+	.coupon_tit h2{font-size:15px;}
+}

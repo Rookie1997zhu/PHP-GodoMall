@@ -6,14 +6,15 @@
  * 本组件负责图案分类的业务逻辑处理，包括分类的增删改查、排序和层级管理等功能
  * 严格遵循Godomall开发规范，基于继承实现功能扩展
  * 
- * @package Component\Custom
+ * @package Custom\Component
  * @author Custom Development Team
  * @version 1.0
  */
 
-namespace Component\Custom;
+namespace Custom\Component;
 
-use Component\Database\CustomTableField;
+use Bundle\Component\Category\Category;
+use Custom\Component\Database\CustomTableField;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -25,8 +26,9 @@ use Session;
 
 /**
  * 图案分类管理组件
+ * 继承官方分类组件，获得完整的分类管理功能
  */
-class CustomPatternCategory extends \Component\AbstractComponent
+class CustomPatternCategory extends Category
 {
     /**
      * 数据库连接对象

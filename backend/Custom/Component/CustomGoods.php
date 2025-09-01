@@ -6,15 +6,16 @@
  * 本组件负责商品定制功能的业务逻辑处理，包括商品定制属性配置、图案关联管理等功能
  * 严格遵循Godomall开发规范，基于继承实现功能扩展
  * 
- * @package Component\Custom
+ * @package Custom\Component
  * @author Custom Development Team
  * @version 1.0
  */
 
-namespace Component\Custom;
+namespace Custom\Component;
 
+use Bundle\Component\Goods\Goods;
 use Component\Storage\CustomStorage;
-use Component\Database\CustomTableField;
+use Custom\Component\Database\CustomTableField;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -26,8 +27,9 @@ use Session;
 
 /**
  * 商品定制组件
+ * 继承官方商品组件，获得完整的商品管理功能
  */
-class CustomGoods extends \Component\AbstractComponent
+class CustomGoods extends Goods
 {
     /**
      * 数据库连接对象
@@ -119,13 +121,15 @@ class CustomGoods extends \Component\AbstractComponent
     public function getGoodsCustomizable($goodsNo)
     {
         try {
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+            
             $sql = "SELECT is_customizable FROM es_goods WHERE goodsNo = ?";
-            $result = $this->db->query($sql, [$goodsNo]);
+            $result = $this->db->query_fetch($sql, $arrBind, false);
 
-            if ($result && $result->num_rows > 0) {
-                $row = $result->fetch_assoc();
+            if ($result) {
                 return [
-                    'is_customizable' => (bool)$row['is_customizable']
+                    'is_customizable' => (bool)$result['is_customizable']
                 ];
             }
 
@@ -228,26 +232,24 @@ class CustomGoods extends \Component\AbstractComponent
 
             $params = array_merge($defaultParams, $params);
 
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+
             $sql = "SELECT cp.*, gcp.id as relation_id 
                     FROM goods_custom_pattern gcp 
                     INNER JOIN custom_pattern cp ON gcp.pattern_id = cp.pattern_id 
                     WHERE gcp.goods_id = ?";
 
-            $bindParams = [$goodsNo];
-
             if ($params['status'] !== null) {
                 $sql .= " AND cp.status = ?";
-                $bindParams[] = $params['status'];
+                $this->db->bind_param_push($arrBind, 'i', $params['status']);
             }
 
             $sql .= " ORDER BY {$params['sort_field']} {$params['sort_order']}";
 
-            $result = $this->db->query($sql, $bindParams);
+            $result = $this->db->query_fetch($sql, $arrBind, true);
 
-            $patterns = [];
-            while ($row = $result->fetch_assoc()) {
-                $patterns[] = $row;
-            }
+            $patterns = $result ?: [];
 
             return [
                 'success' => true,
@@ -340,7 +342,7 @@ class CustomGoods extends \Component\AbstractComponent
                 'group' => null,
                 'keyword' => null,
                 'status' => 1,
-                'sort_field' => 'create_time',
+                'sort_field' => 'created_at',
                 'sort_order' => 'DESC'
             ];
 
@@ -616,10 +618,16 @@ class CustomGoods extends \Component\AbstractComponent
     private function updateGoodsCustomField($goodsNo, $updateData)
     {
         try {
-            $sql = "UPDATE es_goods SET is_customizable = ? WHERE goodsNo = ?";
-            $result = $this->db->query($sql, [$updateData['is_customizable'], $goodsNo]);
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $updateData['is_customizable']);
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+            
+            $whereClause = "goodsNo = ?";
+            $updateParams = ['is_customizable' => $updateData['is_customizable']];
+            
+            $affectedRows = $this->db->set_update_db('es_goods', $updateParams, $whereClause, $arrBind);
 
-            return $result !== false;
+            return $affectedRows > 0;
 
         } catch (Exception $e) {
             Logger::error('更新商品定制字段异常', [
@@ -641,7 +649,7 @@ class CustomGoods extends \Component\AbstractComponent
     private function insertGoodsPattern($goodsNo, $patternId)
     {
         try {
-            $sql = "INSERT INTO goods_custom_pattern (goods_id, pattern_id, create_time) VALUES (?, ?, NOW())";
+            $sql = "INSERT INTO goods_custom_pattern (goods_id, pattern_id, created_at) VALUES (?, ?, NOW())";
             $result = $this->db->query($sql, [$goodsNo, $patternId]);
 
             return $result !== false;
@@ -657,7 +665,7 @@ class CustomGoods extends \Component\AbstractComponent
     }
 
     /**
-     * 添加定制商品到购物车
+     * 添加定制商品到购物车（使用官方Cart组件）
      * 
      * @param array $cartData 购物车数据
      * @return array 添加结果
@@ -668,11 +676,6 @@ class CustomGoods extends \Component\AbstractComponent
             // 验证商品是否存在
             if (!$this->isGoodsExists($cartData['goods_no'])) {
                 throw new AlertBackException('商品不存在');
-            }
-
-            // 验证用户登录状态
-            if (empty($cartData['user_id'])) {
-                throw new AlertBackException('请先登录');
             }
 
             // 验证数量
@@ -686,7 +689,7 @@ class CustomGoods extends \Component\AbstractComponent
                 // 保存定制图片文件
                 $imageResult = $this->saveCustomImageFile(
                     $customizationData['customImage'],
-                    $cartData['user_id'],
+                    $cartData['user_id'] ?? 0,
                     $cartData['goods_no']
                 );
                 
@@ -697,44 +700,46 @@ class CustomGoods extends \Component\AbstractComponent
                     
                     Logger::info('定制图片保存成功，已替换为文件URL', [
                         'image_url' => $imageResult['data']['image_url'],
-                        'user_id' => $cartData['user_id'],
+                        'user_id' => $cartData['user_id'] ?? 0,
                         'goods_no' => $cartData['goods_no']
                     ]);
-            } else {
+                } else {
                     Logger::warning('定制图片保存失败，将使用Base64数据', [
                         'error' => $imageResult['message'],
-                        'user_id' => $cartData['user_id']
+                        'user_id' => $cartData['user_id'] ?? 0
                     ]);
                 }
             }
 
-            // 准备购物车数据
-            $cartItemData = [
-                'goods_no' => $cartData['goods_no'],
-                'quantity' => $cartData['quantity'],
-                'customization_data' => $customizationData ? json_encode($customizationData) : null,
-                'selected_color' => $cartData['selected_color'],
-                'selected_size' => $cartData['selected_size'],
-                'is_customized' => 1,
-                'user_id' => $cartData['user_id'],
-                'created_at' => date('Y-m-d H:i:s')
+            // 使用官方Cart组件添加到购物车
+            $cart = \App::load('\\Component\\Cart\\Cart');
+            
+            // 准备官方购物车格式的数据
+            $arrData = [
+                'goodsNo' => [$cartData['goods_no']],
+                'goodsCnt' => [$cartData['quantity']],
+                'optionSno' => [0], // 默认选项
+                'customization_data' => $customizationData ? json_encode($customizationData) : '',
+                'selected_color' => $cartData['selected_color'] ?? '',
+                'selected_size' => $cartData['selected_size'] ?? '',
+                'is_customized' => 1
             ];
 
-            // 插入购物车表
-            $cartItemId = $this->insertCartItem($cartItemData);
-
-            if ($cartItemId) {
+            // 调用官方购物车保存方法
+            $result = $cart->saveInfoCart($arrData);
+            
+            if ($result) {
                 Logger::info('定制商品添加到购物车成功', [
-                'cart_item_id' => $cartItemId,
                     'goods_no' => $cartData['goods_no'],
-                    'user_id' => $cartData['user_id']
+                    'quantity' => $cartData['quantity'],
+                    'user_id' => $cartData['user_id'] ?? 0
                 ]);
 
-            return [
+                return [
                     'success' => true,
                     'message' => '定制商品已添加到购物车',
                     'data' => [
-                        'cart_item_id' => $cartItemId
+                        'cart_result' => $result
                     ]
                 ];
             } else {
@@ -755,148 +760,74 @@ class CustomGoods extends \Component\AbstractComponent
     }
 
     /**
-     * 插入购物车项目
+     * 保存定制数据到订单
      * 
-     * @param array $cartItemData 购物车项目数据
-     * @return int|false 插入的ID或false
+     * @param array $customizationData 定制数据
+     * @return array 保存结果
      */
-    private function insertCartItem($cartItemData)
+    public function saveCustomization($customizationData)
     {
         try {
-            $sql = "INSERT INTO es_cart_items (
-                goods_no, quantity, customization_data, selected_color, 
-                selected_size, is_customized, user_id, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        $params = [
-                $cartItemData['goods_no'],
-                $cartItemData['quantity'],
-                $cartItemData['customization_data'],
-                $cartItemData['selected_color'],
-                $cartItemData['selected_size'],
-                $cartItemData['is_customized'],
-                $cartItemData['user_id'],
-                $cartItemData['created_at']
-        ];
-
-        $result = $this->db->query($sql, $params);
-            
-            return $result ? $this->db->insert_id : false;
-
-        } catch (Exception $e) {
-            Logger::error('插入购物车项目异常', [
-                'error' => $e->getMessage(),
-                'cart_item_data' => $cartItemData
-            ]);
-            return false;
-        }
-    }
-
-    /**
-     * 获取用户购物车中的定制商品
-     * 
-     * @param int $userId 用户ID
-     * @return array 购物车项目列表
-     */
-    public function getUserCustomCartItems($userId)
-    {
-        try {
-            $sql = "SELECT 
-                        ci.id,
-                        ci.goods_no,
-                        ci.quantity,
-                        ci.customization_data,
-                        ci.selected_color,
-                        ci.selected_size,
-                        ci.is_customized,
-                        ci.created_at,
-                        g.goodsNm,
-                        g.goodsPrice,
-                        g.goodsImage
-                    FROM es_cart_items ci
-                    INNER JOIN es_goods g ON ci.goods_no = g.goodsNo
-                    WHERE ci.user_id = ? AND ci.is_customized = 1 AND g.delFl = 'n'
-                    ORDER BY ci.created_at DESC";
-
-            $result = $this->db->query($sql, [$userId]);
-
-            if ($result && $result->num_rows > 0) {
-                $cartItems = [];
-                while ($row = $result->fetch_assoc()) {
-                    // 解析定制数据
-                    if ($row['customization_data']) {
-                        $row['customization_data'] = json_decode($row['customization_data'], true);
-                    }
-                    $cartItems[] = $row;
-                }
-
-                return [
-                    'success' => true,
-                    'data' => [
-                        'cart_items' => $cartItems,
-                        'total_count' => count($cartItems)
-                    ]
-                ];
-            } else {
-                return [
-                    'success' => true,
-                    'data' => [
-                        'cart_items' => [],
-                        'total_count' => 0
-                    ]
-                ];
+            // 验证商品是否存在
+            if (!$this->isGoodsExists($customizationData['goods_no'])) {
+                throw new AlertBackException('商品不存在');
             }
 
-        } catch (Exception $e) {
-            Logger::error('获取用户定制购物车异常', [
-                'error' => $e->getMessage(),
-                'user_id' => $userId
+            // 验证定制数据
+            if (empty($customizationData['customization_data'])) {
+                throw new AlertBackException('定制数据不能为空');
+            }
+
+            // 处理定制图片
+            $customData = $customizationData['customization_data'];
+            if (is_array($customData) && !empty($customData['customImage'])) {
+                $imageResult = $this->saveCustomImageFile(
+                    $customData['customImage'],
+                    $customizationData['user_id'] ?? 0,
+                    $customizationData['goods_no']
+                );
+                
+                if ($imageResult['success']) {
+                    $customData['customImageUrl'] = $imageResult['data']['image_url'];
+                    $customData['customImage'] = null;
+                }
+            }
+
+            // 生成定制ID
+            $customizationId = 'custom_' . $customizationData['goods_no'] . '_' . time() . '_' . rand(1000, 9999);
+
+            // 存储定制数据到Session（临时存储）
+            $sessionKey = 'customization_' . $customizationId;
+            $sessionData = [
+                'customization_id' => $customizationId,
+                'goods_no' => $customizationData['goods_no'],
+                'customization_data' => json_encode($customData),
+                'selected_color' => $customizationData['selected_color'] ?? '',
+                'selected_size' => $customizationData['selected_size'] ?? '',
+                'user_id' => $customizationData['user_id'] ?? 0,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            Session::set($sessionKey, $sessionData);
+
+            Logger::info('定制数据保存成功', [
+                'customization_id' => $customizationId,
+                'goods_no' => $customizationData['goods_no'],
+                'user_id' => $customizationData['user_id'] ?? 0
             ]);
 
             return [
-                'success' => false,
-                'message' => '获取购物车失败：' . $e->getMessage()
+                'success' => true,
+                'message' => '定制数据保存成功',
+                'data' => [
+                    'customization_id' => $customizationId
+                ]
             ];
-        }
-    }
-
-    /**
-     * 从购物车移除定制商品
-     * 
-     * @param int $cartItemId 购物车项目ID
-     * @param int $userId 用户ID
-     * @return array 移除结果
-     */
-    public function removeCustomCartItem($cartItemId, $userId)
-    {
-        try {
-            // 验证购物车项目是否属于该用户
-            if (!$this->isCartItemBelongsToUser($cartItemId, $userId)) {
-                throw new AlertBackException('购物车项目不存在或无权限');
-            }
-
-            $sql = "DELETE FROM es_cart_items WHERE id = ? AND user_id = ?";
-            $result = $this->db->query($sql, [$cartItemId, $userId]);
-
-            if ($result) {
-                Logger::info('定制商品从购物车移除成功', [
-                    'cart_item_id' => $cartItemId,
-                    'user_id' => $userId
-                ]);
-
-                return [
-                    'success' => true,
-                    'message' => '商品已从购物车移除'
-                ];
-            } else {
-                throw new AlertBackException('移除购物车项目失败');
-            }
 
         } catch (Exception $e) {
-            Logger::error('移除定制购物车项目异常', [
+            Logger::error('保存定制数据异常', [
                 'error' => $e->getMessage(),
-                'cart_item_id' => $cartItemId,
-                'user_id' => $userId
+                'customization_data' => $customizationData
             ]);
 
             return [
@@ -907,32 +838,73 @@ class CustomGoods extends \Component\AbstractComponent
     }
 
     /**
-     * 检查购物车项目是否属于指定用户
+     * 上传定制图片
      * 
-     * @param int $cartItemId 购物车项目ID
-     * @param int $userId 用户ID
-     * @return bool 属于返回true，不属于返回false
+     * @param array $file 上传的文件信息
+     * @return array 上传结果
      */
-    private function isCartItemBelongsToUser($cartItemId, $userId)
+    public function uploadCustomImage($file)
     {
         try {
-            $sql = "SELECT COUNT(*) as count FROM es_cart_items WHERE id = ? AND user_id = ?";
-            $result = $this->db->query($sql, [$cartItemId, $userId]);
-
-            if ($result && $result->num_rows > 0) {
-                $row = $result->fetch_assoc();
-                return $row['count'] > 0;
+            // 验证文件类型
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                throw new AlertBackException('不支持的图片格式');
             }
 
-            return false;
+            // 验证文件大小（5MB限制）
+            $maxSize = 5 * 1024 * 1024;
+            if ($file['size'] > $maxSize) {
+                throw new AlertBackException('图片文件过大，请选择5MB以下的图片');
+            }
+
+            // 生成文件名
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $fileName = 'upload_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
+            
+            // 移动上传文件
+            $uploadPath = $this->getCustomImageDirectory() . '/' . $fileName;
+            
+            // 确保目录存在
+            $uploadDir = $this->getCustomImageDirectory();
+            if (!is_dir($uploadDir)) {
+                if (!mkdir($uploadDir, 0755, true)) {
+                    throw new AlertBackException('无法创建上传目录');
+                }
+            }
+
+            if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                $imageUrl = $this->generateImageUrl($uploadPath);
+                
+                Logger::info('定制图片上传成功', [
+                    'file_name' => $fileName,
+                    'file_path' => $uploadPath,
+                    'image_url' => $imageUrl
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => '图片上传成功',
+                    'data' => [
+                        'image_url' => $imageUrl,
+                        'thumbnail_url' => $imageUrl, // 暂时使用同一张图片
+                        'file_name' => $fileName
+                    ]
+                ];
+            } else {
+                throw new AlertBackException('文件上传失败');
+            }
 
         } catch (Exception $e) {
-            Logger::error('检查购物车项目归属异常', [
+            Logger::error('上传定制图片异常', [
                 'error' => $e->getMessage(),
-                'cart_item_id' => $cartItemId,
-                'user_id' => $userId
+                'file_info' => $file
             ]);
-            return false;
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
         }
     }
 
@@ -1245,37 +1217,355 @@ class CustomGoods extends \Component\AbstractComponent
     }
 
     /**
-     * 删除定制图片文件
+     * 删除自定义图片文件
      * 
      * @param string $imageUrl 图片URL
-     * @return bool 删除结果
+     * @return array
      */
     public function deleteCustomImageFile($imageUrl)
     {
         try {
+            if (empty($imageUrl)) {
+                return [
+                    'success' => false,
+                    'message' => '图片URL이 비어있습니다.'
+                ];
+            }
+
             // 从URL中提取文件路径
-            $baseDir = $this->getCustomImageDirectory();
-            $relativePath = str_replace('/data/custom_images', '', $imageUrl);
-            $filePath = $baseDir . $relativePath;
+            $filePath = $this->extractFilePathFromUrl($imageUrl);
+            if (empty($filePath)) {
+                return [
+                    'success' => false,
+                    'message' => '잘못된 이미지 URL입니다.'
+                ];
+            }
             
             // 检查文件是否存在
             if (!file_exists($filePath)) {
-                Logger::warning('要删除的图片文件不存在', ['file_path' => $filePath]);
-                return true; // 文件不存在也算删除成功
+                return [
+                    'success' => false,
+                    'message' => '이미지 파일을 찾을 수 없습니다.'
+                ];
             }
             
             // 删除文件
             if (unlink($filePath)) {
-                Logger::info('定制图片文件删除成功', ['file_path' => $filePath]);
-                return true;
-            } else {
-                throw new Exception('文件删除失败');
+                Logger::info('自定义图片文件删除成功', [
+                    'file_path' => $filePath,
+                    'image_url' => $imageUrl
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => '이미지 파일이 성공적으로 삭제되었습니다.'
+                ];
             }
 
-        } catch (Exception $e) {
-            Logger::error('删除定制图片文件失败', [
-                'error' => $e->getMessage(),
-                'image_url' => $imageUrl
+            return [
+                'success' => false,
+                'message' => '이미지 파일 삭제에 실패했습니다.'
+            ];
+
+        } catch (\Exception $e) {
+            Logger::error('自定义图片文件删除 예외', [
+                'image_url' => $imageUrl,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'message' => '이미지 파일 삭제 중 오류가 발생했습니다: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 添加自定义尺寸
+     * 
+     * @param int $goodsId 商品ID
+     * @param array $sizeData 尺寸数据
+     * @return array 操作结果
+     */
+    public function addCustomSize($goodsId, $sizeData)
+    {
+        try {
+            // 开始事务
+            $this->db->begin_transaction();
+            
+            try {
+                // 插入自定义尺寸
+                $insertData = [
+                    'goods_id' => $goodsId,
+                    'size_name' => $sizeData['size_name'],
+                    'size_width' => $sizeData['size_width'],
+                    'size_height' => $sizeData['size_height'],
+                    'size_unit' => $sizeData['size_unit'] ?? 'inch',
+                    'is_custom' => 1,
+                    'status' => 1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+                
+                $result = $this->db->set_insert_db('custom_goods_sizes', $insertData);
+                
+                if (!$result) {
+                    // 回滚事务
+                    $this->db->rollback();
+                    throw new \Exception('크기 데이터를 데이터베이스에 삽입하지 못했습니다.');
+                }
+                
+                // 提交事务
+                $this->db->commit();
+                
+                Logger::info('自定义尺寸 추가 성공', [
+                    'goods_id' => $goodsId,
+                    'size_data' => $sizeData,
+                    'custom_size_id' => $result
+                ]);
+                
+                return [
+                    'success' => true,
+                    'message' => '사용자 정의 크기가 성공적으로 추가되었습니다.',
+                    'data' => [
+                        'custom_size_id' => $result,
+                        'size_name' => $sizeData['size_name'],
+                        'size_width' => $sizeData['size_width'],
+                        'size_height' => $sizeData['size_height'],
+                        'size_unit' => $sizeData['size_unit']
+                    ]
+                ];
+                
+            } catch (\Exception $e) {
+                // 回滚事务
+                $this->db->rollback();
+                throw $e;
+            }
+            
+        } catch (\Exception $e) {
+            Logger::error('自定义尺寸 추가 예외', [
+                'goods_id' => $goodsId,
+                'size_data' => $sizeData,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => '사용자 정의 크기 추가 중 오류가 발생했습니다: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 获取商品的所有尺寸（包括自定义尺寸）
+     * 
+     * @param int $goodsId 商品ID
+     * @return array
+     */
+    public function getGoodsAllSizes($goodsId)
+    {
+        try {
+            // 获取预定义尺寸
+            $sql = "SELECT 
+                        'predefined' as type,
+                        size_id as id,
+                        size_code,
+                        size_name,
+                        size_display,
+                        NULL as size_width,
+                        NULL as size_height,
+                        NULL as size_unit,
+                        sort_order
+                    FROM es_goods_sizes gs
+                    INNER JOIN es_goods_size_relation gsr ON gs.size_id = gsr.size_id
+                    WHERE gsr.goods_id = ? AND gs.status = 'active'
+                    ORDER BY gs.sort_order ASC";
+            
+            $predefinedSizes = $this->db->query_fetch($sql, [$goodsId]);
+            
+            // 获取自定义尺寸
+            $sql = "SELECT 
+                        'custom' as type,
+                        custom_size_id as id,
+                        size_name as size_code,
+                        size_name,
+                        CONCAT(size_width, ' x ', size_height, ' ', size_unit) as size_display,
+                        size_width,
+                        size_height,
+                        size_unit,
+                        created_at as sort_order
+                    FROM custom_goods_sizes
+                    WHERE goods_id = ? AND status = 1
+                    ORDER BY created_at DESC";
+            
+            $customSizes = $this->db->query_fetch($sql, [$goodsId]);
+            
+            // 合并尺寸数据
+            $allSizes = array_merge($predefinedSizes, $customSizes);
+            
+            Logger::info('获取商品所有尺寸 성공', [
+                'goods_id' => $goodsId,
+                'predefined_count' => count($predefinedSizes),
+                'custom_count' => count($customSizes),
+                'total_count' => count($allSizes)
+            ]);
+            
+            return [
+                'success' => true,
+                'data' => $allSizes
+            ];
+            
+        } catch (\Exception $e) {
+            Logger::error('获取商品尺寸 예외', [
+                'goods_id' => $goodsId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => '상품 크기 정보를 가져오는 중 오류가 발생했습니다: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 删除自定义尺寸
+     * 
+     * @param int $customSizeId 自定义尺寸ID
+     * @return array
+     */
+    public function deleteCustomSize($customSizeId)
+    {
+        try {
+            if (empty($customSizeId)) {
+                return [
+                    'success' => false,
+                    'message' => '사용자 정의 크기 ID가 필요합니다.'
+                ];
+            }
+
+            // 检查尺寸是否存在
+            $sql = "SELECT custom_size_id, goods_id, size_name FROM custom_goods_sizes WHERE custom_size_id = ? AND status = 1";
+            $sizeInfo = $this->db->query_fetch($sql, [$customSizeId]);
+            
+            if (empty($sizeInfo)) {
+                return [
+                    'success' => false,
+                    'message' => '사용자 정의 크기를 찾을 수 없습니다.'
+                ];
+            }
+
+            // 软删除（更新状态）
+            $updateData = ['status' => 0];
+            $result = $this->db->set_update_db('custom_goods_sizes', $updateData, ['custom_size_id' => $customSizeId]);
+            
+            if ($result) {
+                Logger::info('自定义尺寸删除 성공', [
+                    'custom_size_id' => $customSizeId,
+                    'size_info' => $sizeInfo[0]
+                ]);
+                
+                return [
+                    'success' => true,
+                    'message' => '사용자 정의 크기가 성공적으로 삭제되었습니다.'
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'message' => '사용자 정의 크기 삭제에 실패했습니다.'
+            ];
+            
+        } catch (\Exception $e) {
+            Logger::error('自定义尺寸删除 예외', [
+                'custom_size_id' => $customSizeId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'message' => '사용자 정의 크기 삭제 중 오류가 발생했습니다: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * 验证自定义尺寸数据
+     * 
+     * @param array $sizeData
+     * @throws \Exception
+     */
+    private function validateCustomSizeData($sizeData)
+    {
+        if (empty($sizeData['size_name'])) {
+            throw new \Exception('크기 이름이 비어있습니다.');
+        }
+        
+        if (!is_numeric($sizeData['size_width']) || $sizeData['size_width'] <= 0) {
+            throw new \Exception('너비는 0보다 큰 숫자여야 합니다.');
+        }
+        
+        if (!is_numeric($sizeData['size_height']) || $sizeData['size_height'] <= 0) {
+            throw new \Exception('높이는 0보다 큰 숫자여야 합니다.');
+        }
+        
+        if (strlen($sizeData['size_name']) > 100) {
+            throw new \Exception('크기 이름은 100자를 초과할 수 없습니다.');
+        }
+        
+        if ($sizeData['size_width'] > 9999.99 || $sizeData['size_height'] > 9999.99) {
+            throw new \Exception('크기 값이 너무 큽니다. 9999.99 이하로 입력해주세요.');
+        }
+        
+        // 验证单位
+        $validUnits = ['inch', 'cm', 'mm', 'm'];
+        if (!empty($sizeData['size_unit']) && !in_array($sizeData['size_unit'], $validUnits)) {
+            throw new \Exception('지원하지 않는 단위입니다. inch, cm, mm, m 중에서 선택해주세요.');
+        }
+    }
+
+    /**
+     * 从URL中提取文件路径
+     * 
+     * @param string $imageUrl
+     * @return string|null
+     */
+    private function extractFilePathFromUrl($imageUrl)
+    {
+        // 移除域名部分，获取相对路径
+        $path = parse_url($imageUrl, PHP_URL_PATH);
+        if (empty($path)) {
+            return null;
+        }
+        
+        // 构建完整的文件系统路径
+        $basePath = $this->getCustomImageDirectory();
+        $filePath = $basePath . $path;
+        
+        return $filePath;
+    }
+
+    /**
+     * 检查尺寸名称是否已存在
+     * 
+     * @param int $goodsId 商品ID
+     * @param string $sizeName 尺寸名称
+     * @return bool 存在返回true，不存在返回false
+     */
+    public function isSizeNameExists($goodsId, $sizeName)
+    {
+        try {
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsId);
+            $this->db->bind_param_push($arrBind, 's', $sizeName);
+            $sql = "SELECT COUNT(*) as cnt FROM custom_goods_sizes WHERE goods_id = ? AND size_name = ? AND status = 1";
+            $result = $this->db->query_fetch($sql, $arrBind);
+            return isset($result['cnt']) && $result['cnt'] > 0;
+        } catch (\Exception $e) {
+            Logger::error('检查尺寸名称是否存在异常', [
+                'goods_id' => $goodsId,
+                'size_name' => $sizeName,
+                'error' => $e->getMessage()
             ]);
             return false;
         }

@@ -13,7 +13,7 @@
 
 namespace Controller\Admin\Custom;
 
-use Component\Custom\CustomPattern;
+use Custom\Component\CustomPattern;
 use Component\Storage\CustomStorage;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
@@ -56,7 +56,7 @@ class CustomPatternController extends \Controller\Admin\Controller
                 'group' => Request::get()->get('group'),
                 'status' => Request::get()->get('status'),
                 'keyword' => Request::get()->get('keyword'),
-                'sort_field' => Request::get()->get('sort_field', 'create_time'),
+                'sort_field' => Request::get()->get('sort_field', 'created_at'),
                 'sort_order' => Request::get()->get('sort_order', 'DESC')
             ];
 
@@ -558,7 +558,7 @@ class CustomPatternController extends \Controller\Admin\Controller
                 'group' => Request::get()->get('group'),
                 'status' => Request::get()->get('status'),
                 'keyword' => Request::get()->get('keyword'),
-                'sort_field' => Request::get()->get('sort_field', 'create_time'),
+                'sort_field' => Request::get()->get('sort_field', 'created_at'),
                 'sort_order' => Request::get()->get('sort_order', 'DESC')
             ];
 
@@ -747,15 +747,28 @@ class CustomPatternController extends \Controller\Admin\Controller
             $this->validateCsrfToken();
 
             $patternId = Request::post()->get('pattern_id');
-            
             if (!$patternId) {
                 $this->sendErrorResponse(400, '图案ID不能为空');
                 return;
             }
 
+            // 检查是否被商品引用
+            $goodsRefCount = \Custom\Component\GoodsCustomPattern::where('pattern_id', $patternId)->count();
+            if ($goodsRefCount > 0) {
+                $this->sendErrorResponse(400, '该图案已被商品引用，无法删除');
+                return;
+            }
+            // 检查是否被订单引用（如有订单定制表）
+            if (class_exists('Custom\\Component\\CustomGoodsCustomization')) {
+                $orderRefCount = \Custom\Component\CustomGoodsCustomization::where('pattern_id', $patternId)->count();
+                if ($orderRefCount > 0) {
+                    $this->sendErrorResponse(400, '该图案已被订单引用，无法删除');
+                    return;
+                }
+            }
+
             // 删除图案
             $result = $this->customPattern->deletePattern($patternId);
-
             if ($result['success']) {
                 $this->sendSuccessResponse('图案删除成功', [
                     'pattern_id' => $patternId,
@@ -764,7 +777,6 @@ class CustomPatternController extends \Controller\Admin\Controller
             } else {
                 $this->sendErrorResponse(500, $result['message'], $result['data']);
             }
-
         } catch (AlertBackException $e) {
             $this->sendErrorResponse(400, $e->getMessage());
         } catch (Exception $e) {
@@ -773,7 +785,6 @@ class CustomPatternController extends \Controller\Admin\Controller
                 'trace' => $e->getTraceAsString(),
                 'pattern_id' => $patternId ?? null
             ]);
-            
             $this->sendErrorResponse(500, '服务器内部错误', [
                 'error_type' => get_class($e),
                 'error_message' => $e->getMessage()
@@ -825,6 +836,252 @@ class CustomPatternController extends \Controller\Admin\Controller
                 'trace' => $e->getTraceAsString(),
                 'pattern_id' => $patternId ?? null,
                 'status' => $status ?? null
+            ]);
+            
+            $this->sendErrorResponse(500, '服务器内部错误', [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * 获取图案详情API接口
+     * 用于图案编辑和预览功能
+     * 
+     * @return void
+     */
+    public function getPatternInfoAPI()
+    {
+        try {
+            $patternId = Request::get()->get('pattern_id');
+            
+            if (!$patternId) {
+                $this->sendErrorResponse(400, '图案ID不能为空');
+                return;
+            }
+
+            // 获取图案详情
+            $pattern = $this->customPattern->getPatternById($patternId);
+            
+            if (!$pattern) {
+                $this->sendErrorResponse(404, '图案不存在');
+                return;
+            }
+
+            // 获取分类名称（如果pattern_category是ID）
+            if (isset($pattern['pattern_category']) && is_numeric($pattern['pattern_category'])) {
+                $categoryResult = $this->customPattern->getPatternCategoryById($pattern['pattern_category']);
+                if ($categoryResult['success']) {
+                    $pattern['pattern_category_name'] = $categoryResult['data']['category_name'];
+                } else {
+                    $pattern['pattern_category_name'] = '';
+                }
+            } else {
+                $pattern['pattern_category_name'] = $pattern['pattern_category'] ?? '';
+            }
+
+            $this->sendSuccessResponse('获取图案详情成功', $pattern);
+
+        } catch (Exception $e) {
+            Logger::error('获取图案详情API异常', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'pattern_id' => $patternId ?? null
+            ]);
+            
+            $this->sendErrorResponse(500, '服务器内部错误', [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * 批量更新图案状态API接口
+     * 
+     * @return void
+     */
+    public function batchUpdatePatternStatusAPI()
+    {
+        try {
+            // 验证CSRF Token
+            $this->validateCsrfToken();
+
+            $patternIds = Request::post()->get('pattern_ids');
+            $status = Request::post()->get('status');
+            
+            if (!$patternIds || !is_array($patternIds)) {
+                $this->sendErrorResponse(400, '请选择要操作的图案');
+                return;
+            }
+
+            if (!in_array($status, [0, 1])) {
+                $this->sendErrorResponse(400, '状态值无效');
+                return;
+            }
+
+            // 批量更新图案状态
+            $result = $this->customPattern->batchUpdatePatternStatus($patternIds, $status);
+
+            if ($result['success']) {
+                $this->sendSuccessResponse('批量状态更新成功', [
+                    'updated_count' => $result['data']['updated_count'] ?? count($patternIds),
+                    'pattern_ids' => $patternIds,
+                    'status' => $status
+                ]);
+            } else {
+                $this->sendErrorResponse(500, $result['message'], $result['data']);
+            }
+
+        } catch (AlertBackException $e) {
+            $this->sendErrorResponse(400, $e->getMessage());
+        } catch (Exception $e) {
+            Logger::error('批量更新图案状态API异常', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'pattern_ids' => $patternIds ?? [],
+                'status' => $status ?? null
+            ]);
+            
+            $this->sendErrorResponse(500, '服务器内部错误', [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * 批量删除图案API接口
+     * 
+     * @return void
+     */
+    public function batchDeletePatternsAPI()
+    {
+        try {
+            // 验证CSRF Token
+            $this->validateCsrfToken();
+
+            $patternIds = Request::post()->get('pattern_ids');
+            
+            if (!$patternIds || !is_array($patternIds)) {
+                $this->sendErrorResponse(400, '请选择要删除的图案');
+                return;
+            }
+
+            // 批量删除图案
+            $result = $this->customPattern->batchDeletePatterns($patternIds);
+
+            if ($result['success']) {
+                $this->sendSuccessResponse('批量删除成功', [
+                    'deleted_count' => $result['data']['deleted_count'] ?? count($patternIds),
+                    'pattern_ids' => $patternIds,
+                    'deleted_files' => $result['data']['deleted_files'] ?? []
+                ]);
+            } else {
+                $this->sendErrorResponse(500, $result['message'], $result['data']);
+            }
+
+        } catch (AlertBackException $e) {
+            $this->sendErrorResponse(400, $e->getMessage());
+        } catch (Exception $e) {
+            Logger::error('批量删除图案API异常', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'pattern_ids' => $patternIds ?? []
+            ]);
+            
+            $this->sendErrorResponse(500, '服务器内部错误', [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * 更新图案信息API接口
+     * 用于图案编辑功能
+     * 
+     * @return void
+     */
+    public function updatePatternAPI()
+    {
+        try {
+            // 验证CSRF Token
+            $this->validateCsrfToken();
+
+            // 获取请求参数
+            $patternId = Request::post()->get('pattern_id');
+            $patternName = Request::post()->get('pattern_name');
+            $patternCategory = Request::post()->get('pattern_category');
+            $patternGroup = Request::post()->get('pattern_group');
+            $patternDescription = Request::post()->get('pattern_description');
+            $status = Request::post()->get('status');
+
+            // 参数验证
+            if (!$patternId) {
+                $this->sendErrorResponse(400, '图案ID不能为空');
+                return;
+            }
+
+            if (!$patternName || trim($patternName) === '') {
+                $this->sendErrorResponse(400, '图案名称不能为空');
+                return;
+            }
+
+            if (strlen(trim($patternName)) > 100) {
+                $this->sendErrorResponse(400, '图案名称不能超过100个字符');
+                return;
+            }
+
+            if ($patternGroup && strlen(trim($patternGroup)) > 50) {
+                $this->sendErrorResponse(400, '图案分组不能超过50个字符');
+                return;
+            }
+
+            if ($patternDescription && strlen(trim($patternDescription)) > 500) {
+                $this->sendErrorResponse(400, '图案描述不能超过500个字符');
+                return;
+            }
+
+            if (!in_array($status, ['0', '1'])) {
+                $this->sendErrorResponse(400, '状态值无效');
+                return;
+            }
+
+            // 准备更新数据
+            $updateData = [
+                'pattern_name' => trim($patternName),
+                'pattern_category' => $patternCategory ?: null,
+                'pattern_group' => $patternGroup ? trim($patternGroup) : null,
+                'status' => (int)$status
+            ];
+
+            // 如果有描述字段，添加到更新数据中
+            if ($patternDescription !== null) {
+                $updateData['pattern_description'] = trim($patternDescription);
+            }
+
+            // 调用业务组件更新图案
+            $result = $this->customPattern->updatePattern($patternId, $updateData);
+
+            if ($result['success']) {
+                // 获取更新后的图案信息
+                $updatedPattern = $this->customPattern->getPatternById($patternId);
+                
+                $this->sendSuccessResponse('图案更新成功', $updatedPattern);
+            } else {
+                $this->sendErrorResponse(500, $result['message'], $result['data']);
+            }
+
+        } catch (AlertBackException $e) {
+            $this->sendErrorResponse(400, $e->getMessage());
+        } catch (Exception $e) {
+            Logger::error('图案更新API异常', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'pattern_id' => $patternId ?? null,
+                'update_data' => $updateData ?? []
             ]);
             
             $this->sendErrorResponse(500, '服务器内部错误', [

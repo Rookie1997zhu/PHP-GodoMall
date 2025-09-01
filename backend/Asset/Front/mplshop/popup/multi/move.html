@@ -1,0 +1,183 @@
+{*** 기본 이동 멀티 레이어 팝업창 | main/html.php?htmid=popup/multi_move.htm ***}
+<!--{ ? data.popupKindFl == 'window' }-->
+{ # share_header }
+<!--{ / }-->
+<style>
+    .js_multi_layer{position: relative; padding-top:35px;}
+    .js_multi_layer .multipopup{ width:100%; padding:10px; background-color:#fff; border:1px solid #eaeaea;}
+    .js_multi_layer .bxslider-wrap {border:1px solid #eaeaea; margin-bottom:10px;}
+    .js_multi_layer .bxslider-wrap:after{clear:both; display:block; content:"";}
+    .js_multi_layer .multipopup .mp_select_img{}    
+    .js_multi_layer .multipopup .mp_select_img img{width: 100%;}
+    .js_multi_layer .multipopup .mp_item_wrap{overflow: hidden;}
+    .js_multi_layer .multipopup .mp_item{float: left; position: relative; cursor: pointer; }
+    .js_multi_layer .multipopup .mp_item+.mp_item{}
+    .js_multi_layer .multipopup .mp_item img{width: 100%;}
+
+    #multi_popup_pager{=data.sno} {width:100%; height:auto;}
+
+    .js_multi_layer .check{width:100%; border:1px solid #eaeaea; border-width:0 1px 1px; background-color:{=todayUnSee.todayUnSeeBgColor}; color:{=todayUnSee.todayUnSeeFontColor}; text-align:{=todayUnSee.todayUnSeeAlign}; padding:5px 10px 0 10px;}
+    .js_multi_layer .check label{ padding:2px 22px 0 0; background-position:right 2px; font-size:11px; background-color:{=todayUnSee.todayUnSeeBgColor}; color:{=todayUnSee.todayUnSeeFontColor}; }
+    .js_multi_layer .check label:hover {background-position:right 2px;}
+    .js_multi_layer .check input{left:auto; right:1px; top:1px;}
+    .js_multi_layer .close {display:block; position:absolute; top:6px; right:-10px; width:18px; height:18px; text-indent:-9999px; background: url(../../img/common/layer/btn_layer_close.png) no-repeat left top;}
+</style>
+
+<div class="js_multi_layer" style="width:{=data.popupSlideViewW}px;">
+    <div class="multipopup">
+        <div class="bxslider-wrap" style="width:{=data.popupSlideViewW}px;position:relative;overflow:hidden;">
+            <div class="slider-wrap multi_popup_bxslider{=data.sno} mp_select_img">
+                <!--{ @ data.image }-->
+                <div style="width:{=data.popupSlideViewW}px;overflow:hidden;">
+                    <a href="{=.imageLinkUrl}" target="{=.imageLinkTarget}"><img src="<!--{ ? .imageUploadFl == 'y' }-->{data.imagePath}<!--{ / }-->{=.mainImage}" style="width:{=data.popupSlideViewW}px;" /></a>
+                </div>
+                <!--{ / }-->
+            </div>
+        </div>
+        <div id="multi_popup_pager{=data.sno}">
+            <!--{ @ range(1, data.heightCount) }-->
+            <div class="mp_item_wrap" style="width:{=data.popupSlideViewW}px;height:auto;overflow:hidden;">
+                <!--{ @ range(1, data.widthCount) }-->
+                <div class="mp_item slider-pager-{.key_}" style="width:{=data.popupSlideThumbW}px;height:auto;overflow:hidden;">
+                    <a href="" class="js_multi_popup_out js_multi_popup_out{=data.sno}_{=(..index_+(.index_*data.widthCount))}" data-slide-index="{=(..index_+(.index_*data.widthCount))}"><img src="<!--{ ? data['image'][(..index_+(.index_*data.widthCount))]['imageUploadFl'] == 'y' }-->{=data.imagePath}<!--{ / }-->{=data['image'][(..index_+(.index_*data.widthCount))]['thumbImage1']}" style="width:{=data.popupSlideThumbW}px;height:auto;overflow:hidden;" /></a>
+                    <a href="" class="js_multi_popup_over js_multi_popup_over{=data.sno}_{=(..index_+(.index_*data.widthCount))}" style="display:none" data-slide-index="{=(..index_+(.index_*data.widthCount))}"><img src="<!--{ ? data['image'][(..index_+(.index_*data.widthCount))]['imageUploadFl'] == 'y' }-->{=data.imagePath}<!--{ / }-->{=data['image'][(..index_+(.index_*data.widthCount))]['thumbImage2']}" style="width:{=data.popupSlideThumbW}px;height:auto;overflow:hidden;" /></a>
+                </div>
+                <!--{ / }-->
+            </div>
+            <!--{ / }-->
+        </div>
+        <button type="button" class="close" title="{=__('닫기')}" <!--{ ? data.popupKindFl == 'window' }--> onclick="window.close();<!--{ : }--> onclick="$('#{=popupCode}').hide();<!--{ / }-->">{=__('닫기')}</button>
+    </div>
+    <!--{ ? todayUnSee.todayUnSeeFl == 'y' }-->
+    <div class="check">
+        <span class="form_element">
+            <label for="todayMultiUnSee{=data.sno}" class="check_s">{=__('오늘 하루 보이지 않음2')}</label>
+            <input type="checkbox" id="todayMultiUnSee{=data.sno}" class="checkbox" onClick="gd_popup_cookie('{=popupCode}', this);">
+        </span>
+    </div>
+    <!--{ / }-->    
+</div>
+<!-- //js_multi_layer -->
+<script src="../../js/slider/slick/slick.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    <!--
+    $(document).ready(function () {
+
+        $('.multi_popup_bxslider{=data.sno}').slick({
+            draggable : false,
+            autoplay : true,
+            arrows : false,
+            <!--{ ? data.popupSlideDirection == 'up' || data.popupSlideDirection == 'down' }-->vertical : true,<!--{ / }-->
+            <!--{ ? data.popupSlideDirection == 'none' }-->fade : true,<!--{ / }-->
+            infinite : true,
+            speed : {=(data.popupSlideSpeed * 100)},
+            slidesToShow : 1
+        });
+
+        $("#multi_popup_pager{=data.sno} a").click(function(e){
+            e.preventDefault();
+            var slideIndex = $(this).data('slide-index');
+            $('.multi_popup_bxslider{=data.sno}').slick('slickGoTo', slideIndex, true);
+        });
+
+        $('.multi_popup_bxslider{=data.sno}').on('beforeChange', function(event, slick, currentSlide, nextSlide){
+            $("#multi_popup_pager{=data.sno} .js_multi_popup_over").hide();
+            $("#multi_popup_pager{=data.sno} .js_multi_popup_out").show();
+            $(".js_multi_popup_out{=data.sno}_"+nextSlide).hide();
+            $(".js_multi_popup_over{=data.sno}_"+nextSlide).show();
+        });
+
+        $(document).on('mouseover', '#multi_popup_pager{=data.sno} a.js_multi_popup_out', function (e) {
+            var index = $(this).data('slide-index');
+            $(".js_multi_popup_out{=data.sno}_"+index).hide();
+            $(".js_multi_popup_over{=data.sno}_"+index).show();
+        });
+
+        $(document).on('mouseleave', '#multi_popup_pager{=data.sno} a.js_multi_popup_over', function (e) {
+            var index = $(this).data('slide-index');
+            $(".js_multi_popup_out{=data.sno}_"+index).show();
+            $(".js_multi_popup_over{=data.sno}_"+index).hide();
+        });
+
+        $(".js_multi_popup_out{=data.sno}_0").hide();
+        $(".js_multi_popup_over{=data.sno}_0").show();
+
+        /*화면에 따른 멀티팝업 css 변경*/
+        var wpps_popup_width = Number('{=data.popupSlideViewW}');
+        var wpps_popup_width_catch = 	$('#multiPopupCode_move_{=data.sno}').width();
+        var wpps_rowser_width = $(window).width();
+        var wpp_item_width = (100 / {=data.widthCount})+"%";
+        $('#multiPopupCode_move_{=data.sno}').css("max-width", wpps_popup_width+46+'px' )
+        var filter = "win16|win32|win64|mac";
+        var vWebType = "";
+
+        if (navigator.platform ) {
+            if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+                vWebType = "MOBILE";
+            } 
+        }
+        if (wpps_popup_width+{=data.popupPositionL} > wpps_rowser_width || vWebType == "MOBILE") {  
+            var wpps_popup_width_catch = $(window).width(); 			
+
+            $('#multiPopupCode_move_{=data.sno}').css({"width": "98%","margin":"0 1%","top":"5%","left":"0"});
+            $('#multiPopupCode_move_{=data.sno} .multipopup img,.mp_item a img').css("width", "100%" );
+
+            $('#multi_popup_pager{=data.sno}').css({"border-bottom":"none","height":"100%"});
+            $('.js_multi_layer,.bxslider-wrap,.mp_item_wrap').css({"width": "100%","height":"100%"});
+            $('.js_multi_layer .multipopup').css({"width": "94%","padding": "10px 2%","margin": "0 1%"});
+            $('.js_multi_layer .check').css({"width": "94%","padding": "8px 2% 4px","margin":"0 1%"});
+
+            $('.mp_item').css("width", wpp_item_width);
+            $('.js_multi_layer .close').css("right", "5px");
+
+        }
+    });
+
+    /*화면에 따른 멀티팝업 css 변경*/
+    $( window ).resize(function() {  
+
+        var wpps_popup_width = Number('{=data.popupSlideViewW}');
+        var wpps_popup_width_catch = 	$('#multiPopupCode_move_{=data.sno}').width();
+        var wpps_rowser_width = $(window).width();
+        var wpp_item_width = (100 / {=data.widthCount})+"%";
+        $('#multiPopupCode_move_{=data.sno}').css("max-width", wpps_popup_width+46+'px' )
+        var filter = "win16|win32|win64|mac";
+        var vWebType = "";
+
+        if (navigator.platform ) {
+            if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+                vWebType = "MOBILE";
+            } 
+        }
+
+        if (wpps_popup_width+{=data.popupPositionL} > wpps_rowser_width || vWebType == "MOBILE") {  
+            var wpps_popup_width_catch = $(window).width(); 
+
+            $('#multiPopupCode_move_{=data.sno}').css({"width": "98%","margin":"0 1%","top":"5%","left":"0"});
+            $('#multiPopupCode_move_{=data.sno} .multipopup img,.mp_item a img').css("width", "100%" );
+
+            $('#multi_popup_pager{=data.sno}').css({"border-bottom":"none","height":"100%"});
+            $('.js_multi_layer,.bxslider-wrap,.mp_item_wrap').css({"width": "100%","height":"100%"});
+            $('.js_multi_layer .multipopup').css({"width": "94%","padding": "10px 2%","margin": "0 1%"});
+            $('.js_multi_layer .check').css({"width": "94%","padding": "8px 2% 4px","margin":"0 1%"});
+
+            $('.mp_item').css("width", wpp_item_width);
+            $('.js_multi_layer .close').css("right", "5px");
+
+        } else {  		
+            $('#multiPopupCode_move_{=data.sno}').css({"width": wpps_popup_width+22+'px',"margin":"0","top":"{=data.popupPositionT}px","left":"{=data.popupPositionL}px"});
+            $('#multiPopupCode_move_{=data.sno} .multipopup img').css("width", "{=data.popupSlideViewW}px" );
+            $('.mp_item a img').css("width", "{=data.popupSlideThumbW}px" );
+
+            $('.js_multi_layer,.bxslider-wrap').css({"width": "{=data.popupSlideViewW}px","height":"{=data.popupSlideViewH}px"});
+            $('.mp_item_wrap').css({"width": "{=data.popupSlideViewW}px","height":"auto !important"});
+            $('.js_multi_layer .multipopup').css({"width": "100%","padding": "10px","margin": "0"});
+            $('.js_multi_layer .check').css({"width": "100%","padding": "5px 10px 0 10px","margin":"0"});
+
+            $('.mp_item').css("width", "{=data.popupSlideThumbW}px");
+            $('.js_multi_layer .close').css("right", "-10px");
+                
+        }
+    });
+    //-->
+</script>

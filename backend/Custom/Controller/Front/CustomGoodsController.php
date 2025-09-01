@@ -13,8 +13,8 @@
 
 namespace Controller\Front\Custom;
 
-use Component\Custom\CustomGoods;
-use Component\Custom\CustomPattern;
+use Custom\Component\CustomGoods;
+use Custom\Component\CustomPattern;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -352,6 +352,9 @@ class CustomGoodsController extends \Controller\Front\Controller
     private function getGoodsInfo($goodsNo)
     {
         try {
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+            
             $sql = "SELECT 
                         g.goodsNo,
                         g.goodsNm,
@@ -361,21 +364,17 @@ class CustomGoodsController extends \Controller\Front\Controller
                         g.goodsDescription,
                         g.is_customizable,
                         g.default_color,
-                        g.default_size,
-                        g.rating,
-                        g.review_count
+                        g.default_size
                     FROM es_goods g
                     WHERE g.goodsNo = ? AND g.delFl = 'n'";
 
-            $result = $this->db->query($sql, [$goodsNo]);
+            $result = $this->db->query_fetch($sql, $arrBind, false);
 
-            if ($result && $result->num_rows > 0) {
-                $goods = $result->fetch_assoc();
-                
+            if ($result) {
                 // 构建图片URL
-                $goods['goods_image_url'] = $this->buildImageUrl($goods['goodsImage']);
+                $result['goods_image_url'] = $this->buildImageUrl($result['goodsImage']);
                 
-                return $goods;
+                return $result;
             }
 
             return null;
@@ -398,6 +397,9 @@ class CustomGoodsController extends \Controller\Front\Controller
     private function getGoodsColors($goodsNo)
     {
         try {
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+            
             $sql = "SELECT 
                         gc.color_id,
                         gc.color_code,
@@ -409,7 +411,7 @@ class CustomGoodsController extends \Controller\Front\Controller
                     WHERE gcr.goods_id = ? AND gc.status = 'active'
                     ORDER BY gc.sort_order ASC, gc.color_id ASC";
 
-            $result = $this->db->query($sql, [$goodsNo]);
+            $result = $this->db->query_fetch($sql, $arrBind, true);
 
             return $result ?: [];
 
@@ -431,6 +433,9 @@ class CustomGoodsController extends \Controller\Front\Controller
     private function getGoodsSizes($goodsNo)
     {
         try {
+            $arrBind = [];
+            $this->db->bind_param_push($arrBind, 'i', $goodsNo);
+            
             $sql = "SELECT 
                         gs.size_id,
                         gs.size_code,
@@ -442,7 +447,7 @@ class CustomGoodsController extends \Controller\Front\Controller
                     WHERE gsr.goods_id = ? AND gs.status = 'active'
                     ORDER BY gs.sort_order ASC, gs.size_id ASC";
 
-            $result = $this->db->query($sql, [$goodsNo]);
+            $result = $this->db->query_fetch($sql, $arrBind, true);
 
             return $result ?: [];
 
@@ -472,13 +477,17 @@ class CustomGoodsController extends \Controller\Front\Controller
             return $imagePath;
         }
 
+        // 使用官方Request类获取主机名
+        $host = Request::server()->get('HTTP_HOST');
+        $scheme = Request::server()->get('REQUEST_SCHEME') ?: 'http';
+
         // 如果是相对路径，构建完整URL
         if (strpos($imagePath, '/') === 0) {
-            return 'http://' . $_SERVER['HTTP_HOST'] . $imagePath;
+            return $scheme . '://' . $host . $imagePath;
         }
 
         // 默认图片目录
-        return 'http://' . $_SERVER['HTTP_HOST'] . '/data/goods/' . $imagePath;
+        return $scheme . '://' . $host . '/data/goods/' . $imagePath;
     }
 
     /**

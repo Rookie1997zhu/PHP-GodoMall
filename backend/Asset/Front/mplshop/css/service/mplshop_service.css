@@ -1,0 +1,250 @@
+/* ------------- 이용약관, 개인정보 처리방침  /상단 수정부분/ ------------- */
+.service_tit{ margin:0 0 20px; padding:70px 0 0 0; font-size: 14px; text-align:center; border-bottom:none;}
+.service_tit h2{padding: 0 0 8px 0; display: inline-block; color: #333; font-size:24px;}
+@media screen and (max-width:1240px){
+	.service_tit {padding:50px 5px 0;}
+}
+@media screen and (max-width:760px){
+	.service_tit h2{ font-size:18px;}
+}
+@media screen and (max-width:560px){
+	.service_tit {padding:30px 5px 0;}
+}
+@media screen and (max-width:400px){
+	.service_tit h2{font-size:15px;}
+}
+
+.service_cont {line-height:22px; color:#555; margin-top:50px;}
+/* ------------- 설문조사  /상단 수정부분/------------- */
+.poll_sec {}
+.poll_sec img {max-width:100%;}
+.poll_sec .poll_tit{margin:0 0 20px; padding:20px 0 0 0; font-size: 14px; text-align:center;}
+.poll_tit h3{padding: 0 0 8px 0; display: inline-block; color: #333; font-size:24px;}
+.poll_list_box input[type="text"]{width:96%; margin:0 2%;}
+.poll_list_box textarea{width:96%; margin:0 2%; }
+.poll_end_cont strong{font-size:22px; color:#000;}
+.poll_end_cont span{font-size:14px;}
+/* 설문조사 제목 + 리스트 */
+.poll_list_tit strong{color:#383838;}
+
+/* 설문조사 결과 제목 + 리스트 */
+.poll_result_tit strong{color:#383838;}
+.poll_stick em{background:#383838;}
+@media screen and (max-width:1240px){
+	.poll_tit {padding:50px 5px 0;}
+}
+@media screen and (max-width:760px){
+	.poll_tit h3{ font-size:18px;}
+	.poll_list_box,.poll_result_box{padding:0 10px;} 
+	.poll_end_cont{padding:40px 0 0 0}
+	.poll_end_cont strong{font-size:22px;}
+	.poll_end_cont span{font-size:13px;}
+	.poll_end_cont a{font-size:13px;}
+	.poll_stick {width:60%;}
+	.poll_result_cont .poll_result_view {width:96%; margin:0 2%;}
+}
+@media screen and (max-width:560px){
+	.poll_tit {padding:30px 5px 0;}
+}
+@media screen and (max-width:400px){
+	.poll_tit h3{font-size:15px;}
+	.poll_end_cont{padding:30px 0 0 0}
+	.poll_end_cont strong{font-size:18px;}
+	.poll_end_cont span{font-size:12px;}
+	.poll_end_cont a{font-size:12px;}
+}
+/* ------------- FAQ ------------- */
+/* 게시판 기본  /상단 수정부분/ */
+.board_zone_tit{margin:0; padding:0 0 30px; font-size:16px; text-align:center;}
+.board_zone_tit h2 {color:#333; font-size:24px;}
+@media screen and (max-width:760px){
+	.board_zone_tit h2{ font-size:18px; }
+}
+@media screen and (max-width:400px){
+	.board_zone_tit h2{ font-size:15px; }
+}
+
+/* 게시판 제목 */
+.board_list_table .board_tit strong > span{color:#383838;}
+
+/* 자주묻는 질문 검색 */
+.date_check_box{margin:0 0 25px 0; border:1px solid #eaeaea;}
+
+/* FAQ 질문 리스트 */
+.board_hot_list ul li.on span {color:#383838;}
+.board_hot_list ul li a span:hover{border-bottom:1px solid #383838; color:#383838;}
+/* FAQ 게시판 */
+.board_faq{padding:10px 0;}
+.board_faq_cont{max-width:auto; min-height:auto; margin:0; padding:8px 30px;}
+.board_faq_cont .icon_qan{top:10px; left:5px;}
+
+/* /상단 수정부분/ */
+.service_main {}
+.service_main .serviceTitle { margin:0 0 20px; padding:70px 0 0 0; font-size: 14px; }
+.service_main .serviceTitle h2 {padding: 0 0 8px 0; display: inline-block; color: #333; font-size:24px;}
+.service_main .serviceLink { width: 100%; margin: 0 auto 5px;}
+.service_main .serviceLink ul { text-align: left; font-size:0;  }
+.service_main .serviceLink ul:after { content:""; display:block; clear:both; }
+.service_main .serviceLink ul li { display: inline-block;}
+.service_main .serviceLink ul li a { display: inline-block; max-width: 210px; padding:0 22px 0 5px; font-size:14px; color:#777; text-align:center; overflow:hidden;}
+.service_main .serviceLink ul li:first-child a {background:none;}
+.service_main .serviceLink ul li a:hover { color: #000; }
+
+.service_main .service_main_cont { margin: 15px 0 0 0;}
+.service_main .service_main_cont .service_main_notice ,
+.service_main .service_main_cont .service_main_event { width: 48%; min-height:200px; margin-bottom: 30px;}
+/* 고객센터 게시판타이틀 /상단 수정부분/ */
+.service_main .service_main_cont h3 { color:#000; font-size:14px;}
+.service_main .service_main_cont ul { margin: 0; border: 0; }
+.service_main .service_main_cont li a { padding: 20px 15px; background: none; color: #000;}
+.service_main .service_main_cont li a:hover { text-decoration: none;}
+.service_main .service_main_cont li span { padding: 20px 0 0 0; color: #000;}
+
+.service_main_frame {margin-top:20px;}
+.service_main_frame .date_check_box { padding: 45px 75px; margin-bottom:35px; background: #fafafa; border: 0; font-size: 0; }
+
+.service_main_frame .date_faq_list {
+	width: 70%; background: url("../../_mplshop/images/community/comm_line.gif") repeat-y center right;
+	-webkit-transition: all .25s ease;
+	-moz-transition: all .25s ease;
+	-o-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	transition: all .25s ease;
+}
+.service_main_frame .date_faq_list h2 { padding: 0 0 20px 0; font-size: 16px; color: #000;}
+.service_main_frame .date_faq_list #time { height: 45px; border: 1px solid #000; }
+.service_main_frame .date_faq_list .btn_date_check { min-width:45px; height: 45px; border: 0; background: #000 url("../../_mplshop/images/community/comm_search.png") no-repeat center; }
+.service_main_frame .date_faq_list .btn_date_check em { font-size: 0; }
+
+.service_main_frame .date_faq_txt { 
+	width: 23%; padding: 0 0 0 7%; border: 0; font-size: 12px;
+	-webkit-transition: all .25s ease;
+	-moz-transition: all .25s ease;
+	-o-transition: all .25s ease;
+	-ms-transition: all .25s ease;
+	transition: all .25s ease;
+}
+.service_main_frame .date_faq_txt strong { font-size: 13px; color: #898989; }
+.service_main_frame .date_faq_txt .btn_gray_list .btn_gray_mid { height: 40px; }
+.service_main_frame .date_faq_txt .btn_gray_list .btn_gray_mid span { line-height: 40px; font-size: 13px; }
+.service_main_frame .date_faq_txt .btn_gray_list a,
+.service_main_frame .date_faq_txt .btn_gray_list button { padding: 0 0 0 20px; background: #000;}
+.service_main_frame .date_faq_txt .btn_gray_list a span,
+.service_main_frame .date_faq_txt .btn_gray_list button span { padding: 0 20px 0 0; color: #fff;}
+
+.service_main_frame .board_zone_tit { font-size: 16px; color: #333; margin:0 0 30px; padding:0; border-bottom:1px solid #eaeaea;}
+.service_main_frame .board_zone_tit h3{padding: 0 0 8px 0; display: inline-block; color: #333; border-bottom: 3px solid #333; font-size:16px;}
+.service_main_frame .board_list_faq .btn_board_more {top:-55px;}
+/* 고객센터 FAQ 타이틀 /상단 수정부분/ */
+
+.service_main_frame .board_list_faq { }
+.service_main_frame .board_list_faq .board_hot_list{margin: 20px auto 35px; border-top:none; padding:0;}
+.service_main_frame .board_list_faq .board_hot_list ul{text-align:left; font-size:0;}
+.service_main_frame .board_list_faq .board_hot_list ul li{display: inline-block; }
+.service_main_frame .board_list_faq .board_hot_list ul li a{display: inline-block; max-width: 210px; height:auto; padding:8px 20px; font-size:13px; color:#777; text-align:center; overflow:hidden;  border-left:none; border-bottom:2px solid #fff; background:url('../../_mplshop/images/common/barline_st1.png') no-repeat left 44%; font-weight:normal;}
+.service_main_frame .board_list_faq .board_hot_list ul li a span{position:static; top:auto;}
+.service_main_frame .board_list_faq .board_hot_list ul li a span:hover{font-weight:normal; border-bottom:none;}
+.service_main_frame .board_list_faq .board_hot_list ul li:first-child a{background:none;}
+.service_main_frame .board_list_faq .board_hot_list ul li.on a { color:#000; border-bottom:2px solid #333; font-weight:normal;}
+.service_main_frame .board_list_faq .board_hot_list ul li a:hover{color:#000;}
+
+.service_main_frame .board_list_faq .board_list_table { border-top: 2px solid #000; }
+.service_main_frame .board_list_faq .board_list_table th { padding: 15px 10px 15px 14px; background: none; font-weight: bold; font-size: 14px; }
+.service_main_frame .board_list_faq .board_list_table td { padding: 15px 10px 15px 10px; }
+.service_main_frame .board_list_faq .board_list_table .toggle_faq.a td { padding-left: 0;}
+.service_main_frame .board_list_faq .board_list_table .board_category {}
+.service_main_frame .board_list_faq .board_list_table .board_tit { position: relative; padding-left: 40px;}
+
+.service_main_frame .board_list_faq .icon_qan { position: absolute; top: 13px; left: 0; padding: 0; margin: 0;}
+.service_main_frame .board_list_faq .icon_qan .icon_qan_q { font-size: 20px; color: #000; font-weight: bold; line-height: 100%;}
+.service_main_frame .board_list_faq .icon_qan .icon_qan_a { font-size: 20px; color: #80AFA7; font-weight: bold; line-height: 100%;}
+
+.service_main_frame .board_list_faq .board_faq_cont { max-width:none; min-height:1px; padding: 15px 0 15px 40px; margin: 0; }
+.service_main_frame .board_list_faq .board_faq_cont .icon_qan { position: absolute; top: 15px; left: 0; margin: 0;}
+.service_main_frame .board_list_faq .board_faq_bg { background: #fafafa; }
+
+.service_main .btn_board_more,
+.service_main_frame .btn_board_more { color: #000; font-weight: bold; vertical-align: top; }
+.service_main .btn_board_more:hover,
+.service_main_frame .btn_board_more:hover { text-decoration: none; }
+.service_main .btn_board_more:after,
+.service_main_frame .btn_board_more:after {
+	content: '';
+	position: absolute;
+	border-bottom: 2px solid #000;
+	left: 51%;
+	right: 51%;
+	top: -5px;
+	-webkit-transition: all 200ms cubic-bezier(0, 0.95, 0.5, 0.9); 
+	-moz-transition: all 200ms cubic-bezier(0, 0.95, 0.5, 0.9); 
+	-o-transition: all 200ms cubic-bezier(0, 0.95, 0.5, 0.9); 
+	transition: all 200ms cubic-bezier(0, 0.95, 0.5, 0.9); 
+}
+.service_main .btn_board_more:hover:after,
+.service_main_frame .btn_board_more:hover:after { left: 0%; right: 0%; }
+
+@media screen and (max-width:1239px){
+	.service_main .serviceTitle { padding:50px 5px 0;}
+	.service_main_frame .board_zone_tit {padding:0 5px 0;}
+
+	.service_main .serviceLink ul li a{  padding:5px 15px;}
+	.service_main_frame .board_list_faq .board_hot_list {padding-left:5px;}
+	.service_main_frame .board_list_faq .board_hot_list ul li a{  padding:5px 15px;}
+
+	.service_main .service_main_cont h3 {padding-left:5px;}
+}
+@media screen and (max-width:860px){
+	.service_main_frame .date_faq_list {width:100%; background:none;}
+	.date_faq_list { width:100%; margin:0 auto; text-align:center;}
+	.date_faq_txt {display:none;}
+	.date_faq_list h2 {font-size:16px;}
+
+}
+@media screen and (max-width:768px){
+	.service_main .service_main_cont .service_main_notice ,
+	.service_main .service_main_cont .service_main_event { width: 100%; }
+
+	.service_main_frame .date_check_box { padding: 25px !important; }
+	.service_main_frame .date_faq_list { width: 100%; background: none;}
+	.service_main_frame .date_faq_list h2 { padding: 0 0 10px 0;}
+	.service_main_frame .date_faq_txt { width: 100%; padding: 20px 0 0 0;}
+}
+@media screen and (max-width:760px){
+	.service_main .serviceTitle h2{ font-size:18px;}
+	.service_main .serviceLink ul li a{  font-size:13px; padding:5px 15px;}
+	.service_main_frame .board_zone_tit,
+	.service_main_frame .board_zone_tit h3{font-size:14px;}
+	.service_main_cont h3 {font-size:14px;}
+	.service_main_frame .date_faq_list h2 {font-size:14px;}
+	.board_list_faq .board_list_table .board_tit{padding-left:5px;}
+	
+	.service_main_frame .date_faq_list #time { height: 35px; }
+	.service_main_frame .date_faq_list .btn_date_check { min-width:35px; height: 35px;}
+
+	.date_check_box{margin:0 10px 25px 10px; padding:15px 0 15px 0;}
+	.date_faq_list h2 {font-size:14px;}
+	.date_faq_list input[type="text"]{width:255px; margin-bottom:5px;}
+	.date_faq_list .btn_date_check {display:block; margin:0 auto; width:255px;}
+
+	#faqList colgroup col:nth-child(1) {width:110px !important; }
+}
+@media screen and (max-width:560px){
+	.service_main .serviceTitle { padding:30px 5px 0;}
+	.service_main_frame .date_check_box { padding: 15px 15px 20px !important; margin-bottom:25px !important; }
+}
+@media screen and (max-width:460px){
+	.service_main .serviceLink ul li a {  padding:3px 10px;}
+	.service_main_frame .board_list_faq .board_hot_list{margin: 20px auto 25px;}
+	.service_main_frame .board_list_faq .board_hot_list ul li a { padding:3px 10px;}
+	.service_main_frame .date_check_box { padding: 20px; }
+	.service_main_frame .date_faq_list { width: 100%; background: none;}
+	.service_main_frame .date_faq_txt { width: 100%; padding: 20px 0 0 0;}
+}
+
+@media screen and (max-width:400px){
+	.service_main .serviceTitle h2{font-size:13px;}
+	.service_main .service_main_cont h3 {font-size:13px;}
+	.service_main_frame .board_list_faq .board_hot_list ul li a {font-size:11px;}
+	.service_main_frame .board_zone_tit h3{font-size:13px;}
+}
+

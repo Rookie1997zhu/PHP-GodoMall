@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 맞춤 제작 - {=goods_name}</title>
+    
+    <!-- Fabric.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="../css/custom/goods_custom.css">
+</head>
+<body>
+    <div class="custom-container">
+        <!-- 左侧定制工作区 -->
+        <div class="custom-workspace">
+            <!-- 顶部工具栏 -->
+            <div class="custom-toolbar">
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnUndo" title="실행 취소">
+                        <i class="icon-undo"></i>
+                    </button>
+                    <button class="tool-btn" id="btnRedo" title="다시 실행">
+                        <i class="icon-redo"></i>
+                    </button>
+                    <button class="tool-btn" id="btnView" title="보기">
+                        <i class="icon-view"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnDelete" title="삭제">
+                        <i class="icon-delete"></i>
+                    </button>
+                    <button class="tool-btn" id="btnFlipH" title="좌우 반전">
+                        <i class="icon-flip-h"></i>
+                    </button>
+                    <button class="tool-btn" id="btnFlipV" title="상하 반전">
+                        <i class="icon-flip-v"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnBringForward" title="앞으로 이동">
+                        <i class="icon-bring-forward"></i>
+                    </button>
+                    <button class="tool-btn" id="btnSendBackward" title="뒤로 이동">
+                        <i class="icon-send-backward"></i>
+                    </button>
+                    <button class="tool-btn" id="btnBringToFront" title="맨 앞으로">
+                        <i class="icon-bring-to-front"></i>
+                    </button>
+                    <button class="tool-btn" id="btnSendToBack" title="맨 뒤로">
+                        <i class="icon-send-to-back"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnGroup" title="그룹화">
+                        <i class="icon-group"></i>
+                    </button>
+                    <button class="tool-btn" id="btnUngroup" title="그룹 해제">
+                        <i class="icon-ungroup"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnAlignLeft" title="왼쪽 정렬">
+                        <i class="icon-align-left"></i>
+                    </button>
+                    <button class="tool-btn" id="btnAlignCenter" title="가운데 정렬">
+                        <i class="icon-align-center"></i>
+                    </button>
+                    <button class="tool-btn" id="btnAlignRight" title="오른쪽 정렬">
+                        <i class="icon-align-right"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnAlignTop" title="위쪽 정렬">
+                        <i class="icon-align-top"></i>
+                    </button>
+                    <button class="tool-btn" id="btnAlignMiddle" title="가운데 정렬">
+                        <i class="icon-align-middle"></i>
+                    </button>
+                    <button class="tool-btn" id="btnAlignBottom" title="아래쪽 정렬">
+                        <i class="icon-align-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 검사 버튼 -->
+            <div class="check-button-container">
+                <button class="check-btn" id="btnCheck">
+                    <i class="icon-check"></i>
+                    검사
+                </button>
+            </div>
+            
+            <!-- 产品预览区域 -->
+            <div class="preview-container">
+                <div class="canvas-container">
+                    <!-- 商品背景图片 -->
+                    <div class="product-background" id="productBackground">
+                        <img src="{=goods_image_url}" alt="{=goods_name}" id="backgroundImage">
+                    </div>
+                    <!-- 定制画布 -->
+                    <canvas id="customCanvas" width="400" height="400"></canvas>
+                </div>
+
+            </div>
+            
+            <!-- 오른쪽 맞춤 옵션 -->
+            <div class="custom-options">
+                <button class="option-btn" id="btnChangeProduct" title="상품 변경">
+                    <i class="icon-tshirt"></i>
+                    <span>변경</span>
+                </button>
+                
+                <button class="option-btn" id="btnUploadImage" title="이미지 업로드">
+                    <i class="icon-upload"></i>
+                    <span>이미지 업로드</span>
+                </button>
+                
+                <!-- 隐藏的文件上传输入框 -->
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                
+                <button class="option-btn" id="btnAddText" title="텍스트 추가">
+                    <i class="icon-text"></i>
+                    <span>텍스트 맞춤</span>
+                </button>
+                
+                <button class="option-btn" id="btnPatternLibrary" title="패턴 라이브러리" {=has_patterns ? '' : 'disabled'}>
+                    <i class="icon-palette"></i>
+                    <span>패턴 라이브러리</span>
+                    <span class="new-badge">NEW</span>
+                </button>
+                
+                <button class="option-btn" id="btnWappens" title="Wappens">
+                    <i class="icon-clock"></i>
+                    <span>Wappens</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 右侧商品信息 -->
+        <div class="product-info">
+            <!-- 商品头部信息 -->
+            <div class="product-header">
+                <h1 class="product-name">{=goods_name}</h1>
+                <div class="product-price">
+                    <span class="price-amount">{=goods_price_display}</span>
+                </div>
+                <div class="product-rating">
+                    <span class="stars">★ {=goods_rating}</span>
+                    <span class="reviews">리뷰 {=goods_review_count}개</span>
+                </div>
+                <div class="product-actions">
+                    <button class="action-btn" id="btnShare" title="공유" data-goods-id="{=goods_id}">
+                        <i class="icon-share"></i>
+                    </button>
+                    <button class="action-btn" id="btnFavorite" title="즐겨찾기" data-goods-id="{=goods_id}">
+                        <i class="icon-heart"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 商品图片显示 -->
+            <div class="product-image-section">
+                <div class="product-image">
+                    <img src="{=goods_image_url}" alt="{=goods_name}" id="productImage">
+                </div>
+            </div>
+            
+            <!-- 색상 선택 -->
+            <div class="option-section">
+                <label class="option-label">색상 - {=selected_color_name}</label>
+                <div class="color-options">
+                    {=goods_colors}
+                </div>
+            </div>
+            
+            <!-- 크기 선택 -->
+            <div class="option-section">
+                <label class="option-label">크기</label>
+                <div class="size-options" id="sizeOptions">
+                    <!-- 尺寸选项将通过JavaScript动态加载 -->
+                    <div class="size-loading">
+                        <i class="fa fa-spinner fa-spin"></i> 크기 로딩 중...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 수량 선택 -->
+            <div class="option-section">
+                <label class="option-label">수량</label>
+                <div class="quantity-container">
+                    <div class="discount-notice">
+                        <button class="close-notice" id="btnCloseNotice">×</button>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" id="btnDecrease">-</button>
+                        <input type="number" class="quantity-input" id="quantityInput" value="1" min="1">
+                        <button class="quantity-btn" id="btnIncrease">+</button>
+                    </div>
+                    <div class="min-order">최소 주문 1개</div>
+                </div>
+            </div>
+            
+            <!-- 주문 요약 -->
+            <div class="order-summary">
+                <div class="summary-line">
+                    <span class="summary-quantity">
+                        <span id="summaryQuantity">1</span>개
+                    </span>
+                    <span class="summary-price">
+                        <span id="summaryPrice">{=goods_base_price}</span>
+                    </span>
+                </div>
+                <div class="total-line">
+                    <span class="total-label">총액:</span>
+                    <span class="total-price" id="totalPrice">{=goods_base_price}</span>
+                </div>
+                
+                <!-- 구매 옵션 -->
+                <div class="purchase-options">
+                    <button class="add-to-cart-btn" id="btnAddToCart" data-goods-id="{=goods_id}">
+                        <i class="icon-cart"></i>
+                        장바구니에 추가
+                    </button>
+                    
+                    <!-- 根据用户需求：定制商品必须走购物车流程 -->
+                    <div class="purchase-notice">
+                        <small>💡 맞춤 상품은 장바구니에 추가되며, 장바구니에서 확인 및 결제하실 수 있습니다</small>
+                    </div>
+                </div>
+                
+                <!-- 오류 처리 알림 -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <span class="error-text"></span>
+                    <button class="error-retry" id="btnRetry">다시 시도</button>
+                </div>
+                
+                <!-- 성공 알림 -->
+                <div class="success-message" id="successMessage" style="display: none;">
+                    <span class="success-text"></span>
+                    <button class="success-action" id="btnViewCart">장바구니 보기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 패턴 라이브러리 팝업 -->
+    <div class="pattern-modal" id="patternModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>패턴 라이브러리</h3>
+                <button class="modal-close" id="btnCloseModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="pattern-search">
+                    <input type="text" id="patternSearch" placeholder="패턴 검색...">
+                </div>
+                <div class="pattern-grid" id="patternGrid">
+                    <!-- 패턴은 JavaScript를 통해 동적으로 로드됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 텍스트 편집 팝업 -->
+    <div class="text-modal" id="textModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>텍스트 추가</h3>
+                <button class="modal-close" id="btnCloseTextModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="text-input-group">
+                    <label>텍스트 내용：</label>
+                    <input type="text" id="textContent" placeholder="텍스트 내용을 입력하세요">
+                </div>
+                <div class="text-input-group">
+                    <label>글꼴 크기：</label>
+                    <input type="number" id="textSize" value="20" min="8" max="100">
+                </div>
+                <div class="text-input-group">
+                    <label>글꼴 색상：</label>
+                    <input type="color" id="textColor" value="#000000">
+                </div>
+                <div class="text-input-group">
+                    <label>글꼴：</label>
+                    <select id="textFont">
+                        <option value="Arial">Arial</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="btnCancelText">취소</button>
+                    <button class="btn-confirm" id="btnConfirmText">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 隐藏的文件上传输入 -->
+    <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+    
+    <!-- 隐藏的图案数据（由后端渲染） -->
+    <script id="patternsData" type="application/json" style="display: none;">
+        {=patterns_data}
+    </script>
+    
+    <!-- 页面配置数据 -->
+    <script id="pageConfig" type="application/json" style="display: none;">
+        {
+            "goods_id": "{=goods_id}",
+            "can_customize": {=can_customize},
+            "max_upload_size": {=max_upload_size},
+            "allowed_image_types": {=allowed_image_types},
+            "goods_image_url": "{=goods_image_url}",
+            "size_api_url": "/Custom/Controller/Front/CustomGoodsController.php?action=getGoodsAllSizesAPI",
+            "csrf_token": "{=csrf_token}"
+        }
+    </script>
+    
+    <!-- 尺寸管理JavaScript -->
+    <script>
+        // 尺寸管理相关变量
+        var availableSizes = [];
+        var selectedSize = null;
+        var pageConfig = JSON.parse(document.getElementById('pageConfig').textContent);
+
+        // 页面加载完成后初始化尺寸
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGoodsSizes();
+            bindSizeEvents();
+        });
+
+        // 加载商品所有尺寸（包括自定义尺寸）
+        function loadGoodsSizes() {
+            const sizeOptionsContainer = document.getElementById('sizeOptions');
+            
+            // 显示加载状态
+            sizeOptionsContainer.innerHTML = '<div class="size-loading"><i class="fa fa-spinner fa-spin"></i> 크기 로딩 중...</div>';
+            
+            // 调用后端API获取尺寸数据
+            fetch(pageConfig.size_api_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-json',
+                    'X-CSRF-Token': pageConfig.csrf_token
+                },
+                body: JSON.stringify({
+                    goods_id: pageConfig.goods_id,
+                    action: 'getGoodsAllSizes'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    availableSizes = data.data || [];
+                    renderSizeOptions();
+                } else {
+                    showSizeError('크기 데이터를 불러올 수 없습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('크기 로딩 오류:', error);
+                showSizeError('네트워크 오류로 크기를 불러올 수 없습니다');
+            });
+        }
+
+        // 渲染尺寸选项
+        function renderSizeOptions() {
+            const sizeOptionsContainer = document.getElementById('sizeOptions');
+            
+            if (!availableSizes || availableSizes.length === 0) {
+                sizeOptionsContainer.innerHTML = '<div class="no-sizes">사용 가능한 크기가 없습니다</div>';
+                return;
+            }
+
+            let html = '';
+            availableSizes.forEach((size, index) => {
+                const isCustom = size.type === 'custom';
+                const sizeClass = isCustom ? 'size-option custom-size' : 'size-option';
+                const sizeLabel = isCustom ? 
+                    `${size.size_width} x ${size.size_height} ${size.size_unit}` : 
+                    size.size_display || size.size_name;
+                
+                html += `
+                    <div class="${sizeClass}" data-size-id="${size.id}" data-size-data='${JSON.stringify(size)}'>
+                        <input type="radio" name="selected_size" id="size_${index}" value="${size.id}" ${index === 0 ? 'checked' : ''}>
+                        <label for="size_${index}" class="size-label">
+                            <span class="size-text">${sizeLabel}</span>
+                            ${isCustom ? '<span class="custom-badge">사용자 정의</span>' : ''}
+                        </label>
+                    </div>
+                `;
+            });
+            
+            sizeOptionsContainer.innerHTML = html;
+            
+            // 设置默认选中第一个尺寸
+            if (availableSizes.length > 0) {
+                selectedSize = availableSizes[0];
+                updateSizeSelection();
+            }
+        }
+
+        // 绑定尺寸选择事件
+        function bindSizeEvents() {
+            // 使用事件委托绑定尺寸选择事件
+            document.addEventListener('change', function(e) {
+                if (e.target.name === 'selected_size') {
+                    const sizeId = e.target.value;
+                    const sizeData = availableSizes.find(size => 
+                        size.id == sizeId
+                    );
+                    
+                    if (sizeData) {
+                        selectedSize = sizeData;
+                        updateSizeSelection();
+                        updateOrderSummary();
+                    }
+                }
+            });
+        }
+
+        // 更新尺寸选择状态
+        function updateSizeSelection() {
+            if (!selectedSize) return;
+            
+            // 移除所有选中状态
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // 添加选中状态到当前选中的尺寸
+            const selectedOption = document.querySelector(`[data-size-id="${selectedSize.id}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            // 更新商品信息显示
+            updateProductInfo();
+        }
+
+        // 更新商品信息显示
+        function updateProductInfo() {
+            if (!selectedSize) return;
+            
+            // 这里可以添加根据尺寸更新商品信息的逻辑
+            // 例如：更新价格、库存状态等
+            console.log('선택된 크기:', selectedSize);
+        }
+
+        // 更新订单摘要
+        function updateOrderSummary() {
+            // 根据选择的尺寸更新价格和订单摘要
+            // 这里可以添加尺寸相关的价格计算逻辑
+            console.log('주문 요약 업데이트 - 선택된 크기:', selectedSize);
+        }
+
+        // 显示尺寸错误信息
+        function showSizeError(message) {
+            const sizeOptionsContainer = document.getElementById('sizeOptions');
+            sizeOptionsContainer.innerHTML = `
+                <div class="size-error">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    <span>${message}</span>
+                    <button class="btn-retry" onclick="loadGoodsSizes()">다시 시도</button>
+                </div>
+            `;
+        }
+
+        // 获取当前选中的尺寸
+        function getSelectedSize() {
+            return selectedSize;
+        }
+
+        // 验证尺寸选择
+        function validateSizeSelection() {
+            if (!selectedSize) {
+                alert('크기를 선택해주세요');
+                return false;
+            }
+            return true;
+        }
+    </script>
+    
+    <!-- JavaScript文件 -->
+    <script src="../js/custom/goods_custom.js"></script>
+
+    <!-- 尺寸选择样式 -->
+    <style>
+    .size-options {
+        margin-top: 10px;
+    }
+
+    .size-loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-style: italic;
+    }
+
+    .size-loading i {
+        margin-right: 8px;
+        color: #007bff;
+    }
+
+    .size-option {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background-color: #fff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .size-option:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+
+    .size-option.selected {
+        border-color: #28a745;
+        background-color: #d4edda;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+
+    .size-option.custom-size {
+        border-left: 4px solid #ffc107;
+        background-color: #fff3cd;
+    }
+
+    .size-option.custom-size:hover {
+        background-color: #ffeaa7;
+    }
+
+    .size-option input[type="radio"] {
+        margin-right: 12px;
+        transform: scale(1.2);
+    }
+
+    .size-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .size-text {
+        font-weight: 500;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .custom-badge {
+        background-color: #ffc107;
+        color: #212529;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .no-sizes {
+        text-align: center;
+        padding: 20px;
+        color: #6c757d;
+        font-style: italic;
+        border: 1px dashed #dee2e6;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .size-error {
+        text-align: center;
+        padding: 20px;
+        color: #dc3545;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        background-color: #f8d7da;
+    }
+
+    .size-error i {
+        margin-right: 8px;
+        color: #dc3545;
+    }
+
+    .btn-retry {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-retry:hover {
+        background-color: #c82333;
+    }
+
+    /* 尺寸选择区域的响应式设计 */
+    @media (max-width: 768px) {
+        .size-option {
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .size-label {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .custom-badge {
+            margin-top: 5px;
+            align-self: flex-end;
+        }
+    }
+    </style>
+</body>
+</html> 

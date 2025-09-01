@@ -1,0 +1,101 @@
+{*** 기본 고정 레이어 팝업창 | main/html.php?htmid=popup/layer.htm ***}
+<style type="text/css">
+    #{=popupCode} {}
+    #{=popupCode}_form {/*background: {=data.popupBgColor};*/}
+    #{=popupCode}_form .check {background-color:{=todayUnSee.todayUnSeeBgColor}; color:{=todayUnSee.todayUnSeeFontColor}; text-align:{=todayUnSee.todayUnSeeAlign};}
+    #{=popupCode}_form .check .form_element .check_s {background-color:{=todayUnSee.todayUnSeeBgColor}; color:{=todayUnSee.todayUnSeeFontColor};}
+    #{=popupCode}_form .box .view p {margin:0; padding:0; font-size:0; line-height:0;}
+</style>
+
+<div id="{=popupCode}_form" class="sys_pop">
+	<div class="box">
+		<div class="view">
+			{=viewPopupContent}
+		</div>
+		<!--{ ? todayUnSee.todayUnSeeFl == 'y' }-->
+		<!-- 오늘 하루 보이지 않음 : start -->
+		<div class="check">
+            <span class="form_element">
+                <label for="todayUnSee_{=popupCode}" class="check_s">{=__('오늘 하루 보이지 않음')}</label>
+                <input type="checkbox" id="todayUnSee_{=popupCode}" class="checkbox" onClick="gd_popup_cookie('{=popupCode}', this);" />
+            </span>
+		</div>
+		<!-- 오늘 하루 보이지 않음 : end -->
+		<!--{ / }-->
+		<button type="button" class="close" title="{=__('닫기')}" onclick="$('#{=popupCode}').hide();">{=__('닫기')}</button>
+	</div>
+</div>
+<script type="text/javascript">
+    <!--
+    $(function(){
+        <!--{ ? data.sizeTypeW == '%' }-->
+        var percentWidth = ($(window).width() * (Number('{=popupWidth}') / 100)) - 36;
+        $('#{=popupCode}_form .box .view').css('width', percentWidth + 'px');
+        <!--{ / }-->
+        <!--{ ? data.sizeTypeH == '%' }-->
+        var percentHeight = $(window).height() * (Number('{=popupHeight}') / 100) - 102;
+        $('#{=popupCode}_form .box .view').css('height', percentHeight + 'px');
+        <!--{ / }-->
+
+        var wpps_popup_width = Number('{=(popupWidth)}');
+        var wpps_popup_height = Number('{=(popupHeight)}');
+        var wpps_popup_wh_ratio = wpps_popup_height / wpps_popup_width; 
+        var wpps_popup_width_catch = 	$('#{=popupCode}').width();
+
+        var wpps_rowser_width = $(window).width();
+        var filter = "win16|win32|win64|mac";
+        var vWebType = "";
+
+        if (navigator.platform ) {
+            if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+                vWebType = "MOBILE";
+            } 
+        }					
+				
+        $('#{=popupCode}').css("max-width", wpps_popup_width+46+'px' )
+
+        if (wpps_popup_width+{=data.popupPositionL} > wpps_rowser_width || vWebType == "MOBILE") {  
+            var wpps_popup_width_catch = $(window).width(); 			
+            $('#{=popupCode}_form').css("padding", "10px 0 0" );
+            $('#{=popupCode},#{=popupCode}_form,#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css({"width":"98%","margin":"0 1%"});
+            $('#{=popupCode}_form .box .check').css({"width": "94%","padding": "5px 2% 2px","margin":"0 1%"});
+            $('#{=popupCode}').css("height", wpps_popup_width_catch * wpps_popup_wh_ratio + 100);
+            $('#{=popupCode},#{=popupCode}_form').css({"top":"5%","left":"0"});
+            $('#{=popupCode}_form,#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css("height", "auto");
+            $('#{=popupCode}_form .box .view img').css("width", "100%" );
+        }
+
+        $( window ).resize(function() {  
+            var wpps_rowser_width = $(window).width();
+            $('#{=popupCode}').css("margin", "0 auto");
+            var filter = "win16|win32|win64|mac";
+            var vWebType = "";
+
+            if (navigator.platform ) {
+                if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+                    vWebType = "MOBILE";
+                } 
+            }			
+            if (wpps_popup_width+{=data.popupPositionL} > wpps_rowser_width || vWebType == "MOBILE") {  
+                var wpps_popup_width_catch = $(window).width(); 
+                $('#{=popupCode}_form').css("padding", "10px 0 0" );
+                $('#{=popupCode},#{=popupCode}_form,#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css({"width":"98%","margin":"0 1%"});
+                $('#{=popupCode}_form .box .check').css({"width": "94%","padding": "5px 2% 2px","margin":"0 1%"});
+                $('#{=popupCode}').css("height", wpps_popup_width_catch * wpps_popup_wh_ratio + 100);
+                $('#{=popupCode},#{=popupCode}_form').css({"top":"5%","left":"0"});
+                $('#{=popupCode}_form,#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css("height", "auto");
+                $('#{=popupCode}_form .box .view img').css("width", "100%" );
+            } else {  		
+                $('#{=popupCode}_form').css("padding", "15px 15px 5px" );											
+                $('#{=popupCode}').css({"width": Number('{=(popupWidth)}')+46,"height": Number('{=(popupHeight)}') + 110,"margin": "0 auto"});
+                $('#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css("margin", "0" );
+                $('#{=popupCode}_form .box .check').css({"width": "auto","padding": "5px 10px 2px 10px","margin":"0"});
+                $('#{=popupCode}').css({"top": '{=data.popupPositionT}px',"left": '{=data.popupPositionL}px'});
+                $('#{=popupCode}_form,#{=popupCode}_form .box ,#{=popupCode}_form .box .view').css("width", Number('{=(popupWidth)}'));
+                $('#{=popupCode}_form .box .view img').css("width", Number('{=(popupWidth)}'));
+                $('#{=popupCode}_form').css({"height":'auto',"top":"0","left":"0"});                    
+            }
+        });
+    });
+    //-->
+</script>

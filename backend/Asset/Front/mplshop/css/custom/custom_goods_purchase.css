@@ -1,0 +1,240 @@
+/**
+ * 商品购买按钮样式
+ * 
+ * 根据网站风格设计的现代化购买按钮样式
+ * 支持响应式设计，适配PC和移动端
+ * 
+ * @author Custom Development Team
+ * @version 1.0
+ */
+
+/* 购买按钮容器 */
+.custom-purchase-buttons {
+    margin: 20px 0;
+    padding: 15px 0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.purchase-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 400px;
+}
+
+/* 基础按钮样式 */
+.custom-purchase-buttons .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 48px;
+    position: relative;
+    overflow: hidden;
+}
+
+.custom-purchase-buttons .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.custom-purchase-buttons .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-purchase-buttons .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 定制购买按钮 */
+.btn-custom-purchase {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+}
+
+.btn-custom-purchase:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* 普通购买按钮容器 */
+.normal-purchase-buttons {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+/* 加入购物车按钮 */
+.btn-add-cart {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    flex: 1;
+}
+
+.btn-add-cart:hover {
+    background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+}
+
+/* 立即购买按钮 */
+.btn-buy-now {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    flex: 1;
+}
+
+.btn-buy-now:hover {
+    background: linear-gradient(135deg, #ee5a52 0%, #dc4f4a 100%);
+}
+
+/* 图标样式 */
+.custom-purchase-buttons .btn i {
+    font-size: 18px;
+}
+
+/* 加载状态 */
+.purchase-loading {
+    text-align: center;
+    padding: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.purchase-loading span {
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 响应式设计 - 移动端 */
+@media (max-width: 768px) {
+    .custom-purchase-buttons {
+        margin: 15px 0;
+        padding: 12px 0;
+    }
+    
+    .purchase-buttons-wrapper {
+        max-width: 100%;
+    }
+    
+    .normal-purchase-buttons {
+        flex-direction: column;
+    }
+    
+    .custom-purchase-buttons .btn {
+        font-size: 14px;
+        padding: 10px 20px;
+        min-height: 44px;
+    }
+    
+    .custom-purchase-buttons .btn i {
+        font-size: 16px;
+    }
+}
+
+/* 小屏幕优化 */
+@media (max-width: 480px) {
+    .custom-purchase-buttons {
+        margin: 10px 0;
+        padding: 10px 0;
+    }
+    
+    .custom-purchase-buttons .btn {
+        font-size: 13px;
+        padding: 8px 16px;
+        min-height: 40px;
+    }
+    
+    .custom-purchase-buttons .btn i {
+        font-size: 14px;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .custom-purchase-buttons .btn {
+        border: 2px solid;
+    }
+    
+    .btn-custom-purchase {
+        border-color: #667eea;
+    }
+    
+    .btn-add-cart {
+        border-color: #4CAF50;
+    }
+    
+    .btn-buy-now {
+        border-color: #ff6b6b;
+    }
+}
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+    .custom-purchase-buttons .btn {
+        transition: none;
+    }
+    
+    .custom-purchase-buttons .btn:hover {
+        transform: none;
+    }
+    
+    .purchase-loading span {
+        animation: none;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .custom-purchase-buttons {
+        border-top-color: #444;
+    }
+    
+    .purchase-loading {
+        color: #ccc;
+    }
+}
+
+/* 按钮焦点状态（键盘导航支持） */
+.custom-purchase-buttons .btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.custom-purchase-buttons .btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* 按钮文字选择禁用 */
+.custom-purchase-buttons .btn {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* 打印样式 */
+@media print {
+    .custom-purchase-buttons {
+        display: none;
+    }
+}

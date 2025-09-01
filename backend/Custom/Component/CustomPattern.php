@@ -6,19 +6,22 @@
  * 本组件负责定制图案的业务逻辑处理，包括图案的增删改查、分类管理等功能
  * 严格遵循Godomall开发规范，基于继承实现功能扩展
  * 
- * @package Component\Custom
+ * @package Custom\Component
  * @author Custom Development Team
  * @version 1.0
  */
 
-namespace Component\Custom;
+namespace Custom\Component;
 
+use Bundle\Component\Goods\Goods;
 use Component\Storage\CustomStorage;
-use Component\Database\CustomTableField;
+use Custom\Component\Database\CustomTableField;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
 use Framework\Utility\DateTimeUtils;
+use Framework\SimpleCache\SimpleCache;
+use Framework\SimpleCache\CacheableProxyFactory;
 use Exception;
 use Logger;
 use Request;
@@ -26,8 +29,9 @@ use Session;
 
 /**
  * 定制图案管理组件
+ * 继承官方商品组件，获得基础的商品管理功能
  */
-class CustomPattern extends \Component\AbstractComponent
+class CustomPattern extends Goods
 {
     /**
      * 数据库连接对象
@@ -42,13 +46,44 @@ class CustomPattern extends \Component\AbstractComponent
     private $tableField;
 
     /**
+     * 缓存对象
+     * @var SimpleCache
+     */
+    private $cache;
+
+    /**
      * 构造函数
      */
     public function __construct()
     {
         parent::__construct();
-        $this->db = \App::load('DB');
+        // 使用Godomall标准的数据库加载方式
+        $this->db = App::load('DB');
         $this->tableField = new CustomTableField();
+        
+        // 初始化Godomall缓存系统
+        $this->initCache();
+    }
+
+    /**
+     * 初始化缓存系统
+     */
+    private function initCache()
+    {
+        try {
+            // 使用Godomall标准的缓存系统
+            $this->cache = new SimpleCache();
+            
+            // 设置缓存配置
+            $this->cache->setPrefix('custom_pattern_');
+            $this->cache->setDefaultTtl(1800); // 30分钟默认缓存时间
+            
+        } catch (Exception $e) {
+            Logger::warning('缓存系统初始化失败', [
+                'error' => $e->getMessage()
+            ]);
+            // 缓存初始化失败不影响主要功能
+        }
     }
 
     /**
@@ -95,6 +130,9 @@ class CustomPattern extends \Component\AbstractComponent
             $patternId = $this->insertPattern($dbData);
             
             if ($patternId) {
+                // 清除相关缓存
+                $this->clearPatternCache();
+                
                 Logger::info('定制图案添加成功', [
                     'pattern_id' => $patternId,
                     'pattern_name' => $dbData['pattern_name']
@@ -192,6 +230,9 @@ class CustomPattern extends \Component\AbstractComponent
             $result = $this->updatePatternInDb($patternId, $updateData);
             
             if ($result) {
+                // 清除相关缓存
+                $this->clearPatternCache($patternId);
+                
                 Logger::info('定制图案更新成功', [
                     'pattern_id' => $patternId,
                     'update_data' => $updateData
@@ -245,6 +286,9 @@ class CustomPattern extends \Component\AbstractComponent
             $result = $this->deletePatternFromDb($patternId);
             
             if ($result) {
+                // 清除相关缓存
+                $this->clearPatternCache($patternId);
+                
                 Logger::info('定制图案删除成功', [
                     'pattern_id' => $patternId,
                     'pattern_name' => $pattern['pattern_name']
@@ -403,17 +447,16 @@ class CustomPattern extends \Component\AbstractComponent
     private function getCachedPatternList($cacheKey)
     {
         try {
-            // 这里使用Godomall的缓存机制
-            // 如果没有专门的缓存类，可以使用文件缓存或Redis
-            $cacheFile = $this->getCacheFilePath($cacheKey);
+            if (!$this->cache) {
+                return false;
+            }
             
-            if (file_exists($cacheFile)) {
-                $cacheData = file_get_contents($cacheFile);
-                $decoded = json_decode($cacheData, true);
-                
-                if ($decoded && isset($decoded['expires']) && $decoded['expires'] > time()) {
-                    return $decoded['data'];
-                }
+            // 使用Godomall标准的缓存系统
+            $cachedData = $this->cache->get($cacheKey);
+            
+            if ($cachedData !== null) {
+                Logger::info('图案列表从缓存获取', ['cache_key' => $cacheKey]);
+                return $cachedData;
             }
             
             return false;
@@ -432,27 +475,20 @@ class CustomPattern extends \Component\AbstractComponent
      * 
      * @param string $cacheKey 缓存键
      * @param array $data 要缓存的数据
+     * @param int $ttl 缓存时间（秒）
      * @return bool 是否成功
      */
     private function cachePatternList($cacheKey, $data, $ttl)
     {
         try {
-            $cacheFile = $this->getCacheFilePath($cacheKey);
-            $cacheDir = dirname($cacheFile);
-            
-            if (!is_dir($cacheDir)) {
-                mkdir($cacheDir, 0755, true);
+            if (!$this->cache) {
+                return false;
             }
             
-            $cacheData = [
-                'data' => $data,
-                'expires' => time() + $ttl,
-                'created' => time()
-            ];
+            // 使用Godomall标准的缓存系统
+            $result = $this->cache->set($cacheKey, $data, $ttl);
             
-            $result = file_put_contents($cacheFile, json_encode($cacheData, JSON_UNESCAPED_UNICODE));
-            
-            if ($result !== false) {
+            if ($result) {
                 Logger::info('图案列表缓存保存成功', [
                     'cache_key' => $cacheKey,
                     'ttl' => $ttl
@@ -472,15 +508,36 @@ class CustomPattern extends \Component\AbstractComponent
     }
 
     /**
-     * 获取缓存文件路径
+     * 清除图案相关缓存
      * 
-     * @param string $cacheKey 缓存键
-     * @return string 缓存文件路径
+     * @param string $patternId 图案ID（可选）
      */
-    private function getCacheFilePath($cacheKey)
+    public function clearPatternCache($patternId = null)
     {
-        $cacheDir = PATH_DATA . 'cache/custom_patterns/';
-        return $cacheDir . $cacheKey . '.json';
+        try {
+            if (!$this->cache) {
+                return;
+            }
+            
+            if ($patternId) {
+                // 清除特定图案的缓存
+                $this->cache->delete('pattern_' . $patternId);
+                $this->cache->delete('pattern_list_' . $patternId);
+            } else {
+                // 清除所有图案相关缓存
+                $this->cache->deletePattern('custom_pattern_*');
+            }
+            
+            Logger::info('图案缓存清除成功', [
+                'pattern_id' => $patternId
+            ]);
+            
+        } catch (Exception $e) {
+            Logger::warning('图案缓存清除失败', [
+                'error' => $e->getMessage(),
+                'pattern_id' => $patternId
+            ]);
+        }
     }
 
     /**
@@ -592,7 +649,7 @@ class CustomPattern extends \Component\AbstractComponent
                 'group' => null,
                 'status' => null,
                 'keyword' => null,
-                'sort_field' => 'create_time',
+                'sort_field' => 'created_at',
                 'sort_order' => 'DESC'
             ];
             
@@ -681,14 +738,11 @@ class CustomPattern extends \Component\AbstractComponent
     public function getPatternById($patternId)
     {
         try {
+            // 使用Godomall标准的数据库查询方法
             $sql = "SELECT * FROM custom_pattern WHERE pattern_id = ?";
-            $result = $this->db->query($sql, [$patternId]);
+            $result = $this->db->query_fetch($sql, [$patternId]);
             
-            if ($result->num_rows > 0) {
-                return $result->fetch_assoc();
-            }
-            
-            return false;
+            return $result ?: false;
             
         } catch (Exception $e) {
             Logger::error('根据ID获取定制图案异常', [
@@ -872,22 +926,15 @@ class CustomPattern extends \Component\AbstractComponent
     private function insertPattern($data)
     {
         try {
-            $sql = "INSERT INTO custom_pattern (pattern_name, pattern_url, pattern_category, pattern_group, 
-                    uploader, file_size, file_type, status, create_time, update_time) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+            // 使用Godomall标准的数据库插入方法
+            $arrBind = $this->db->get_binding($this->tableField->tableCustomPattern(), $data, 'insert');
             
-            $params = [
-                $data['pattern_name'],
-                $data['pattern_url'],
-                $data['pattern_category'],
-                $data['pattern_group'],
-                $data['uploader'],
-                $data['file_size'],
-                $data['file_type'],
-                $data['status']
-            ];
-            
-            $result = $this->db->query($sql, $params);
+            $result = $this->db->set_insert_db(
+                'custom_pattern',
+                $arrBind['param'],
+                $arrBind['bind'],
+                'y'
+            );
             
             if ($result) {
                 return $this->db->insert_id();
@@ -922,7 +969,7 @@ class CustomPattern extends \Component\AbstractComponent
                 $params[] = $value;
             }
             
-            $setParts[] = "update_time = NOW()";
+            $setParts[] = "updated_at = NOW()";
             
             $sql = "UPDATE custom_pattern SET " . implode(', ', $setParts) . " WHERE pattern_id = ?";
             $params[] = $patternId;

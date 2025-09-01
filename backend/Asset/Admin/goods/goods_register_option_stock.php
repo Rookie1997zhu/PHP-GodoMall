@@ -3161,6 +3161,11 @@ if ($data['mode'] == 'modify') {
 </script>
 <style>
     .obs-display-none { display: none !important; }
+    .display-none { display: none !important; }
+    
+    /* 确保尺寸输入框始终显示 */
+    #customSizeRow { display: table-row !important; }
+    #customSizeRow th, #customSizeRow td { display: table-cell !important; }
 </style>
 <form id="frmGoods" name="frmGoods" action="./goods_ps.php" method="post" enctype="multipart/form-data">
     <input type="hidden" name="mode" value="<?=$data['mode']; ?>"/>
@@ -3709,6 +3714,21 @@ if ($data['mode'] == 'modify') {
                         <input type="text" name="goodsSearchWord" value="<?=$data['goodsSearchWord']; ?>" class="form-control input-width js-maxlength" maxlength="250"/>
                     </label>
                     <p class="notice-info">상품상세 페이지의 메타태그와 상품 검색시 키워드로 사용하실 수 있습니다.</p>
+                </td>
+            </tr>
+            <tr id="customSizeRow">
+                <th>상품 크기</th>
+                <td colspan="3">
+                    <div class="form-inline">
+                        <input type="number" name="custom_width" id="custom_width" value="<?=$data['custom_width']; ?>" class="form-control width-sm" placeholder="0.00" step="0.01" min="0" max="200" style="text-align: center;" />
+                        <span style="margin: 0 10px; font-weight: bold;">x</span>
+                        <input type="number" name="custom_height" id="custom_height" value="<?=$data['custom_height']; ?>" class="form-control width-sm" placeholder="0.00" step="0.01" min="0" max="200" style="text-align: center;" />
+                        <span style="margin-left: 10px; font-weight: bold;">CM</span>
+                        <button type="button" class="btn btn-sm btn-info" style="margin-left: 15px;" onclick="testSizeRow()">테스트</button>
+                        <button type="button" class="btn btn-sm btn-success" style="margin-left: 5px;" onclick="showSizeRow()">보이기</button>
+                        <button type="button" class="btn btn-sm btn-warning" style="margin-left: 5px;" onclick="hideSizeRow()">숨기기</button>
+                    </div>
+                    <p class="notice-info">맞춤 상품의 크기를 입력하세요. 너비와 높이는 0-200 CM 사이의 숫자여야 합니다.</p>
                 </td>
             </tr>
             <tr>
@@ -5408,6 +5428,192 @@ if ($data['mode'] == 'modify') {
         </div>
     </div>
 
+    <div class="table-title gd-help-manual" id="goodsCustom">
+        상품 맞춤 설정
+        <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="goodsCustom"><span>닫힘</span></button></span>
+    </div>
+    <input type="hidden" id="depth-toggle-hidden-goodsCustom" value="<?=$toggle['goodsCustom_'.$SessScmNo]?>">
+    <div id="depth-toggle-line-goodsCustom" class="depth-toggle-line display-none"></div>
+    <div id="depth-toggle-layer-goodsCustom">
+        <table class="table table-cols">
+            <colgroup>
+                <col class="width-lg"/>
+                <col/>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th>상품 맞춤 설정</th>
+                <td>
+                    <div>
+                        <label class="radio-inline">
+                            <input type="radio" name="is_customizable" value="1" <?=gd_isset($checked['is_customizable']['1']); ?> onclick="toggleCustomizationOptions('1');" />사용함
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="is_customizable" value="0" <?=gd_isset($checked['is_customizable']['0']); ?> onclick="toggleCustomizationOptions('0');" />사용안함
+                        </label>
+                    </div>
+                    <div id="customizationOptions" class="display-none">
+                        <table class="table table-cols mgt10">
+                            <colgroup>
+                                <col class="width-xl"/>
+                                <col class="width-xl"/>
+                                <col class="width-xl"/>
+                            </colgroup>
+                            <tr>
+                                <th>기본 색상</th>
+                                <td>
+                                    <input type="text" name="default_color" value="<?=gd_isset($data['default_color']); ?>" class="form-control width-lg" placeholder="기본 색상을 입력하세요"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>기본 크기</th>
+                                <td>
+                                    <select name="default_size" class="form-control width-lg">
+                                        <option value="">기본 크기를 선택하세요</option>
+                                        <?php
+                                        if (!empty($data['goodsSizes'])) {
+                                            foreach ($data['goodsSizes'] as $size) {
+                                                $selected = ($data['default_size'] == $size['size_id']) ? 'selected' : '';
+                                                echo '<option value="' . $size['size_id'] . '" ' . $selected . '>' . $size['size_name'] . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-title gd-help-manual" id="goodsCustomPattern">
+        상품 맞춤 패턴
+        <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="goodsCustomPattern"><span>닫힘</span></button></span>
+    </div>
+    <!-- 图案管理按钮 -->
+    <div class="toolbar mb-3" style="padding: 10px 20px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; margin: 10px 0;">
+        <button type="button" class="btn btn-info" onclick="openPatternManageWindow()">
+            <i class="icon-settings"></i> 图案管理
+        </button>
+        <small class="text-muted ml-2">点击打开独立图案管理页面，进行图案的上传、编辑、删除等操作</small>
+    </div>
+    
+    <script type="text/javascript">
+    // 打开图案管理页面
+    function openPatternManageWindow() {
+        // 在新窗口中打开图案管理页面 - 使用Godomall标准路径
+        var patternManageUrl = '/admin/goods/pattern_manage.php';
+        var windowFeatures = 'width=1200,height=800,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no';
+        
+        try {
+            var patternWindow = window.open(patternManageUrl, 'pattern_manage', windowFeatures);
+            if (patternWindow) {
+                // 窗口打开成功
+                patternWindow.focus();
+            } else {
+                // 如果弹窗被阻止，尝试直接跳转
+                alert('弹窗被阻止，请允许弹窗后重试，或手动访问图案管理页面');
+                window.location.href = patternManageUrl;
+            }
+        } catch (e) {
+            // 出错时直接跳转
+            console.error('打开图案管理页面失败:', e);
+            window.location.href = patternManageUrl;
+        }
+    }
+    </script>
+    <input type="hidden" id="depth-toggle-hidden-goodsCustomPattern" value="<?=$toggle['goodsCustomPattern_'.$SessScmNo]?>">
+    <div id="depth-toggle-line-goodsCustomPattern" class="depth-toggle-line display-none"></div>
+    <div id="depth-toggle-layer-goodsCustomPattern">
+        <table class="table table-cols">
+            <colgroup>
+                <col class="width-lg"/>
+                <col/>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th>패턴 검색</th>
+                <td>
+                    <div class="form-inline">
+                        <input type="text" id="patternSearchInput" class="form-control width-lg" placeholder="패턴명을 입력하세요"/>
+                        <button type="button" class="btn btn-sm btn-gray" onclick="searchPatterns()">검색</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>카테고리 필터</th>
+                <td>
+                    <select id="categoryFilter" class="form-control width-lg" onchange="filterPatternsByCategory()">
+                        <option value="">모든 카테고리</option>
+                        <?php
+                        if (!empty($data['patternCategories'])) {
+                            foreach ($data['patternCategories'] as $category) {
+                                echo '<option value="' . $category['category_id'] . '">' . $category['category_name'] . '</option>';
+                            }
+                        }
+                        ?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>패턴 라이브러리</th>
+                <td>
+                    <div id="patternLibrary" class="pattern-library-container">
+                        <div class="notice-info">패턴을 검색하거나 카테고리를 선택하여 패턴을 찾아보세요.</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>선택된 패턴</th>
+                <td>
+                    <div id="selectedPatterns" class="selected-patterns-container">
+                        <div class="notice-info">선택된 패턴이 없습니다.</div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 旧的复杂尺寸管理功能已移除，现在使用简化的尺寸输入功能 -->
+
+    <div class="table-title gd-help-manual" id="patternCategoryManagement">
+        패턴 분류 관리
+        <span class="depth-toggle"><button type="button" class="btn btn-sm btn-link bold depth-toggle-button" depth-name="patternCategoryManagement"><span>닫힘</span></button></span>
+    </div>
+    <input type="hidden" id="depth-toggle-hidden-patternCategoryManagement" value="<?=$toggle['patternCategoryManagement_'.$SessScmNo]?>">
+    <div id="depth-toggle-line-patternCategoryManagement" class="depth-toggle-line display-none"></div>
+    <div id="depth-toggle-layer-patternCategoryManagement">
+        <table class="table table-cols">
+            <colgroup>
+                <col class="width-lg"/>
+                <col/>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th>패턴 분류 추가</th>
+                <td>
+                    <div class="form-inline">
+                        <input type="text" id="newCategoryName" class="form-control width-lg" placeholder="분류명을 입력하세요" maxlength="100"/>
+                        <input type="text" id="newCategoryDescription" class="form-control width-lg" placeholder="분류 설명을 입력하세요" maxlength="500"/>
+                        <button type="button" class="btn btn-sm btn-black" onclick="addPatternCategory()">분류 추가</button>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>패턴 분류 목록</th>
+                <td>
+                    <div id="patternCategoriesList" class="pattern-categories-container">
+                        <div class="notice-info">패턴 분류를 불러오는 중...</div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
     <div class="table-title gd-help-manual" id="goodsImage">
         상품 이미지
@@ -7477,6 +7683,407 @@ if ($data['mode'] == 'modify') {
                 $('#maxOrderCheckInfo').hide();
                 $('#maxOrderCheckDanger').hide();
             }
+        }
+
+        // ===== 상품 맞춤 기능 JavaScript 함수 =====
+        
+        // 简化的尺寸功能 - 不需要复杂的防重复提交机制
+        
+        // 简化的尺寸功能 - 不需要复杂的CSRF Token机制
+
+
+
+            
+
+            
+
+
+        
+        // 맞춤 옵션 토글 - 控制用户端定制入口显示
+        // 注意：后台所有设置功能始终显示，此选项只影响用户端
+        function toggleCustomizationOptions(value) {
+            console.log('toggleCustomizationOptions called with value:', value);
+            
+            // 确保值有效
+            if (!value || (value !== '1' && value !== '0')) {
+                console.log('无效的值，使用默认值0');
+                value = '0';
+            }
+            
+            // 不管选择什么，所有后台设置功能都始终显示
+            // 这个选项只控制用户端是否显示定制入口
+            console.log('所有后台设置功能始终显示');
+            $('#customizationOptions').show();
+            $('#customSizeRow').show();
+            
+            // 记录选择状态（用于用户端控制）
+            console.log('定制功能状态设置为:', value === '1' ? '사용함 (用户端显示定制入口)' : '사용안함 (用户端不显示定制入口)');
+        }
+
+
+
+        // 패턴 검색
+        function searchPatterns() {
+            var searchTerm = $('#patternSearchInput').val();
+            if (!searchTerm) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+            
+            // AJAX로 패턴 검색
+            $.ajax({
+                url: '/Custom/Controller/Admin/Custom/CustomPatternController.php?action=getPatternListAPI',
+                type: 'GET',
+                data: {
+                    search: searchTerm,
+                    page: 1,
+                    limit: 20
+                },
+                success: function(response) {
+                    if (response.success) {
+                        displayPatternLibrary(response.data.patterns);
+                    } else {
+                        alert('패턴 검색에 실패했습니다: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('패턴 검색 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 카테고리별 패턴 필터
+        function filterPatternsByCategory() {
+            var categoryId = $('#categoryFilter').val();
+            
+            $.ajax({
+                url: '/Custom/Controller/Admin/Custom/CustomPatternController.php?action=getPatternListAPI',
+                type: 'GET',
+                data: {
+                    category_id: categoryId,
+                    page: 1,
+                    limit: 20
+                },
+                success: function(response) {
+                    if (response.success) {
+                        displayPatternLibrary(response.data.patterns);
+                    } else {
+                        alert('패턴 필터링에 실패했습니다: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('패턴 필터링 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 패턴 라이브러리 표시
+        function displayPatternLibrary(patterns) {
+            var html = '';
+            if (patterns && patterns.length > 0) {
+                patterns.forEach(function(pattern) {
+                    html += '<div class="pattern-item" data-pattern-id="' + pattern.pattern_id + '">';
+                    html += '    <img src="' + pattern.pattern_url + '" alt="' + pattern.pattern_name + '" class="pattern-thumbnail" onclick="selectPattern(' + pattern.pattern_id + ', \'' + pattern.pattern_name + '\')"/>';
+                    html += '    <div class="pattern-name">' + pattern.pattern_name + '</div>';
+                    html += '</div>';
+                });
+            } else {
+                html = '<div class="notice-info">검색 결과가 없습니다.</div>';
+            }
+            $('#patternLibrary').html(html);
+        }
+
+        // 패턴 선택
+        function selectPattern(patternId, patternName) {
+            var selectedPatterns = $('#selectedPatterns');
+            var existingPattern = selectedPatterns.find('[data-pattern-id="' + patternId + '"]');
+            
+            if (existingPattern.length > 0) {
+                alert('이미 선택된 패턴입니다.');
+                return;
+            }
+            
+            var patternHtml = '<div class="selected-pattern" data-pattern-id="' + patternId + '">';
+            patternHtml += '    <span class="pattern-name">' + patternName + '</span>';
+            patternHtml += '    <input type="hidden" name="selected_patterns[]" value="' + patternId + '"/>';
+            patternHtml += '    <button type="button" class="btn btn-sm btn-white btn-icon-minus" onclick="removeSelectedPattern(' + patternId + ')">삭제</button>';
+            patternHtml += '</div>';
+            
+            if (selectedPatterns.find('.notice-info').length > 0) {
+                selectedPatterns.html('');
+            }
+            selectedPatterns.append(patternHtml);
+        }
+
+        // 선택된 패턴 제거
+        function removeSelectedPattern(patternId) {
+            $('[data-pattern-id="' + patternId + '"]').remove();
+            
+            if ($('#selectedPatterns .selected-pattern').length === 0) {
+                $('#selectedPatterns').html('<div class="notice-info">선택된 패턴이 없습니다.</div>');
+            }
+        }
+
+        // 旧的复杂尺寸管理功能已移除，现在使用简化的尺寸输入功能
+
+        // 旧的复杂尺寸管理功能已移除，现在使用简化的尺寸输入功能
+
+        // 简化的尺寸功能 - 不需要复杂的尺寸管理API
+        function loadAllSizes() {
+            // 简化版本：不需要加载复杂的尺寸数据
+            console.log('简化的尺寸功能：不需要加载复杂的尺寸数据');
+        }
+
+        // 简化的尺寸显示 - 不需要复杂的尺寸显示
+        function displayAllSizes(sizes) {
+            // 简化版本：不需要显示复杂的尺寸列表
+            console.log('简化的尺寸功能：不需要显示复杂的尺寸列表');
+        }
+
+        // 简化的尺寸删除 - 不需要复杂的尺寸删除功能
+        function removeCustomSize(sizeId) {
+            // 简化版本：不需要删除功能
+            console.log('简化的尺寸功能：不需要删除功能');
+        }
+
+        // 패턴 분류 추가
+        function addPatternCategory() {
+            var categoryName = $('#newCategoryName').val();
+            var categoryDescription = $('#newCategoryDescription').val();
+            
+            if (!categoryName) {
+                alert('분류명을 입력해주세요.');
+                return;
+            }
+            
+            $.ajax({
+                url: '/Custom/Controller/Admin/Custom/CustomPatternCategoryController.php?action=addCategoryAPI',
+                type: 'POST',
+                data: {
+                    category_name: categoryName,
+                    category_description: categoryDescription
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('패턴 분류가 추가되었습니다.');
+                        $('#newCategoryName').val('');
+                        $('#newCategoryDescription').val('');
+                        loadPatternCategories();
+                    } else {
+                        alert('분류 추가에 실패했습니다: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('분류 추가 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 패턴 분류 목록 로드
+        function loadPatternCategories() {
+            $.ajax({
+                url: '/Custom/Controller/Admin/Custom/CustomPatternCategoryController.php?action=getCategoryListAPI',
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        displayPatternCategories(response.data.categories);
+                    } else {
+                        $('#patternCategoriesList').html('<div class="notice-info">분류 목록을 불러올 수 없습니다.</div>');
+                    }
+                },
+                error: function() {
+                    $('#patternCategoriesList').html('<div class="notice-info">분류 목록을 불러올 수 없습니다.</div>');
+                }
+            });
+        }
+
+        // 패턴 분류 목록 표시
+        function displayPatternCategories(categories) {
+            var html = '';
+            if (categories && categories.length > 0) {
+                categories.forEach(function(category) {
+                    html += '<div class="category-item" data-category-id="' + category.category_id + '">';
+                    html += '    <span class="category-name">' + category.category_name + '</span>';
+                    if (category.category_description) {
+                        html += '    <span class="category-description">(' + category.category_description + ')</span>';
+                    }
+                    html += '    <button type="button" class="btn btn-sm btn-white btn-icon-minus" onclick="removePatternCategory(' + category.category_id + ')">삭제</button>';
+                    html += '</div>';
+                });
+            } else {
+                html = '<div class="notice-info">등록된 분류가 없습니다.</div>';
+            }
+            $('#patternCategoriesList').html(html);
+        }
+
+        // 패턴 분류 삭제
+        function removePatternCategory(categoryId) {
+            if (!confirm('이 분류를 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            $.ajax({
+                url: '/Custom/Controller/Admin/Custom/CustomPatternCategoryController.php?action=deleteCategoryAPI',
+                type: 'POST',
+                data: { category_id: categoryId },
+                success: function(response) {
+                    if (response.success) {
+                        alert('분류가 삭제되었습니다.');
+                        loadPatternCategories();
+                    } else {
+                        alert('분류 삭제에 실패했습니다: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('분류 삭제 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 페이지 로드 시 초기화
+        $(document).ready(function() {
+            console.log('页面加载完成，开始初始化...');
+            
+            // 延迟初始化，确保所有元素都已加载
+            setTimeout(function() {
+                // 检查尺寸输入框是否存在
+                if ($('#customSizeRow').length > 0) {
+                    console.log('尺寸输入框找到，ID: customSizeRow');
+                } else {
+                    console.log('错误：尺寸输入框未找到！');
+                }
+                
+                // 检查定制选项是否存在
+                if ($('input[name="is_customizable"]').length > 0) {
+                    var currentValue = $('input[name="is_customizable"]:checked').val();
+                    console.log('定制选项找到，当前值:', currentValue);
+                    
+                    // 如果没有选中的值，检查是否有默认值
+                    if (!currentValue) {
+                        // 检查是否有默认选中的选项
+                        var defaultChecked = $('input[name="is_customizable"][checked]').val();
+                        if (defaultChecked) {
+                            currentValue = defaultChecked;
+                            console.log('使用默认选中值:', currentValue);
+                        } else {
+                            // 如果没有默认值，设置为'0'（사용안함）
+                            currentValue = '0';
+                            $('input[name="is_customizable"][value="0"]').prop('checked', true);
+                            console.log('设置默认值:', currentValue);
+                        }
+                    }
+                    
+                    // 맞춤 기능 초기화 - 所有后台设置功能始终显示
+                    // 这个选项只控制用户端是否显示定制入口，不影响后台功能
+                    console.log('所有后台设置功能始终显示');
+                    $('#customizationOptions').show();
+                    $('#customSizeRow').show();
+                    
+                    // 记录选择状态（用于用户端控制）
+                    console.log('定制功能状态:', currentValue === '1' ? '사용함 (用户端显示定制入口)' : '사용안함 (用户端不显示定制入口)');
+                } else {
+                    console.log('错误：定制选项未找到！');
+                }
+                
+                // 简化的尺寸功能 - 不需要加载复杂的尺寸数据
+                console.log('简化的尺寸功能：不需要加载复杂的尺寸数据');
+                
+                // 패턴 분류 로드
+                loadPatternCategories();
+                
+                // 尺寸输入框验证事件绑定
+                bindSizeValidationEvents();
+                
+                console.log('初始化完成');
+            }, 100); // 延迟100毫秒执行
+        });
+
+        // 尺寸输入验证事件绑定
+        function bindSizeValidationEvents() {
+            $('#custom_width, #custom_height').on('input', function() {
+                var value = parseFloat($(this).val());
+                var fieldName = $(this).attr('id') === 'custom_width' ? '너비' : '높이';
+                
+                // 验证数值范围
+                if (value < 0) {
+                    $(this).val(0);
+                    showSizeError(fieldName + '는 0 이상이어야 합니다.');
+                } else if (value > 200) {
+                    $(this).val(200);
+                    showSizeError(fieldName + '는 200 이하여야 합니다.');
+                } else {
+                    // 自动格式化到2位小数
+                    if (value && value.toString().indexOf('.') !== -1) {
+                        $(this).val(value.toFixed(2));
+                    }
+                    hideSizeError();
+                }
+            });
+
+            // 失去焦点时验证
+            $('#custom_width, #custom_height').on('blur', function() {
+                var value = $(this).val();
+                if (value && value !== '') {
+                    var numValue = parseFloat(value);
+                    if (isNaN(numValue) || numValue < 0 || numValue > 200) {
+                        var fieldName = $(this).attr('id') === 'custom_width' ? '너비' : '높이';
+                        showSizeError(fieldName + '는 0-200 CM 사이의 유효한 숫자여야 합니다.');
+                        $(this).focus();
+                    }
+                }
+            });
+        }
+
+        // 显示尺寸错误信息
+        function showSizeError(message) {
+            var errorDiv = $('#customSizeError');
+            if (errorDiv.length === 0) {
+                $('#customSizeRow').after('<div id="customSizeError" class="alert alert-danger" style="margin: 10px 0;">' + message + '</div>');
+            } else {
+                errorDiv.text(message).show();
+            }
+        }
+
+        // 隐藏尺寸错误信息
+        function hideSizeError() {
+            $('#customSizeError').hide();
+        }
+
+        // 测试尺寸输入框显示/隐藏
+        function testSizeRow() {
+            console.log('测试函数被调用');
+            console.log('当前customSizeRow状态:', $('#customSizeRow').is(':visible'));
+            console.log('当前customSizeRow CSS display:', $('#customSizeRow').css('display'));
+            console.log('当前customSizeRow CSS class:', $('#customSizeRow').attr('class'));
+            
+            // 强制显示
+            $('#customSizeRow').show();
+            console.log('强制显示后状态:', $('#customSizeRow').is(':visible'));
+            
+            // 检查定制选项状态
+            var isCustomizable = $('input[name="is_customizable"]:checked').val();
+            console.log('当前定制选项状态:', isCustomizable);
+            
+            // 手动触发定制选项显示
+            if (isCustomizable === '1') {
+                $('#customizationOptions').show();
+                $('#customSizeRow').show();
+                console.log('手动显示定制选项和尺寸输入框');
+            }
+            
+            alert('테스트 완료! 콘솔을 확인하세요.');
+        }
+
+        // 手动显示尺寸输入框
+        function showSizeRow() {
+            $('#customSizeRow').show();
+            console.log('尺寸输入框已手动显示');
+        }
+
+        // 手动隐藏尺寸输入框
+        function hideSizeRow() {
+            $('#customSizeRow').hide();
+            console.log('尺寸输入框已手动隐藏');
         }
 
     });

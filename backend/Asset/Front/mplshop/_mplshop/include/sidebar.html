@@ -1,0 +1,33 @@
+<nav id="aside">
+	<button class="asideClose"></button>
+	<div class="inner">
+		<div class="asideLogin">
+			<ul>
+				<!--{ ? gd_is_login() === false }-->
+				<li><a href="../member/login.php">{=__('로그인')}</a></li>
+				<li><a href="../member/join_method.php">{=__('회원가입')}</a></li>
+				<!--{ : }-->
+				<li><a href="../member/logout.php?returnUrl={=logoutReturnUrl}">{=__('로그아웃')}</a></li>
+				<li><a href="../mypage/my_page_password.php">{=__('내정보수정')}</a></li>
+				<!--{ / }-->
+				<li><a href='../order/cart.php'>{=__('장바구니')}</a></li>
+				<li><a href='../mypage/index.php'>{=__('마이페이지')}</a></li>
+			</ul>
+		</div>
+		<div class="asideSearch">{=includeWidget('proc/_header_search.html')}</div>
+		<div class="asideCategory">
+			<div class="title">CATEGORY</div>
+			<!--{=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all')}-->
+		</div>
+		<div class="asideCommunity">
+			<div class="title">COMMUNITY</div>
+		</div>
+		<div class="quickContent">
+			<ul class="quickCs">
+				<li class="title">CUSTOMER</li>
+				<li class="num"><a href="tel:{=gMall.centerPhone}">{=gMall.centerPhone}</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<div id="asideDim"></div>

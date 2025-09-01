@@ -1,0 +1,342 @@
+/* 商品定制功能样式 */
+
+/* 정제 기능 섹션 */
+.custom_goods_section {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.custom_header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.custom_header h3 {
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.custom_header p {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* 미리보기 영역 */
+.custom_preview_area {
+    margin-bottom: 20px;
+}
+
+.preview_container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.preview_image {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.preview_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.custom_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 2;
+}
+
+.preview_controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn_custom_design,
+.btn_reset_custom {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.btn_custom_design {
+    background: #007bff;
+    color: white;
+}
+
+.btn_custom_design:hover {
+    background: #0056b3;
+}
+
+.btn_reset_custom {
+    background: #6c757d;
+    color: white;
+}
+
+.btn_reset_custom:hover {
+    background: #545b62;
+}
+
+/* 옵션 선택 영역 */
+.custom_options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.custom_option_row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.custom_option_row label {
+    font-weight: 500;
+    min-width: 80px;
+    color: #495057;
+}
+
+/* 색상 선택 */
+.color_options {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.color_item {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.color_item.active {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.color_item:hover {
+    transform: scale(1.1);
+}
+
+.selected_color_name {
+    font-weight: 500;
+    color: #495057;
+    margin-left: 10px;
+}
+
+/* 사이즈 선택 */
+.size_options {
+    display: flex;
+    gap: 10px;
+}
+
+.size_item {
+    padding: 8px 16px;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.size_item.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+.size_item:hover {
+    border-color: #007bff;
+}
+
+/* 장바구니 정제 정보 표시 */
+.custom_info_display {
+    margin-top: 10px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #28a745;
+}
+
+.custom_badge {
+    margin-bottom: 8px;
+}
+
+.badge_custom {
+    background: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.custom_option_info {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 5px;
+}
+
+.custom_label {
+    font-weight: 500;
+    color: #495057;
+    margin-right: 5px;
+}
+
+.custom_value {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.custom_preview_thumb {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom_thumb_image {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+}
+
+.btn_view_custom {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn_view_custom:hover {
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+}
+
+/* 정제 상세보기 모달 */
+.custom_detail_modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.custom_detail_modal .modal_content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.custom_detail_modal .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.custom_detail_modal .close:hover {
+    color: #000;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .preview_container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .preview_image {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .custom_option_row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .custom_option_row label {
+        min-width: auto;
+    }
+    
+    .color_options,
+    .size_options {
+        flex-wrap: wrap;
+    }
+    
+    .custom_detail_modal .modal_content {
+        width: 95%;
+        margin: 10% auto;
+    }
+}
+
+/* 추가 유틸리티 클래스 */
+.text-center {
+    text-align: center;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}

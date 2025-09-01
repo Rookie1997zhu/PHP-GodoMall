@@ -1533,6 +1533,47 @@ class OrderPsController extends \Controller\Admin\Controller
 
                 break;
 
+            // 커스터마이징 이미지 확인
+            case 'check_customization_image':
+                try {
+                    $postValue = Request::post()->toArray();
+                    $orderNo = $postValue['orderNo'];
+                    
+                    if (empty($orderNo)) {
+                        throw new Exception('주문번호가 필요합니다.');
+                    }
+                    
+                    // 데이터베이스에서 커스터마이징 이미지 확인
+                    $db = \App::load('DB');
+                    $arrBind = [];
+                    $db->bind_param_push($arrBind, 's', $orderNo);
+                    $sql = "SELECT customization_image FROM es_order WHERE orderNo = ?";
+                    $result = $db->query_fetch($sql, $arrBind);
+                    
+                    if ($result && !empty($result['customization_image'])) {
+                        $this->json([
+                            'success' => true,
+                            'data' => [
+                                'customization_image' => $result[0]['customization_image']
+                            ],
+                            'message' => '커스터마이징 이미지가 있습니다.'
+                        ]);
+                    } else {
+                        $this->json([
+                            'success' => false,
+                            'data' => null,
+                            'message' => '커스터마이징 이미지가 없습니다.'
+                        ]);
+                    }
+                } catch (Exception $e) {
+                    $this->json([
+                        'success' => false,
+                        'data' => null,
+                        'message' => $e->getMessage()
+                    ]);
+                }
+                break;
+
             // 수기 주문 저장하기
             case 'save_write_order':
                 try {

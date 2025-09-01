@@ -1,0 +1,265 @@
+{*** 쇼핑몰 메인본문 | main/index.php ***}
+{ # header }
+
+<style>
+/*메인 슬라이드 영역  높이값은 730px 로 측정되어 있습니다. */
+.mainTopSildeWrap,
+.mainTopSildeWrap .mainTopSilde .wideImages,
+.mainTopSildeWrap .mainTopSilde .slick-slide {height:600px; overflow:hidden;}
+
+/*화면 해상도(가로 넓이) 변경에 따른 높이값 변경 */
+@media screen and (max-width:1240px){
+	.mainTopSildeWrap,
+	.mainTopSildeWrap .mainTopSilde .wideImages,
+	.mainTopSildeWrap .mainTopSilde .slick-slide { height:600px; }
+}
+@media screen and (max-width:1140px){
+	.mainTopSildeWrap,
+	.mainTopSildeWrap .mainTopSilde .wideImages,
+	.mainTopSildeWrap .mainTopSilde .slick-slide {height:560px; }
+}
+@media screen and (max-width:1024px){
+	.mainTopSildeWrap,
+	.mainTopSildeWrap .mainTopSilde .wideImages,
+	.mainTopSildeWrap .mainTopSilde .slick-slide {height:520px; }
+}
+@media screen and (max-width:960px){
+	.mainTopSildeWrap,
+	.mainTopSildeWrap .mainTopSilde .wideImages,
+	.mainTopSildeWrap .mainTopSilde .slick-slide {height:480px; }
+}
+</style>
+
+<div class="mainSildeWrap mainTopSildeWrap">
+	<div class="slideContainer mainTopSilde">
+		<!--{ @dataBanner('6096513', true) }-->
+		<div class="wideImages" style="background:url('{.bannerImageUrl}') no-repeat top center;">
+			<!--{ ? .bannerLink }--><a href="{.bannerLink}" target="{.bannerTarget}"></a><!--{ / }-->
+		</div>
+		<!--{ / }-->
+        <!--{ @dataBanner('412027244', true) }-->
+            <div class="fitImages">
+                <!--{ ? .bannerLink }--><a href="{.bannerLink}" target="{.bannerTarget}"><!--{ / }-->
+                <img src="{.bannerImageUrl}" style="width:100%;">
+                <!--{ ? .bannerLink }--></a><!--{ / }-->
+            </div>
+        <!--{ / }-->
+	</div>
+</div>
+
+
+
+<!--
+<div class="mainContainer mTop90">
+	<div class="mainContainer1600">
+		<div class="mainTitle" data-aos="fade-right" data-aos-duration="1800">
+			<h1 class="titleTop"></h1>
+            <h3></h3>
+		</div>
+		<div class="mainSildeWrap" data-aos="fade-up" data-aos-duration="1800">
+			<div class="jbanner">
+			<img src="/data/skin/front/mplshop/img/banner/main.jpg" alt="">
+			</div>
+		</div>
+	</div>
+</div>
+-->
+
+<!-- 
+    ※※ 중단 슬라이드 배너 진열 영역 ※※
+	해당 부분 숨김 처리 class="mainContainer mTop90 displaynone" 또는 주석처리 
+	class에 displaynone을 추가하십시요.
+-->
+<div class="mainContainer mTop90">
+	<div class="mainContainer1600">
+		<div class="mainTitle" data-aos="fade-right" data-aos-duration="1800">
+			<h1 class="titleTop">Hello :)</h1>
+            <h3>브랜딩을 위한 커스터마이징 굿즈 제작 연구소 박순희와 오덕구 입니다.</h3>
+		</div>
+		<div class="mainSildeWrap" data-aos="fade-up" data-aos-duration="1800">
+			<div class="slideContainer mainSilde1">
+				<!--{ @dataBanner('137957393') }--><div class="bannerImage"><span>{.tag}</span></div><!--{ / }-->
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- ※※ PRODUCT 진열 영역 ※※ -->
+<div class="mainBgContent2">
+	<div class="main_goods_cont">
+		<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '1')}<!-- 메인 상품 노출 -->
+	</div>
+</div>
+
+<!-- 
+    ※※ 메인 상단 배너 영역 ※※ 
+    해당 부분 숨김 처리 class="mainContainer mTop90 displaynone" 또는 주석처리 
+    class에 displaynone을 추가하십시요.
+-->
+<div class="mainContainer mTop90" data-aos="fade-up" data-aos-duration="1800">
+    
+     <div class="fixBg" <!--{ @dataBanner('174171300', true) }--> style="background:url('{.bannerImageUrl}') no-repeat center center; background-attachment:fixed;"<!--{ / }-->>
+        <div class="mainfixedTitle" data-aos="fade-right" data-aos-duration="1800">
+			<h1 class="titleTop"><b>GOODS NEWS</b></h1>
+            <h2 class="titleBottom">박순희와 오덕구의 새로운 소식을 만나보세요</h2>
+            <!--<h3>고객님의 동의 없이 굿즈 관련 사항을 공개 및 유출하지 않습니다.</h3>-->
+        </div>
+        <div class="mainContainer1400" data-aos="fade-up" data-aos-duration="2500">
+            
+            <div class="mainBanner">
+                <ul class="cols4">
+                    <!--{ @dataBanner('3868222027') }--><li>{.tag}</li><!--{ / }-->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- 
+    ※※ 메인 EVENT ZONE 배너 ※※
+    해당 부분 숨김 처리 class="mainContainer1400 mTop90 displaynone" 또는 주석처리 
+    class에 displaynone을 추가하십시요.
+-->
+<!--
+<div class="mainContainer1400 mTop90">
+	<div class="mainTitle" data-aos="fade-right" data-aos-duration="1800">
+		<h2 class="titleTop">EVENT ZONE</h2>
+        <!-- <h3 class="titleBottom">다양한 이벤트를 만나보세요.</h3> -->
+	<!--</div>
+	<div class="mainBanner mTop50" data-aos="fade-up" data-aos-duration="1800">
+        <ul class="cols2">
+            <!--{ @dataBanner('3663401153', true) }-->
+                <!--<li><!--{ ? .bannerLink }--><a href="{.bannerLink}" target="{.bannerTarget}"><!--{ / }--><img src="{.bannerImageUrl}"><span class="eventTit">{.bannerImageAlt}</span><!--{ ? .bannerLink }--></a><!--{ / }--><!--</li>
+            <!--{ / }-->
+        <!--</ul>
+	</div>
+</div>
+-->
+<!-- 
+    ※※ 메인 MOVIE 진열 영역 ※※
+    해당 부분 숨김 처리 class="mainContainer1400 mTop90 displaynone" 또는 주석처리 
+    class에 displaynone을 추가하십시요.
+-->
+<!-- <div class="mainContainer1400 mTop90">
+	<div class="mainTitle" data-aos="fade-right" data-aos-duration="1800">
+		<!-- <h2 class="titleTop">MOVIE</h2>
+        <!-- <h3 class="titleBottom">W_INNOVATION 동영상을 확인해보세요.</h3> -->
+	<!--</div>
+	<!--{ @dataBanner('1105408246', true) }-->
+	<!--<div class="mainMoiveBanner mTop50" data-aos="fade-up" data-aos-duration="1800">
+		<!--{ ? .bannerLink }-->
+		<!--<div class="videoFrameBox">
+			<div class="videoFrameContainer">
+            	<iframe src="{.bannerLink}" frameborder="0" allowfullscreen=""></iframe>
+				
+            </div>
+		</div>
+		<!--{ / }-->
+	<!--</div>
+	<!--{ / }-->
+<!--</div>}-->
+
+<!-- 
+    ※※ 메인 하단 좌측 슬라이드 우측 REVIEW 진열 영역 ※※
+    해당 부분 전체 숨김 처리 class="mainContainer1400 mTop20 displaynone" 또는 주석처리 
+    class에 displaynone을 추가하십시요.
+-->
+<div class="mainContainer1400 mTop20 displaynone">
+	<div class="mainReviewContainer">
+		<div class="mainReviewSlide">
+			<div class="mainSildeWrap mTop90">
+				<div class="slideContainer reviewSlider">
+					<!--{ @dataBanner('509852189') }--><div class="bannerImage">{.tag}</div><!--{ / }-->
+				</div>
+			</div>
+		</div>
+        <!-- 우측 REVIEW 진열 -->
+		<div class="mainReviewBoard mTop90">
+            <h3>REVIEW</h3>   
+			{=includeWidget('board/board_article', 'bdId', goodsReviewBdId, 'listCount', 4, 'strCut', 25 ,'layoutType', 'photoreview')}
+            <a href="../board/list.php?bdId=goodsreview" class="btn_board_more -showDom">전체보기 <img src="../_mplshop/images/common/ico_all_list.png" alt=""></a>
+		</div>
+	</div>
+</div>
+
+
+<!-- 
+    ※※ 메인 하단 EVENT 게시판 / NOTICE 영역 ※※
+    해당 부분 전체 숨김 처리 class="mainBgContent mTop90 displaynone" 또는 주석처리 
+    class에 displaynone을 추가하십시요.
+-->
+<div class="mainBgContent mTop90 displaynone">
+	<div class="mainContainer1400">
+		<div class="mainBoardContainer">
+			<div class="mainBoard" data-aos="fade-up" data-aos-duration="1800">
+				<h3>EVENT</h3>
+				<ul>
+					<!--{@ getArticles( 'event', 4 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId={.bdId}&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../board/list.php?bdId=event" class="btn_board_more -showDom">전체보기 <img src="../_mplshop/images/common/ico_all_list.png" alt=""></a>
+			</div>
+			<div class="mainBoard" data-aos="fade-down" data-aos-duration="1800">
+				<h3>NOTICE</h3>
+				<ul>
+					<!--{@ getArticles( 'notice', 4 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId={.bdId}&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../board/list.php?bdId=notice" class="btn_board_more -showDom">전체보기 <img src="../_mplshop/images/common/ico_all_list.png" alt=""></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--추가 배너-->
+
+<style>
+	.jbanner img{width:1600px; display: block; margin: 0 auto;}
+/*화면 해상도(가로 넓이) 변경에 따른 가로값 변경 */
+@media screen and (max-width:2000px){
+	.jbanner img{ width:1600px; }
+}
+@media screen and (max-width:1600px){
+	.jbanner img{ width:1240px; }
+}	
+@media screen and (max-width:1240px){
+	.jbanner img{ width:1100px; }
+}
+@media screen and (max-width:1140px){
+	.jbanner img{ width:1000px; }
+}
+@media screen and (max-width:1024px){
+	.jbanner img{ width:800px; }
+}	
+@media screen and (max-width:960px){
+	.jbanner img{ width:700px; }
+}
+@media screen and (max-width:460px){
+	.jbanner img{ width:410px; }
+}	
+</style>
+
+<div class="jbanner">
+			<img src="/data/main-client.jpg" alt="">
+			</div>
+
+<!-- 인스고위젯 소스 코드 인스고위젯에서 생성한 소스코드를 삽입하시기 바랍니다.-->
+<!-- 인스고위젯 소스 코드  -->
+
+<div class="main_goods_cont" id="Resize_imgArea">
+<!-- 설문조사 배너 -->{=pollViewBanner()}<!-- 설문조사 배너 -->
+</div>
+
+
+{ # footer }

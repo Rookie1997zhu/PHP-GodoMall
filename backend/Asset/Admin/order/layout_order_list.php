@@ -186,6 +186,30 @@ use Framework\Utility\StringUtils;
                                             </td>
                                         <?php } //주문상품 ?>
 
+                                        <?php if($gridKey === 'customizationImage'){ // 맞춤 이미지 ?>
+                                            <td>
+                                                <?php if (!empty($val['customization_image'])) { ?>
+                                                    <div class="customization-image-container">
+                                                        <img src="<?= $val['customization_image'] ?>" 
+                                                             alt="맞춤 이미지" 
+                                                             class="customization-thumbnail" 
+                                                             style="max-width: 40px; max-height: 40px; cursor: pointer;"
+                                                             onclick="showCustomizationImage('<?= $val['customization_image'] ?>', '<?= $val['orderNo'] ?>')"
+                                                             title="클릭하여 확대보기">
+                                                        <div class="customization-actions">
+                                                            <button type="button" class="btn btn-xs btn-primary" 
+                                                                    onclick="downloadCustomizationImage('<?= $val['customization_image'] ?>', '<?= $val['orderNo'] ?>')"
+                                                                    title="다운로드">
+                                                                <i class="fa fa-download"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                <?php } else { ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php } ?>
+                                            </td>
+                                        <?php } // 맞춤 이미지 ?>
+
                                         <?php if($gridKey === 'orderGoodsNmGlobal'){ //주문상품(해외상점) ?>
                                             <td class="text-left">
                                                 <?=($val['mallSno'] != DEFAULT_MALL_NUMBER && $val['orderGoodsNmGlobal']) ? $val['orderGoodsNmGlobal'] : '<div style="width:100%; text-align: center;">-</div>'?>

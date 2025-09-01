@@ -1,0 +1,100 @@
+{*** 목록 | board/skin/lookbook/list.php ***}
+<!--{ = includeFile( "_mplshop/include/lookbook_inc.html" ) }-->
+<!--{?bdList.cfg.bdHeader && !inList}-->
+<div class="addition_zone" id="subTopImgSlider">
+	{=stripslashes(str_replace(array("&nbsp;","<p>","</p>"), array("","",""), bdList.cfg.bdHeader))}
+</div>
+<!--{/}-->
+<div class="board_zone_sec">
+	<!--{? !inList }-->
+	<div class="board_zone_tit">
+		<h2>{=__(bdList.cfg.bdNm)}</h2>
+	</div>
+	<!--{/}-->
+    <!--{ ? bdList.cfg.bdCategoryFl == 'y'}-->
+    <div class="boardCateSub">
+        <a href="../board/list.php?bdId={req.bdId}" <!--{ ? gd_get('category') == ''}-->class="select"<!--{ / }-->>전체</a>
+        <!--{ @ bdList.cfg.arrCategory }-->
+        <a href="../board/list.php?bdId={req.bdId}&category={.value_}"  <!--{ ? gd_get('category') == .value_}-->class="select"<!--{ / }-->>{.value_}</a>
+        <!--{ / }-->
+    </div>
+    <!--{ / }-->
+    <div class="board_zone_cont">
+		<div class="board_zone_list" align="{bdList.cfg.bdAlign}">
+			<table class="board_list_table <!--{? bdList.noticeList}-->mBot30<!--{/}-->" {bdList.cfg.bdWidthStyle}>
+				<!--{? bdList.noticeList}-->
+                <colgroup>
+                    <col style="width:8%" class="widthDisplayNo">
+                    <!--{ ? bdList.cfg.bdCategoryFl == 'y'}-->
+                    <col style="width:10%" class="widthDisplayNone">
+                    <!--{/}-->
+                    <col style="width:;">
+                    <col style="width:10%" class="widthDisplayNone">
+                    <col style="width:12%" class="widthDisplaySubject">
+                    <!--{ ? bdList.cfg.bdPcHitFl == 'y'}--> 
+                    <col style="width:8%" class="widthDisplayNone">
+                    <!--{/}-->
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>{=__('번호')}</th>
+                    <!--{ ? bdList.cfg.bdCategoryFl == 'y'}-->
+                    <th class="widthDisplayNone">{=__('말머리')}</th>
+                    <!--{/}-->
+                    <th>{=__('제목')}</th>
+                    <th class="widthDisplayNone">{=__('날짜')}</th>
+                    <th>{=__('작성자')}</th>
+                    <!--{ ? bdList.cfg.bdPcHitFl == 'y'}--> 
+                    <th class="widthDisplayNone">{=__('조회')}</th>
+                    <!--{/}-->
+                </tr>
+                </thead>
+				<!--{/}-->
+				<tbody>
+				<!--{ @ bdList.noticeList }-->
+				<tr class="notice_point">
+					<td> <img src="{bdList.cfg.iconImage.notice.url}" alt="{=__('공지')}"/> </td>
+					<!--{ ? bdList.cfg.bdCategoryFl == 'y'}-->
+					<td class="widthDisplayNone">
+						<!--{? .category }-->[{.category}]<!--{/}-->
+					</td>
+					<!--{/}-->
+					<td class="board_tit">
+						<a href="javascript:gd_btn_view('{req.bdId}',{.sno} , '{.auth.view}')">
+							<strong>{.subject}</strong>
+						</a>
+					</td>
+					<td class="widthDisplayNone"> {.regDate} </td>
+					<td> {.writer} </td>
+                    <!--{ ? bdList.cfg.bdPcHitFl == 'y'}--> 
+					<td class="widthDisplayNone"> {.hit} </td>
+                    <!--{/}-->
+				</tr>
+				<!--{/}-->
+				</tbody>
+			</table>
+		</div>
+		<!-- //board_zone_list -->
+	</div>
+	<!-- //board_zone_cont -->
+	<div class="grid_layout lightboxAddThumb">
+        <!-- 룩북 나열 갯수변경 
+            80 번째라인  item w30
+            한줄에 표현되는 개수 w20 : 4개 / w25,w30 : 3개 / w50 : 2개 / w100 : 1개
+            w30 클래스 값을 변경하여 사용하시기 바랍니다.  80번째라인 부분에 적용필요
+         -->
+		<ul class="masonry grid effect-1" id="grid">
+			<!--{ @ bdList.list }-->
+            <!--{ ? .isNotice != 'y'}-->
+			<li class="item look w20">
+				<a href="{=gd_isset(.viewListImage, 'img/etc/noimg.png')}" data-lightbox="lookbook" data-title="" class="imgLink">
+					<img src="{=gd_isset(.viewListImage, 'img/etc/noimg.png')}"/>
+				</a>
+			</li>
+            <!--{/}-->
+			<!--{/}-->
+		</ul>
+	</div>
+
+    {bdList.pagination}
+</div>

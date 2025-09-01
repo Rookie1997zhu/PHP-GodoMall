@@ -1,0 +1,77 @@
+{*** 고객센터 | service/faq_list.php ***}
+{ # header }
+<div class="content">
+	<div class="service_main subLimit1680">
+		<div class="serviceTitle"><h2>커뮤니티</h2></div>
+		<div class="serviceLink"><ul></ul></div>
+		<div class="board_zone_sec">
+			<div class="board_zone_cont">
+				<div class="board_zone_list">
+					<iframe src="faq.php?noheader=y&isBest=y" id="faqIframe" width="100%" height="100%" marginwidth="0" marginheight="0" frameborder="no" scrolling="no" onload="gd_resize_frame(this)" onresize="gd_resize_frame1(this)"></iframe>
+				</div>
+				<!-- //board_zone_list -->
+			</div>
+			<!-- //board_zone_cont -->
+		</div>
+		<!-- //board_zone_sec -->
+		<div class="service_main_cont">
+			<div class="service_main_notice">
+				<h3>{=__(notice.cfg.bdNm)}</h3>
+				<ul>
+					<!--{@ getArticles( 'notice', 5 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId={notice.cfg.bdId}&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../service/notice.php" class="btn_board_more">MORE +</a>
+			</div>
+			<div class="service_main_event">
+				<h3>{=__(event.cfg.bdNm)}</h3>
+				<ul>
+					<!--{@ getArticles( 'event', 5 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId={event.cfg.bdId}&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../service/event.php" class="btn_board_more">MORE +</a>
+			</div>
+		</div>
+		<div class="service_main_cont">
+			<div class="service_main_notice">
+				<h3>{=__('상품문의')}</h3>
+				<ul>
+					<!--{@ getArticles( 'goodsqa', 5 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId=goodsqa&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../board/list.php?bdId=goodsqa" class="btn_board_more">MORE +</a>
+			</div>
+			<div class="service_main_event">
+				<h3>{=__('상품후기')}</h3>
+				<ul>
+					<!--{@ getArticles( 'goodsreview', 5 )}-->
+					<li>
+						<span>{.regDate}</span>
+						<a href="../board/view.php?bdId=goodsreview&sno={.sno}">{.subject}</a>
+					</li>
+					<!--{ / }-->
+				</ul>
+				<a href="../board/list.php?bdId=goodsreview" class="btn_board_more">MORE +</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(function () {
+	var faqIframe = document.getElementById("faqIframe");
+	$(window).on( "resize", function() { gd_resize_frame(faqIframe); });
+});
+</script>
+{ # footer }

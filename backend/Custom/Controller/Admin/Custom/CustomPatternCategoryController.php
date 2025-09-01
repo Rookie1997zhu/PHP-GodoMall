@@ -13,7 +13,7 @@
 
 namespace Controller\Admin\Custom;
 
-use Component\Custom\CustomPatternCategory;
+use Custom\Component\CustomPatternCategory;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -49,50 +49,13 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
      */
     public function getCategoryListAPI()
     {
-        try {
-            // 验证请求方法
-            if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-                $this->sendErrorResponse(405, '请求方法不允许', ['method' => $_SERVER['REQUEST_METHOD']]);
-                return;
-            }
-
-            // 获取请求参数
-            $params = [
-                'page' => (int)Request::get()->get('page', 1),
-                'limit' => (int)Request::get()->get('limit', 20),
-                'keyword' => Request::get()->get('keyword', ''),
-                'status' => Request::get()->get('status', ''),
-                'parent_id' => Request::get()->get('parent_id', '')
-            ];
-
-            // 参数验证
-            $validation = $this->validateCategoryListParams($params);
-            if (!$validation['valid']) {
-                $this->sendErrorResponse(400, $validation['message'], $validation['details']);
-                return;
-            }
-
-            // 调用业务组件获取分类列表
-            $result = $this->categoryComponent->getCategoryList($params);
-            
-            if ($result['success']) {
-                $this->sendSuccessResponse('分类列表获取成功', $result['data']);
-            } else {
-                $this->sendErrorResponse(500, $result['message'], $result['data']);
-            }
-
-        } catch (Exception $e) {
-            Logger::error('分类列表API异常', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'params' => $params ?? []
-            ]);
-            
-            $this->sendErrorResponse(500, '服务器内部错误', [
-                'error_type' => get_class($e),
-                'error_message' => $e->getMessage()
-            ]);
+        $status = Request::get()->get('status', null);
+        $query = \Custom\Component\CustomPatternCategory::query();
+        if ($status !== null && $status !== '') {
+            $query->where('status', '=', (int)$status);
         }
+        $categories = $query->orderBy('sort_order', 'asc')->get();
+        $this->json(['success' => true, 'data' => ['categories' => $categories->toArray()]]);
     }
 
     /**
@@ -138,50 +101,46 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
      */
     public function addCategoryAPI()
     {
-        try {
-            // 验证请求方法
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                $this->sendErrorResponse(405, '请求方法不允许', ['method' => $_SERVER['REQUEST_METHOD']]);
-                return;
-            }
-
-            // 获取请求参数
-            $categoryData = [
-                'category_name' => Request::post()->get('category_name'),
-                'category_description' => Request::post()->get('category_description', ''),
-                'parent_id' => (int)Request::post()->get('parent_id', 0),
-                'sort_order' => (int)Request::post()->get('sort_order', 0),
-                'status' => (int)Request::post()->get('status', 1)
-            ];
-
-            // 参数验证
-            $validation = $this->validateCategoryData($categoryData);
-            if (!$validation['valid']) {
-                $this->sendErrorResponse(400, $validation['message'], $validation['details']);
-                return;
-            }
-
-            // 调用业务组件添加分类
-            $result = $this->categoryComponent->addCategory($categoryData);
-            
-            if ($result['success']) {
-                $this->sendSuccessResponse('分类添加成功', $result['data']);
-            } else {
-                $this->sendErrorResponse(500, $result['message'], $result['data']);
-            }
-
-        } catch (Exception $e) {
-            Logger::error('添加分类API异常', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'category_data' => $categoryData ?? []
-            ]);
-            
-            $this->sendErrorResponse(500, '服务器内部错误', [
-                'error_type' => get_class($e),
-                'error_message' => $e->getMessage()
-            ]);
+        $data = [
+            'category_name' => trim(Request::post()->get('category_name', '')),
+            'category_description' => trim(Request::post()->get('category_description', '')),
+            'parent_id' => (int)Request::post()->get('parent_id', 0),
+            'sort_order' => (int)Request::post()->get('sort_order', 0),
+            'status' => (int)Request::post()->get('status', 1),
+        ];
+        // 必填项和长度校验
+        if ($data['category_name'] === '' || mb_strlen($data['category_name']) > 100) {
+            $this->json(['success' => false, 'message' => '分类名称不能为空且不能超过100字符']);
+            return;
         }
+        if (mb_strlen($data['category_description']) > 500) {
+            $this->json(['success' => false, 'message' => '分类描述不能超过500字符']);
+            return;
+        }
+        if (!is_numeric($data['sort_order']) || $data['sort_order'] < 0) {
+            $this->json(['success' => false, 'message' => '排序顺序必须为非负整数']);
+            return;
+        }
+        if (!in_array($data['status'], [0, 1], true)) {
+            $this->json(['success' => false, 'message' => '状态值非法']);
+            return;
+        }
+        // 唯一性校验
+        $exists = \Custom\Component\CustomPatternCategory::where([
+            ['category_name', '=', $data['category_name']],
+            ['parent_id', '=', $data['parent_id']]
+        ])->exists();
+        if ($exists) {
+            $this->json(['success' => false, 'message' => '同一父分类下已存在同名分类']);
+            return;
+        }
+        // 层级校验：不能自引用
+        if ($data['parent_id'] > 0) {
+            // 新建时parent_id=自身理论不会发生，但可加防护
+            // 编辑时会做更严格校验
+        }
+        $category = \Custom\Component\CustomPatternCategory::create($data);
+        $this->json(['success' => (bool)$category, 'data' => $category ? $category->toArray() : null]);
     }
 
     /**
@@ -191,57 +150,62 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
      */
     public function updateCategoryAPI()
     {
-        try {
-            // 验证请求方法
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                $this->sendErrorResponse(405, '请求方法不允许', ['method' => $_SERVER['REQUEST_METHOD']]);
-                return;
-            }
-
-            // 获取请求参数
-            $categoryId = Request::post()->get('category_id');
-            $categoryData = [
-                'category_name' => Request::post()->get('category_name'),
-                'category_description' => Request::post()->get('category_description', ''),
-                'parent_id' => (int)Request::post()->get('parent_id', 0),
-                'sort_order' => (int)Request::post()->get('sort_order', 0),
-                'status' => (int)Request::post()->get('status', 1)
-            ];
-
-            // 参数验证
-            if (!$categoryId) {
-                $this->sendErrorResponse(400, '分类ID不能为空');
-                return;
-            }
-
-            $validation = $this->validateCategoryData($categoryData);
-            if (!$validation['valid']) {
-                $this->sendErrorResponse(400, $validation['message'], $validation['details']);
-                return;
-            }
-
-            // 调用业务组件更新分类
-            $result = $this->categoryComponent->updateCategory($categoryId, $categoryData);
-            
-            if ($result['success']) {
-                $this->sendSuccessResponse('分类更新成功', $result['data']);
-            } else {
-                $this->sendErrorResponse(500, $result['message'], $result['data']);
-            }
-
-        } catch (Exception $e) {
-            Logger::error('更新分类API异常', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'category_id' => $categoryId ?? null,
-                'category_data' => $categoryData ?? []
-            ]);
-            
-            $this->sendErrorResponse(500, '服务器内部错误', [
-                'error_type' => get_class($e),
-                'error_message' => $e->getMessage()
-            ]);
+        $categoryId = (int)Request::post()->get('category_id', 0);
+        $category = \Custom\Component\CustomPatternCategory::find($categoryId);
+        if (!$category) {
+            $this->json(['success' => false, 'message' => '分类不存在']);
+            return;
         }
+        $data = [
+            'category_name' => trim(Request::post()->get('category_name', '')),
+            'category_description' => trim(Request::post()->get('category_description', '')),
+            'parent_id' => (int)Request::post()->get('parent_id', 0),
+            'sort_order' => (int)Request::post()->get('sort_order', 0),
+            'status' => (int)Request::post()->get('status', 1),
+        ];
+        // 必填项和长度校验
+        if ($data['category_name'] === '' || mb_strlen($data['category_name']) > 100) {
+            $this->json(['success' => false, 'message' => '分类名称不能为空且不能超过100字符']);
+            return;
+        }
+        if (mb_strlen($data['category_description']) > 500) {
+            $this->json(['success' => false, 'message' => '分类描述不能超过500字符']);
+            return;
+        }
+        if (!is_numeric($data['sort_order']) || $data['sort_order'] < 0) {
+            $this->json(['success' => false, 'message' => '排序顺序必须为非负整数']);
+            return;
+        }
+        if (!in_array($data['status'], [0, 1], true)) {
+            $this->json(['success' => false, 'message' => '状态值非法']);
+            return;
+        }
+        // 唯一性校验
+        $exists = \Custom\Component\CustomPatternCategory::where([
+            ['category_name', '=', $data['category_name']],
+            ['parent_id', '=', $data['parent_id']],
+            ['category_id', '!=', $categoryId]
+        ])->exists();
+        if ($exists) {
+            $this->json(['success' => false, 'message' => '同一父分类下已存在同名分类']);
+            return;
+        }
+        // 层级校验：不能自引用或形成环
+        if ($data['parent_id'] == $categoryId) {
+            $this->json(['success' => false, 'message' => '父分类不能为自身']);
+            return;
+        }
+        // 防止形成环：不能将自己的子孙设为父分类
+        if ($data['parent_id'] > 0) {
+            $descendants = $this->getAllDescendantIds($categoryId);
+            if (in_array($data['parent_id'], $descendants)) {
+                $this->json(['success' => false, 'message' => '不能将子孙分类设为父分类']);
+                return;
+            }
+        }
+        $category->fill($data);
+        $result = $category->save();
+        $this->json(['success' => $result, 'data' => $category->toArray()]);
     }
 
     /**
@@ -251,43 +215,26 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
      */
     public function deleteCategoryAPI()
     {
-        try {
-            // 验证请求方法
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                $this->sendErrorResponse(405, '请求方法不允许', ['method' => $_SERVER['REQUEST_METHOD']]);
-                return;
-            }
-
-            // 获取请求参数
-            $categoryId = Request::post()->get('category_id');
-
-            // 参数验证
-            if (!$categoryId) {
-                $this->sendErrorResponse(400, '分类ID不能为空');
-                return;
-            }
-
-            // 调用业务组件删除分类
-            $result = $this->categoryComponent->deleteCategory($categoryId);
-            
-            if ($result['success']) {
-                $this->sendSuccessResponse('分类删除成功', $result['data']);
-            } else {
-                $this->sendErrorResponse(500, $result['message'], $result['data']);
-            }
-
-        } catch (Exception $e) {
-            Logger::error('删除分类API异常', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'category_id' => $categoryId ?? null
-            ]);
-            
-            $this->sendErrorResponse(500, '服务器内部错误', [
-                'error_type' => get_class($e),
-                'error_message' => $e->getMessage()
-            ]);
+        $categoryId = (int)Request::post()->get('category_id', 0);
+        $category = \Custom\Component\CustomPatternCategory::find($categoryId);
+        if (!$category) {
+            $this->json(['success' => false, 'message' => '分类不存在']);
+            return;
         }
+        // 禁止删除有子分类的分类
+        $hasChildren = \Custom\Component\CustomPatternCategory::where('parent_id', $categoryId)->exists();
+        if ($hasChildren) {
+            $this->json(['success' => false, 'message' => '请先删除该分类下的子分类']);
+            return;
+        }
+        // 禁止删除有图案的分类
+        $hasPatterns = \Custom\Component\CustomPattern::where('pattern_category', $categoryId)->exists();
+        if ($hasPatterns) {
+            $this->json(['success' => false, 'message' => '请先移除该分类下的所有图案']);
+            return;
+        }
+        $result = $category->delete();
+        $this->json(['success' => $result]);
     }
 
     /**
@@ -353,43 +300,46 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
      */
     public function getCategoryInfoAPI()
     {
-        try {
-            // 验证请求方法
-            if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-                $this->sendErrorResponse(405, '请求方法不允许', ['method' => $_SERVER['REQUEST_METHOD']]);
-                return;
-            }
-
-            // 获取请求参数
-            $categoryId = Request::get()->get('category_id');
-
-            // 参数验证
-            if (!$categoryId) {
-                $this->sendErrorResponse(400, '分类ID不能为空');
-                return;
-            }
-
-            // 调用业务组件获取分类信息
-            $result = $this->categoryComponent->getCategoryById($categoryId);
-            
-            if ($result['success']) {
-                $this->sendSuccessResponse('分类信息获取成功', $result['data']);
-            } else {
-                $this->sendErrorResponse(500, $result['message'], $result['data']);
-            }
-
-        } catch (Exception $e) {
-            Logger::error('获取分类信息API异常', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'category_id' => $categoryId ?? null
-            ]);
-            
-            $this->sendErrorResponse(500, '服务器内部错误', [
-                'error_type' => get_class($e),
-                'error_message' => $e->getMessage()
-            ]);
+        $categoryId = (int)Request::get()->get('category_id', 0);
+        if ($categoryId <= 0) {
+            $this->json(['success' => false, 'message' => '参数错误']);
+            return;
         }
+        $category = \Custom\Component\CustomPatternCategory::find($categoryId);
+        if (!$category) {
+            $this->json(['success' => false, 'message' => '分类不存在']);
+            return;
+        }
+        $this->json(['success' => true, 'data' => $category->toArray()]);
+    }
+
+    /**
+     * 验证分类名称唯一性API接口
+     * 
+     * @return void
+     */
+    public function checkCategoryNameUniqueAPI()
+    {
+        $categoryName = trim(Request::get()->get('category_name', ''));
+        $parentId = (int)Request::get()->get('parent_id', 0);
+        $categoryId = (int)Request::get()->get('category_id', 0);
+
+        if ($categoryName === '') {
+            $this->json(['exists' => false]);
+            return;
+        }
+
+        $where = [
+            ['category_name', '=', $categoryName],
+            ['parent_id', '=', $parentId]
+        ];
+        if ($categoryId > 0) {
+            $where[] = ['category_id', '!=', $categoryId];
+        }
+
+        $exists = \Custom\Component\CustomPatternCategory::where($where)->exists();
+
+        $this->json(['exists' => $exists]);
     }
 
     /**
@@ -520,5 +470,17 @@ class CustomPatternCategoryController extends \Controller\Admin\Controller
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($response, JSON_UNESCAPED_UNICODE);
         exit;
+    }
+
+    // 获取所有子孙分类ID（递归）
+    private function getAllDescendantIds($categoryId)
+    {
+        $ids = [];
+        $children = \Custom\Component\CustomPatternCategory::where('parent_id', $categoryId)->get();
+        foreach ($children as $child) {
+            $ids[] = $child->category_id;
+            $ids = array_merge($ids, $this->getAllDescendantIds($child->category_id));
+        }
+        return $ids;
     }
 }

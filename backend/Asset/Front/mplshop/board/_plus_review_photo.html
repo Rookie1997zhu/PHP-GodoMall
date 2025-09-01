@@ -1,0 +1,73 @@
+{*** 플러스 리뷰 포토 위젯 | board/plus_review_photo.php ***}
+<style>
+    .js-pr-btn-image {
+        cursor:pointer;
+    }
+    .board_name_star {padding:10px 0 15px;}
+    .reviewInfo a {cursor:default;}
+</style>
+<link type="text/css" rel="stylesheet" href="\{=c.PATH_SKIN}css/gd_plus_review.css?ts={=time()}">
+<div class="reviewListContainer">
+    <!--{ @data}-->
+    <ul class="reviewWrap">
+        <li class="reviewImage js-pr-btn-image" data-sno="{=.sno}"><img src="{=.uploadHeadImage.thumSquareSrc}"></li>
+        <li class="reviewInfo">
+            <a href="#none" class="reviewSubject">{.goodsNm}</a>
+            <a href="#none" class="reviewContent">{=gd_html_cut(gd_remove_tag(.listContents),45)}</a>
+            <div class="board_name_star">
+                <span class="board_name"><span>{.writer}</span></span>
+                <span class="board_star"><!--{ @range(1,.goodsPt) }--><strong>★</strong><!--{/}--></span>
+            </div>
+        </li>
+    </ul>
+    <!--{/}-->
+</div>
+
+<div id="plusReviewPhotoLayer" class="layer_wrap plus_review_view_layer dn"></div>
+
+<script>
+    var thumSizeType = '{=req.thumSizeType}';
+    $(document).ready(function () {
+        $('.js-pr-btn-image').bind('click',function () {
+            $.ajax({
+                method: "get",
+                data: {sno : $(this).data('sno')},
+                cache: false,
+                url: "../board/plus_review_view.php",
+                success: function (data) {
+                    photoLayer.show(data);
+                },
+                error: function (data) {
+                    alert('error');
+                }
+            });
+        })
+
+
+        setTimeout(function () {
+            if (thumSizeType == 'menual') {
+                $('.plus_review_widget_item img').css('width', '{=req.thumWidth}px').css('height', '{=req.thumWidth}px');
+            }
+            else {
+                var containerWidth = ($('.plus_review_widget').width());
+                var autoSize = Math.floor(containerWidth / { = req.cols})-8;
+                $('.plus_review_widget_item').css('width', autoSize + 'px').css('height', autoSize + 'px');
+                $('.plus_review_widget_item img').css('width', '100%').css('height', '100%');
+            }
+            $('.plus_review_widget_item img').show();
+        }, 1);
+    })
+
+    var photoLayer = {
+        show: function (data) {
+            $('#layerDim').removeClass('dn');
+            $('#plusReviewPhotoLayer').removeClass('dn');
+            $('#plusReviewPhotoLayer').html(data);
+            $('#plusReviewPhotoLayer').find('>div').center();
+            $('.plusreview_view_layer').css('top', '5%');
+        },
+        close: function () {
+            $('#plusReviewPhotoLayer').find('.close').trigger('click');
+        },
+    }
+</script>

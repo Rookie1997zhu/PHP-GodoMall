@@ -1,0 +1,39 @@
+{*** 회사소개 | service/company.php ***}
+{ # header }
+<div class="content_box">
+	<div class="brandPageWarp">
+		<div class="titleAreaBrand">
+			<h1>{=__('회사소개')}</h1>
+		</div>
+        
+        <!-- 브랜드 페이지 상단 탭 메뉴 부분
+             현재 페이지 위치 <li class="select"> select 클래스가 현재위치를 나타냅니다.
+             사용안하시는 메뉴가 있을 경우 <li> ~ </li> 부분을 주석처리해주시기 바랍니다.
+        
+             company.php  ~ company3.php  3개 페이지를 다 확인하시여 공통적으로 적용하시기 바랍니다.
+             대메뉴에서 수정시에는  proc(기타페이지) > _category_top.html 파일  
+            '카테고리 추가메뉴 앞부분 추가' 부분에서 주석처리 하시기 바랍니다.
+
+			 이미지 교체는 관리자 > 디자인 > 배너관리에 등록되어 있는 이미지를 교체하시기 바랍니다
+         -->
+		<div class="brandTab">
+			<ul>
+				<li class="select"><a href="../service/company.php">회사소개</a></li>
+				
+				<!-- 
+					<li><a href="../main/html.php?htmid=service/company2.html">제작과정</a></li>
+				-->
+			    
+				<li><a href="../main/html.php?htmid=service/company3.html">오시는 길</a></li>
+			</ul>
+		</div>
+
+		<div class="service_cont">
+			<div class="service_company" id="Resize_imgArea">
+				<img src="/data/abotcompany2.jpg" alt="." title="">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- //content_box -->
+{ # footer }

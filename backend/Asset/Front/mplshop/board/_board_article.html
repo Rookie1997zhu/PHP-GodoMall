@@ -1,0 +1,93 @@
+{*** [위젯] 게시글 리스트 | board/_board_article.php ***}
+<!--{?canList == 'y'}-->
+    <!--{?layoutType == 'photoreview' }-->
+    <div class="reviewListContainer">
+        <!--{ @ list }-->
+            <ul class="reviewWrap">
+                <li class="reviewImage reviewBtnViewPop" data-bdid="{bdId}" data-sno="{.sno}" data-auth="{.auth.view}" data-notice="{.isNotice}"><img src="<!--{ ? .viewListImage }-->{.viewListImage}<!--{ : .goodsImageSrc == '/data/commonimg/ico_noimg_100.gif' }-->/data/commonimg/noimg.png<!--{ : }-->{.goodsImageSrc}<!--{ / }-->"></li>
+                <li class="reviewInfo">
+                    <a class="reviewSubject reviewBtnViewPop" data-bdid="{bdId}" data-sno="{.sno}" data-auth="{.auth.view}" data-notice="{.isNotice}">{.subject}</a>
+                    <a class="reviewContent" ><!--{ ? .isSecret != 'y' }-->{=gd_html_cut(gd_remove_tag(str_replace('&nbsp;','',.contents)),55)}<!--{:}-->비밀글 입니다.<!--{/}--></a>
+                    <div class="b_star_name_day">
+                        <!--{ ? cfg.bdGoodsPtFl == 'y' }-->
+                        <a class="rating_star">
+                            <span style="width:{.goodsPtPer}%;">{=__('별 다섯개중 다섯개')}</span>
+                        </a>
+                        <!--{/}-->
+                        <div class="board_name_day">
+                            <span class="board_name">{.writer}</span>
+                            <span class="board_day">{.regDate}</span>
+                            <!--{ ? cfg.bdMemoFl == 'y' && .memoCnt > 0 }--><span class="board_memo">댓글 {.memoCnt}</span><!--{/}-->
+                        </div>
+                        <!--{ ? cfg.bdRecommendFl == 'y'}-->
+                        <div class="board_recommend" id="board_recommend_{.sno}">
+                            <strong>{.recommend}</strong>명에게 도움됨
+                            <a href="javascript:gd_mpl_recommend('{bdId}',{.sno})" class="btn_comment"><em>{=__('도움 돼요')}</em></a>
+                        </div>
+                        <!--{/}-->
+                    </div>
+                </li>
+            </ul>
+        <!--{ / }-->
+    </div>    
+	<div id="reviewDetailLayer" class="dn">
+		<div class="detailLayerClose"></div>
+		<div class="js_detail"></div>
+	</div>
+	<div id="reviewLayerDim" class="dn">&nbsp;</div>
+	<div id="lyPassword" class="layer_wrap password_layer js_password_layer dn" style="height: 223px">
+		<div class="layer_wrap_cont">
+			<div class="ly_tit">
+				<h4>{=__('비밀번호 인증')}</h4>
+			</div>
+			<div class="ly_cont">
+				<div class="scroll_box">
+					<p>{=__('글 작성시 설정한 비밀번호를 입력해 주세요.')}</p>
+					<input type="password" name="writerPw" class="text" autocomplete="off">
+				</div>
+				<!-- // -->
+				<div class="btn_center_box">
+					<button type="button" class="btn_ly_password js_submit"><strong>{=__('확인')}</strong></button>
+				</div>
+			</div>
+			<!-- //ly_cont -->
+			<a href="#close" class="ly_close review_layer_close"><img src="../img/common/layer/btn_layer_close.png" alt="{=__('닫기')}"></a>
+		</div>
+		<!-- //layer_wrap_cont -->
+	</div>
+	<!-- //password_layer -->
+	<div id="lyPassword" class="layer_wrap password_layer js_password_layer2 dn" style="height: 223px">
+		<div class="layer_wrap_cont">
+			<div class="ly_tit">
+				<h4>{=__('비밀번호 인증')}</h4>
+			</div>
+			<div class="ly_cont">
+				<div class="scroll_box">
+					<p>{=__('글 작성시 설정한 비밀번호를 입력해 주세요.')}</p>
+					<input type="password" name="writerPw" class="text" autocomplete="off">
+				</div>
+				<!-- // -->
+				<div class="btn_center_box">
+					<button type="button" class="btn_ly_password js_submit"><strong>{=__('확인')}</strong></button>
+				</div>
+			</div>
+			<!-- //ly_cont -->
+			<a href="#close" class="ly_close review_layer_close"><img src="../img/common/layer/btn_layer_close.png" alt="{=__('닫기')}"></a>
+		</div>
+		<!-- //layer_wrap_cont -->
+	</div>
+	<!-- //password_layer -->
+
+	<link type="text/css" rel="stylesheet" href="\{=c.PATH_SKIN}_mplshop/css/reviewLayer.css" />
+	<script type="text/javascript" src="\{=c.PATH_SKIN}_mplshop/js/reviewLayer.js"></script>
+    <!--{ : }-->
+    <ul>
+        <!--{ @ list }-->
+        <li>
+            <span><!--{ ? .isNew == 'y' }--><img src="{cfg.iconImage.new.url}" alt="{=__('신규 등록글')}"/><!--{ / }--></span>
+            <a href="../board/view.php?bdId={bdId}&sno={.sno}">{.subject}</a>
+        </li>
+        <!--{ / }-->
+    </ul>
+    <!--{/}-->
+<!--{/}-->

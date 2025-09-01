@@ -13,7 +13,7 @@
 
 namespace Controller\Admin\Custom;
 
-use Component\Database\CustomDatabaseInstaller;
+use Custom\Component\Database\CustomDatabaseInstaller;
 use Framework\Debug\Exception\AlertBackException;
 use Logger;
 use Request;

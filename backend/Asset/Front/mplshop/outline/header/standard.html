@@ -1,0 +1,70 @@
+{*** 상단 기본파일 | main/index.php ***}
+<!--{ ? gCurrentPageName == 'main/index'}--><!--{ = includeFile( "_mplshop/include/top_banner.html" ) }--><!--{ / }-->
+<div id="header">
+	<div class="headerContent">
+		<div class="inner">
+			<div class="headerLeftContents">
+				<div class="headerLogo  -showDom">
+					<!--{ @dataBanner('912521278') }-->{.tag}<!--{ / }-->
+				</div>
+			</div>
+			<div class="headerGnb">
+				<div class="categorySlide">                    
+					{=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all')}
+				</div>                
+			</div>
+            <!-- 모바일 해상도 상단 카테고리 사용시 displaynone 을 제거 하시기 바랍니다. -->
+            <div class="displaynone">
+                <div class="categoryMobile">
+                    <div class="categoryAllBtn"><span id="allMenuIcon"></span></div>
+                    {=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all','showType','mobile')}
+                    <div class="categoryMore"></div>
+                </div>
+                <div class="mobileAddMenu">
+                    <div class="mobileAddMenuContainer">
+                        <ul class="addCategory1"></ul>
+                        <ul class="addCategory2"></ul>
+                    </div>
+                </div>
+            </div>
+			<div class="headerRightContents">
+				<!-- 상단 로그인 영역 수정부분 -->
+				<div class="headerMember">
+					<ul>
+						<!--{ ? gd_is_login() === false }-->
+						<li>
+                            <a href="../member/login.php">LOGIN</a>
+                        </li>
+                        <li>
+                            <a href="../member/join_method.php">JOIN</a>
+                        </li>
+						<!--{ : }-->
+						<li>
+                            <a href="../member/logout.php?returnUrl={=logoutReturnUrl}">LOGOUT</a>
+                        </li>
+						<!--{ / }-->
+						<li>
+                            <a href="../order/cart.php">CART</a>
+                        </li>
+						<li>
+                            <a href="../mypage/index.php">MYPAGE</a>
+                        </li>
+                        <li>
+                            <div class="headerCategoryAll -showDom">
+                                <div class="asideBtn">ALL LIST</div>
+                            </div>
+                        </li>
+					</ul>
+                    <ul class="isPcOnly">
+                        <li class="headerSearch">
+                            {=includeWidget('proc/_header_search.html')}
+                            {=includeFile('_mplshop/include/search_hot_list.html')}
+                        </li>
+                    </ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- //header -->

@@ -1,0 +1,140 @@
+{*** [위젯] 레이어형 상단 카테고리 | proc/category_top.htm ***}
+<div class="gnbMenuBox">
+    <ul class="menuCategory">        
+        <!-- 
+             카테고리 추가메뉴 앞부분 추가 start 
+             해당 카테고리 사용을 안하실 경우 <li> ~ </li> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+             메뉴를 더추가하실 경우는 <li> ~ </li> 형태를 복사하여 반복시키시면 추가 가능합니다.
+        -->
+      <!-- <li>
+            <a href="../service/company.php">회사소개<div class="lineBg"></div></a>
+            <div class="subCategory depth1">
+                <ul>
+                    <li><a href="../service/company.php">회사소개</a></li>
+				    
+					<!--
+					<li><a href="../main/html.php?htmid=service/company2.html">제작과정</a></li>
+					-->				   
+                   <!--
+                   <li><a href="../main/html.php?htmid=service/company3.html">오시는 길</a></li>
+                </ul>
+            </div>
+			<button class="categoryMore"></button>
+        </li>
+        <!-- <li><a href="../goods/brand.php">BRAND<div class="lineBg"></div></a></li> -->    
+        <!-- 카테고리 추가메뉴 앞부분 추가 end -->
+		<!--{ ? showType == 'mobile' }-->
+		<!--{ @ data }-->
+		<li <!--{ ? .divisionFl =='y' }--> class='group_tit'<!--{ / }-->>
+			<!--{ ? .divisionFl =='n' }-->
+			<a href="../goods/goods_list.php?{cateType}Cd={.cateCd}" >{.cateNm}</a>
+			<!--{ : }-->
+			{.cateNm}
+			<!--{ / }-->
+		</li>
+		<!--{ / }-->
+		<!--{ : }-->
+        <!--{ @ data }-->
+        <li class="originCategory<!--{ ? .divisionFl =='y' }--> group_tit<!--{ / }-->">
+            <!--{ ? .divisionFl =='n' }-->
+            <a href="../goods/goods_list.php?{cateType}Cd={.cateCd}" >{.cateNm}<div class="lineBg"></div></a>
+            <!--{ : }-->
+            {.cateNm}
+            <!--{ / }-->
+            <!--{ ? .children }-->
+			<div class="subCategory depth1">
+				<ul>
+					<!--{ @ .children }-->
+					<li class="<!--{ ? ..children }-->hasChild<!--{ / }--> <!--{ ? ..divisionFl =='y' }-->group_tit<!--{ / }-->" >
+						<!--{ ? ..divisionFl =='n' }-->
+						<a href="../goods/goods_list.php?{cateType}Cd={..cateCd}" >{..cateNm}</a>
+						<!--{ : }-->
+						{..cateNm}
+						<!--{ / }-->
+						<!--{ ? ..children }-->
+		
+						<div class="subCategory depth2">
+							<ul>
+								<!--{ @ ..children }-->
+								<li class="<!--{ ? ...children }-->hasChild<!--{ / }--> <!--{ ? ...divisionFl =='y' }-->group_tit<!--{ / }-->">
+									<!--{ ? ...divisionFl =='n' }-->
+									<a href="../goods/goods_list.php?{cateType}Cd={...cateCd}" >{...cateNm}</a>
+									<!--{ : }-->
+									{...cateNm}
+									<!--{ / }-->
+									<!--{ ? ...children }-->	
+									<div class="subCategory depth3">
+										<ul>
+											<!--{ @ ...children }-->
+											<li <!--{ ? ....divisionFl =='y' }--> class='group_tit'<!--{ / }-->>
+											<!--{ ? ....divisionFl =='n' }-->
+											<a href="../goods/goods_list.php?{cateType}Cd={....cateCd}" >{....cateNm}</a>
+											<!--{ : }-->
+											{....cateNm}
+											<!--{ / }-->
+											</li>
+											<!--{ / }-->
+										</ul>
+									</div>
+									<button class="categoryMore"></button>
+									<!--{ / }-->
+								</li>
+								<!--{ / }-->
+							</ul>
+						</div>
+						<button class="categoryMore"></button>
+						<!--{ / }-->
+					</li>
+					<!--{ / }-->
+				</ul>
+			</div>
+			<button class="categoryMore"></button>
+            <!--{ / }-->
+        </li>
+        <!--{ / }-->
+		<!--{ / }-->
+        <!-- 
+             카테고리 추가메뉴 뒷부분 추가 start 
+             해당 카테고리 사용을 안하실 경우 <li> ~ </li> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+             메뉴를 더추가하실 경우는 <li> ~ </li> 형태를 복사하여 반복시키시면 추가 가능합니다.
+        -->
+		<li><a href='../board/list.php?bdId=lookbook'>PORTFOLIO<div class="lineBg"></div></a></li>
+
+		<li><a href="../main/html.php?htmid=service/estimate.html">CONTACT<div class="lineBg"></div></a></li>
+        <li>
+            <a href="../service/company.php">ABOUT<div class="lineBg"></div></a>
+            <div class="subCategory depth1">
+                <ul>
+                    <li><a href="../service/company.php">회사소개</a></li>
+				    
+					<!--
+					<li><a href="../main/html.php?htmid=service/company2.html">제작과정</a></li>
+					-->				   
+         
+                   <li><a href="../main/html.php?htmid=service/company3.html">오시는 길</a></li>
+                </ul>
+            </div>
+			<button class="categoryMore"></button>
+        </li>
+        <!--
+		<li><a href='../board/list.php?bdId=request'>견적요청<div class="lineBg"></div></a>
+			<div class="subCategory depth1">
+                <ul>			
+					<li><a href='../board/list.php?bdId=request'>견적요청</a></li>
+
+					<li><a href='../board/list.php?bdId=cooperation'>협력신청</a></li>
+				</ul>
+            </div>
+			<button class="categoryMore"></button>
+		</li>
+		-->
+        <!--
+        <li><a href='../board/list.php?bdId=news'>굿즈소식<div class="lineBg"></div></a></li>
+        -->
+        
+        <!-- <li><a href='../board/list.php?bdId=event'>EVENT<div class="lineBg"></div></a></li> -->
+        <!-- <li><a href='../board/list.php?bdId=goodsreview'>REVIEW<div class="lineBg"></div></a></li> -->
+        <!-- <li><a href='../board/list.php?bdId=store'>STORE LIST<div class="lineBg"></div></a></li> -->
+        <!-- 카테고리 추가메뉴 뒷부분 추가 end -->
+    </ul>
+</div>
