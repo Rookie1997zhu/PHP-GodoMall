@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{=page_title}</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .header .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .content {
+            padding: 30px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group label.required::after {
+            content: ' *';
+            color: #dc3545;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .form-control.error {
+            border-color: #dc3545;
+        }
+        .form-control.error:focus {
+            box-shadow: 0 0 0 2px rgba(220,53,69,0.25);
+        }
+        .form-text {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        .form-text.error {
+            color: #dc3545;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .file-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .file-upload-area:hover {
+            border-color: #007bff;
+            background: #f0f8ff;
+        }
+        .file-upload-area.dragover {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+        .file-upload-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        .file-upload-text {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .file-upload-hint {
+            font-size: 12px;
+            color: #999;
+        }
+        .file-preview {
+            margin-top: 20px;
+            display: none;
+        }
+        .file-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .category-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        .category-suggestion {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        .category-suggestion:hover {
+            background: #f8f9fa;
+        }
+        .category-suggestion:last-child {
+            border-bottom: none;
+        }
+        .form-group {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面头部 -->
+        <div class="header">
+            <h1>{=page_title}</h1>
+            <div class="actions">
+                <a href="/admin/custom/pattern" class="btn btn-secondary">返回列表</a>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content">
+            <!-- 消息提示 -->
+            {? success_message}
+            <div class="alert alert-success">{=success_message}</div>
+            {/}
+            {? error_message}
+            <div class="alert alert-danger">{=error_message}</div>
+            {/}
+
+            <!-- 表单 -->
+            <form id="patternForm" method="POST" action="/admin/custom/pattern/add" enctype="multipart/form-data">
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{=csrf_token}">
+
+                <!-- 基本信息 -->
+                <div class="form-section">
+                    <h3>基本信息</h3>
+                    
+                    <div class="form-group">
+                        <label for="pattern_name" class="required">图案名称</label>
+                        <input type="text" id="pattern_name" name="pattern_name" class="form-control" 
+                               placeholder="请输入图案名称" maxlength="100" required>
+                        <div class="form-text">图案名称用于标识和管理，最多100个字符</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pattern_category">分类</label>
+                            <input type="text" id="pattern_category" name="pattern_category" class="form-control" 
+                                   placeholder="请输入分类名称" maxlength="50" list="categoryList">
+                            <datalist id="categoryList">
+                                {? categories}
+                                {= categories}
+                                <option value="{=categories}">
+                                {/}
+                                {/}
+                            </datalist>
+                            <div class="form-text">用于对图案进行分类管理，可选</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pattern_group">分组</label>
+                            <input type="text" id="pattern_group" name="pattern_group" class="form-control" 
+                                   placeholder="请输入分组名称" maxlength="50" list="groupList">
+                            <datalist id="groupList">
+                                {? groups}
+                                {= groups}
+                                <option value="{=groups}">
+                                {/}
+                                {/}
+                            </datalist>
+                            <div class="form-text">用于对图案进行分组管理，可选</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">状态</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="1">启用</option>
+                            <option value="0">禁用</option>
+                        </select>
+                        <div class="form-text">禁用状态的图案不会在商品定制页面显示</div>
+                    </div>
+                </div>
+
+                <!-- 图片上传 -->
+                <div class="form-section">
+                    <h3>图片上传</h3>
+                    
+                    <div class="form-group">
+                        <label class="required">选择图片文件</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <div class="file-upload-icon">📁</div>
+                            <div class="file-upload-text">点击选择文件或拖拽文件到此处</div>
+                            <div class="file-upload-hint">支持 JPG、PNG、GIF、WebP 格式，最大 10MB</div>
+                            <input type="file" id="pattern_file" name="pattern_file" accept="image/*" 
+                                   style="display: none;" required>
+                        </div>
+                        
+                        <div class="file-preview" id="filePreview">
+                            <img id="previewImage" src="" alt="预览图">
+                            <div class="file-info" id="fileInfo"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 表单操作 -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">取消</button>
+                    <button type="submit" class="btn btn-success" id="submitBtn">保存图案</button>
+                </div>
+            </form>
+
+            <!-- 加载状态 -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>正在上传，请稍候...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 文件上传相关
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('pattern_file');
+        const filePreview = document.getElementById('filePreview');
+        const previewImage = document.getElementById('previewImage');
+        const fileInfo = document.getElementById('fileInfo');
+        const progressFill = document.getElementById('progressFill');
+        const loading = document.getElementById('loading');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 点击上传区域选择文件
+        fileUploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 拖拽上传
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // 文件选择处理
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        // 处理文件选择
+        function handleFileSelect(file) {
+            // 验证文件类型
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('请选择有效的图片文件（JPG、PNG、GIF、WebP）');
+                return;
+            }
+
+            // 验证文件大小（10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                alert('文件大小不能超过10MB');
+                return;
+            }
+
+            // 显示预览
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                filePreview.style.display = 'block';
+                
+                // 显示文件信息
+                fileInfo.innerHTML = `
+                    <strong>文件名：</strong>${file.name}<br>
+                    <strong>文件大小：</strong>${formatFileSize(file.size)}<br>
+                    <strong>文件类型：</strong>${file.type}<br>
+                    <strong>最后修改：</strong>${new Date(file.lastModified).toLocaleString()}
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 表单验证
+        document.getElementById('patternForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 验证必填字段
+            const patternName = document.getElementById('pattern_name').value.trim();
+            if (!patternName) {
+                alert('请输入图案名称');
+                document.getElementById('pattern_name').focus();
+                return;
+            }
+
+            if (patternName.length > 100) {
+                alert('图案名称不能超过100个字符');
+                document.getElementById('pattern_name').focus();
+                return;
+            }
+
+            // 验证文件
+            if (!fileInput.files.length) {
+                alert('请选择要上传的图片文件');
+                return;
+            }
+
+            // 显示加载状态
+            loading.style.display = 'block';
+            submitBtn.disabled = true;
+
+            // 模拟上传进度
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 200);
+
+            // 提交表单
+            this.submit();
+        });
+
+        // 分类和分组输入建议
+        const categoryInput = document.getElementById('pattern_category');
+        const groupInput = document.getElementById('pattern_group');
+
+        // 分类输入建议
+        categoryInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            const datalist = document.getElementById('categoryList');
+            const options = datalist.querySelectorAll('option');
+            
+            options.forEach(option => {
+                if (option.value.toLowerCase().includes(value)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // 分组输入建议
+        groupInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            const datalist = document.getElementById('groupList');
+            const options = datalist.querySelectorAll('option');
+            
+            options.forEach(option => {
+                if (option.value.toLowerCase().includes(value)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自动聚焦到图案名称输入框
+            document.getElementById('pattern_name').focus();
+        });
+    </script>
+</body>
+</html> 
