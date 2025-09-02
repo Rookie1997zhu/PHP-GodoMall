@@ -2,54 +2,69 @@
 // 分类管理测试数据，可后续对接后端
 $categoryList = [
     [
-        'id' => 1,
-        'name' => '测试分类',
-        'desc' => '这是一个测试分类',
-        'parent' => '',
-        'sort' => 1,
+        'category_id' => 1,
+        'category_name' => '测试分类',
+        'category_description' => '这是一个测试分类',
+        'parent_id' => 0,
+        'parent_name' => null,
+        'sort_order' => 1,
         'status' => 1,
         'pattern_count' => 0,
-        'created_at' => date('Y-m-d H:i:s')
+        'created_at' => date('Y-m-d H:i:s'),
+        'created_at_formatted' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s')
     ],
     [
-        'id' => 2,
-        'name' => '图案分类A',
-        'desc' => '用于存放图案A类型',
-        'parent' => '',
-        'sort' => 2,
+        'category_id' => 2,
+        'category_name' => '图案分类A',
+        'category_description' => '用于存放图案A类型',
+        'parent_id' => 0,
+        'parent_name' => null,
+        'sort_order' => 2,
         'status' => 1,
         'pattern_count' => 5,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-1 hour'))
+        'created_at' => date('Y-m-d H:i:s', strtotime('-1 hour')),
+        'created_at_formatted' => date('Y-m-d H:i:s', strtotime('-1 hour')),
+        'updated_at' => date('Y-m-d H:i:s', strtotime('-1 hour'))
     ],
     [
-        'id' => 3,
-        'name' => '设计分类B',
-        'desc' => '设计相关的分类',
-        'parent' => '',
-        'sort' => 3,
+        'category_id' => 3,
+        'category_name' => '设计分类B',
+        'category_description' => '设计相关的分类',
+        'parent_id' => 0,
+        'parent_name' => null,
+        'sort_order' => 3,
         'status' => 0,
         'pattern_count' => 2,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))
+        'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours')),
+        'created_at_formatted' => date('Y-m-d H:i:s', strtotime('-2 hours')),
+        'updated_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))
     ],
     [
-        'id' => 4,
-        'name' => '产品分类C',
-        'desc' => '产品管理分类',
-        'parent' => '',
-        'sort' => 4,
+        'category_id' => 4,
+        'category_name' => '产品分类C',
+        'category_description' => '产品管理分类',
+        'parent_id' => 0,
+        'parent_name' => null,
+        'sort_order' => 4,
         'status' => 1,
         'pattern_count' => 8,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-3 hours'))
+        'created_at' => date('Y-m-d H:i:s', strtotime('-3 hours')),
+        'created_at_formatted' => date('Y-m-d H:i:s', strtotime('-3 hours')),
+        'updated_at' => date('Y-m-d H:i:s', strtotime('-3 hours'))
     ],
     [
-        'id' => 5,
-        'name' => '营销分类D',
-        'desc' => '营销活动分类',
-        'parent' => '',
-        'sort' => 5,
+        'category_id' => 5,
+        'category_name' => '营销分类D',
+        'category_description' => '营销活动分类',
+        'parent_id' => 0,
+        'parent_name' => null,
+        'sort_order' => 5,
         'status' => 1,
         'pattern_count' => 3,
-        'created_at' => date('Y-m-d H:i:s', strtotime('-4 hours'))
+        'created_at' => date('Y-m-d H:i:s', strtotime('-4 hours')),
+        'created_at_formatted' => date('Y-m-d H:i:s', strtotime('-4 hours')),
+        'updated_at' => date('Y-m-d H:i:s', strtotime('-4 hours'))
     ]
 ];
 
@@ -545,6 +560,19 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
     <!-- 筛选区 -->
     <form class="godo-filter" id="godoSearchForm" style="margin-top:20px;">
         <label>分类名称 <input type="text" class="godo-input" name="category_name" id="godoSearchInput" placeholder="请输入分类名称"></label>
+        <label>状态 
+            <select class="godo-input" id="statusFilter">
+                <option value="">全部</option>
+                <option value="1">启用</option>
+                <option value="0">禁用</option>
+            </select>
+        </label>
+        <label>父分类 
+            <select class="godo-input" id="parentFilter">
+                <option value="">全部</option>
+                <option value="0">顶级分类</option>
+            </select>
+        </label>
         <button type="submit" class="godo-btn godo-btn-search" id="godoSearchBtn">搜索</button>
         <button type="button" class="godo-btn" id="godoClearSearch" style="margin-left:8px;">清空搜索</button>
     </form>
@@ -568,22 +596,22 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
                 <?php if (!empty($pagedCategoryList)) : ?>
                 <?php foreach ($pagedCategoryList as $cat) : ?>
                 <tr>
-                    <td><input type="checkbox" name="category_ids[]" value="<?=htmlspecialchars($cat['id'])?>"></td>
-                    <td><?=htmlspecialchars($cat['name'])?></td>
-                    <td><?=htmlspecialchars($cat['desc'])?></td>
-                    <td><?=htmlspecialchars($cat['parent'])?></td>
-                    <td><?=htmlspecialchars($cat['sort'])?></td>
+                    <td><input type="checkbox" name="category_ids[]" value="<?=htmlspecialchars($cat['category_id'])?>"></td>
+                    <td><?=htmlspecialchars($cat['category_name'])?></td>
+                    <td><?=htmlspecialchars($cat['category_description'])?></td>
+                    <td><?=htmlspecialchars($cat['parent_name'] ?: ($cat['parent_id'] == 0 ? '无' : $cat['parent_id']))?></td>
+                    <td><?=htmlspecialchars($cat['sort_order'])?></td>
                     <td>
                         <?php if ($cat['status']) : ?>
-                            <span class="godo-status godo-status-on godo-status-toggle" data-id="<?=htmlspecialchars($cat['id'])?>" data-status="1" title="点击切换状态">启用</span>
+                            <span class="godo-status godo-status-on godo-status-toggle" data-id="<?=htmlspecialchars($cat['category_id'])?>" data-status="1" title="点击切换状态">启用</span>
                         <?php else : ?>
-                            <span class="godo-status godo-status-off godo-status-toggle" data-id="<?=htmlspecialchars($cat['id'])?>" data-status="0" title="点击切换状态">禁用</span>
+                            <span class="godo-status godo-status-off godo-status-toggle" data-id="<?=htmlspecialchars($cat['category_id'])?>" data-status="0" title="点击切换状态">禁用</span>
                         <?php endif; ?>
                     </td>
                     <td><?=htmlspecialchars($cat['pattern_count'])?></td>
-                    <td><?=htmlspecialchars($cat['created_at'])?></td>
+                    <td><?=htmlspecialchars($cat['created_at_formatted'])?></td>
                     <td>
-                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="<?=htmlspecialchars($cat['id'])?>" data-name="<?=htmlspecialchars($cat['name'])?>" data-desc="<?=htmlspecialchars($cat['desc'])?>" data-parent="<?=htmlspecialchars($cat['parent'])?>" data-sort="<?=htmlspecialchars($cat['sort'])?>" data-status="<?=htmlspecialchars($cat['status'])?>"><span>编辑</span></button>
+                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="<?=htmlspecialchars($cat['category_id'])?>" data-name="<?=htmlspecialchars($cat['category_name'])?>" data-desc="<?=htmlspecialchars($cat['category_description'])?>" data-parent="<?=htmlspecialchars($cat['parent_id'])?>" data-sort="<?=htmlspecialchars($cat['sort_order'])?>" data-status="<?=htmlspecialchars($cat['status'])?>"><span>编辑</span></button>
                         <button class="godo-btn godo-btn-xs godo-btn-view" title="分配图案"><span>分配图案</span></button>
                         <button class="godo-btn godo-btn-xs godo-btn-del" title="删除"><span>删除</span></button>
                     </td>
@@ -611,22 +639,22 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
         <form id="godoCategoryForm" class="godo-modal-body">
             <div class="godo-form-row">
                 <label>分类名称 <span class="godo-required">*</span></label>
-                <input type="text" name="name" class="godo-input" required maxlength="30">
+                <input type="text" name="category_name" class="godo-input" required maxlength="100">
             </div>
             <div class="godo-form-row">
                 <label>描述</label>
-                <textarea name="desc" class="godo-input" rows="2" maxlength="250"></textarea>
+                <textarea name="category_description" class="godo-input" rows="2" maxlength="500"></textarea>
             </div>
             <div class="godo-form-row">
                 <label>父分类</label>
-                <select name="parent" class="godo-input">
-                    <option value="">无</option>
+                <select name="parent_id" class="godo-input">
+                    <option value="0">无</option>
                     <!-- 后续动态填充父分类选项 -->
                 </select>
             </div>
             <div class="godo-form-row">
                 <label>排序</label>
-                <input type="number" name="sort" class="godo-input" min="0" max="9999" value="0">
+                <input type="number" name="sort_order" class="godo-input" min="0" max="9999" value="0">
             </div>
             <div class="godo-form-row">
                 <label>状态</label>
@@ -764,9 +792,161 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+// 全局配置
+var API_BASE_URL = '/admin/custom/custom-pattern-category/';
+var currentPage = 1;
+var perPage = 3;
+
+// AJAX请求基础函数
+function apiRequest(url, method, data, successCallback, errorCallback) {
+    var options = {
+        url: API_BASE_URL + url,
+        type: method,
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function(response) {
+            if (response.success) {
+                if (successCallback) successCallback(response.data);
+            } else {
+                if (errorCallback) errorCallback(response.message);
+                else showError('操作失败：' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            var errorMsg = '网络请求失败';
+            try {
+                var response = JSON.parse(xhr.responseText);
+                errorMsg = response.message || errorMsg;
+            } catch (e) {
+                errorMsg = '服务器错误：' + xhr.status;
+            }
+            if (errorCallback) errorCallback(errorMsg);
+            else showError(errorMsg);
+        }
+    };
+    
+    if (data && method !== 'GET') {
+        options.data = JSON.stringify(data);
+    } else if (data && method === 'GET') {
+        options.data = data;
+    }
+    
+    $.ajax(options);
+}
+
+// 显示成功消息
+function showSuccess(message) {
+    var $toast = $('<div class="godo-status-toast">' + message + '</div>');
+    $('body').append($toast);
+    setTimeout(function() {
+        $toast.addClass('godo-status-toast-show');
+    }, 10);
+    setTimeout(function() {
+        $toast.removeClass('godo-status-toast-show');
+        setTimeout(function() {
+            $toast.remove();
+        }, 300);
+    }, 2000);
+}
+
+// 显示错误消息
+function showError(message) {
+    alert('错误：' + message);
+}
+
+// 显示加载状态
+function showLoading() {
+    $('.godo-table tbody').html('<tr><td colspan="9" style="text-align:center;padding:40px;color:#999;"><div>加载中...</div></td></tr>');
+}
+
+// 加载分类列表
+function loadCategoryList(page, searchParams) {
+    showLoading();
+    
+    // 构建查询参数
+    var params = {
+        page: page || 1,
+        limit: perPage
+    };
+    
+    // 合并搜索参数
+    if (searchParams) {
+        params = $.extend(params, searchParams);
+    }
+    
+    // 添加状态筛选参数
+    var statusFilter = $('#statusFilter').val();
+    if (statusFilter !== '') {
+        params.status = statusFilter;
+    }
+    
+    // 添加父分类筛选参数
+    var parentFilter = $('#parentFilter').val();
+    if (parentFilter !== '') {
+        params.parent_id = parentFilter;
+    }
+    
+    apiRequest('get-category-list-api', 'GET', params, function(data) {
+        renderCategoryTable(data.categories);
+        updatePagination(data.pagination);
+        currentPage = data.pagination.current_page;
+    }, function(error) {
+        $('.godo-table tbody').html('<tr><td colspan="9" style="color:#d32f2f;text-align:center;">加载失败：' + error + '</td></tr>');
+    });
+}
+
+// 渲染分类表格
+function renderCategoryTable(categories) {
+    var $tbody = $('.godo-table tbody');
+    $tbody.empty();
+    
+    if (categories && categories.length > 0) {
+        categories.forEach(function(cat) {
+            var statusHtml = cat.status == 1 ? 
+                '<span class="godo-status godo-status-on godo-status-toggle" data-id="' + cat.category_id + '" data-status="1" title="点击切换状态">启用</span>' :
+                '<span class="godo-status godo-status-off godo-status-toggle" data-id="' + cat.category_id + '" data-status="0" title="点击切换状态">禁用</span>';
+            
+            var parentName = cat.parent_name || (cat.parent_id == 0 ? '无' : cat.parent_id);
+            
+            var row = '<tr>' +
+                '<td><input type="checkbox" name="category_ids[]" value="' + cat.category_id + '"></td>' +
+                '<td>' + escapeHtml(cat.category_name) + '</td>' +
+                '<td>' + escapeHtml(cat.category_description) + '</td>' +
+                '<td>' + escapeHtml(parentName) + '</td>' +
+                '<td>' + cat.sort_order + '</td>' +
+                '<td>' + statusHtml + '</td>' +
+                '<td>' + cat.pattern_count + '</td>' +
+                '<td>' + escapeHtml(cat.created_at_formatted) + '</td>' +
+                '<td>' +
+                    '<button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="' + cat.category_id + '" data-name="' + escapeHtml(cat.category_name) + '" data-desc="' + escapeHtml(cat.category_description) + '" data-parent="' + cat.parent_id + '" data-sort="' + cat.sort_order + '" data-status="' + cat.status + '"><span>编辑</span></button> ' +
+                    '<button class="godo-btn godo-btn-xs godo-btn-view" title="分配图案"><span>分配图案</span></button> ' +
+                    '<button class="godo-btn godo-btn-xs godo-btn-del" title="删除"><span>删除</span></button>' +
+                '</td>' +
+            '</tr>';
+            $tbody.append(row);
+        });
+    } else {
+        $tbody.html('<tr><td colspan="9" style="color:#aaa;text-align:center;">暂无数据</td></tr>');
+    }
+}
+
+// HTML转义函数
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 $(function(){
+    // 页面初始化 - 加载分类列表
+    loadCategoryList(1);
+    
     // 打开新增分类弹窗
     $('#btn-category-add').on('click', function() {
         $('#godoCategoryModalTitle').text('新增分类');
@@ -795,10 +975,10 @@ $(function(){
         $('#godoCategoryForm').find('button[type="submit"]').text('更新');
         
         // 预填充表单数据
-        $('#godoCategoryForm [name="name"]').val(name);
-        $('#godoCategoryForm [name="desc"]').val(desc);
-        $('#godoCategoryForm [name="parent"]').val(parent);
-        $('#godoCategoryForm [name="sort"]').val(sort);
+        $('#godoCategoryForm [name="category_name"]').val(name);
+        $('#godoCategoryForm [name="category_description"]').val(desc);
+        $('#godoCategoryForm [name="parent_id"]').val(parent);
+        $('#godoCategoryForm [name="sort_order"]').val(sort);
         $('#godoCategoryForm [name="status"]').val(status);
         
         // 添加分类ID到表单，用于区分新增/编辑
@@ -821,56 +1001,109 @@ $(function(){
         var valid = true;
         
         // 校验分类名称
-        var name = $(this).find('[name="name"]').val().trim();
+        var name = $(this).find('[name="category_name"]').val().trim();
         if (!name) {
             valid = false;
-            $(this).find('[name="name"]').after('<div class="godo-form-error">请输入分类名称</div>');
-        } else if (name.length > 30) {
+            $(this).find('[name="category_name"]').after('<div class="godo-form-error">请输入分类名称</div>');
+        } else if (name.length > 100) {
             valid = false;
-            $(this).find('[name="name"]').after('<div class="godo-form-error">名称不能超过30字符</div>');
+            $(this).find('[name="category_name"]').after('<div class="godo-form-error">名称不能超过100字符</div>');
         }
         
         // 校验描述长度
-        var desc = $(this).find('[name="desc"]').val();
-        if (desc && desc.length > 250) {
+        var desc = $(this).find('[name="category_description"]').val();
+        if (desc && desc.length > 500) {
             valid = false;
-            $(this).find('[name="desc"]').after('<div class="godo-form-error">描述不能超过250字符</div>');
+            $(this).find('[name="category_description"]').after('<div class="godo-form-error">描述不能超过500字符</div>');
         }
         
         // 校验排序为数字且范围合法
-        var sort = $(this).find('[name="sort"]').val();
+        var sort = $(this).find('[name="sort_order"]').val();
         if (sort && (!/^\d+$/.test(sort) || sort < 0 || sort > 9999)) {
             valid = false;
-            $(this).find('[name="sort"]').after('<div class="godo-form-error">排序请输入0~9999的数字</div>');
+            $(this).find('[name="sort_order"]').after('<div class="godo-form-error">排序请输入0~9999的数字</div>');
         }
         
         if (!valid) return false;
         
-        // 校验通过，后续可提交表单或AJAX
+        // 准备提交数据
         var categoryId = $(this).find('[name="category_id"]').val();
+        var formData = {
+            category_name: name,
+            category_description: desc,
+            parent_id: parseInt($(this).find('[name="parent_id"]').val()) || 0,
+            sort_order: parseInt(sort) || 0,
+            status: parseInt($(this).find('[name="status"]').val()) || 1
+        };
+        
+        // 显示提交状态
+        var $submitBtn = $(this).find('button[type="submit"]');
+        var originalText = $submitBtn.text();
+        $submitBtn.text('提交中...').prop('disabled', true);
+        
+        // 根据是否有ID判断是新增还是编辑
         if (categoryId) {
-            alert('编辑分类校验通过，可提交更新数据！');
+            // 编辑分类
+            formData.category_id = parseInt(categoryId);
+            apiRequest('update-category-api', 'POST', formData, function(data) {
+                showSuccess('分类更新成功');
+                $('#godoCategoryModal').hide();
+                loadCategoryList(currentPage); // 重新加载当前页
+            }, function(error) {
+                showError('分类更新失败：' + error);
+            });
         } else {
-            alert('新增分类校验通过，可提交数据！');
+            // 新增分类
+            apiRequest('add-category-api', 'POST', formData, function(data) {
+                showSuccess('分类添加成功');
+                $('#godoCategoryModal').hide();
+                loadCategoryList(1); // 跳转到第一页
+            }, function(error) {
+                showError('分类添加失败：' + error);
+            });
         }
         
-        $('#godoCategoryModal').hide();
+        // 恢复按钮状态
+        setTimeout(function() {
+            $submitBtn.text(originalText).prop('disabled', false);
+        }, 1000);
+        
         return false;
     });
-    // 分类管理表格“删除”按钮二次确认弹窗
+    // 分类管理表格"删除"按钮二次确认弹窗
     var $deleteTargetTr = null;
-    $('.godo-btn-del[title="删除"]').on('click', function() {
+    var deleteCategoryId = null;
+    
+    $(document).on('click', '.godo-btn-del[title="删除"]', function() {
         $deleteTargetTr = $(this).closest('tr');
+        deleteCategoryId = $(this).closest('tr').find('input[name="category_ids[]"]').val();
         $('#godoDeleteConfirmModal').show();
     });
+    
     $('#btn-delete-confirm').on('click', function() {
-        // 实际删除逻辑可对接后端，此处仅前端移除行
-        if ($deleteTargetTr) {
-            $deleteTargetTr.remove();
-            $deleteTargetTr = null;
-        }
-        $('#godoDeleteConfirmModal').hide();
-        alert('删除成功！');
+        if (!deleteCategoryId) return;
+        
+        // 显示删除状态
+        var $confirmBtn = $(this);
+        var originalText = $confirmBtn.text();
+        $confirmBtn.text('删除中...').prop('disabled', true);
+        
+        // 调用删除API
+        apiRequest('delete-category-api', 'POST', {category_id: parseInt(deleteCategoryId)}, function(data) {
+            showSuccess('分类删除成功');
+            $('#godoDeleteConfirmModal').hide();
+            loadCategoryList(currentPage); // 重新加载当前页
+        }, function(error) {
+            showError('分类删除失败：' + error);
+        });
+        
+        // 恢复按钮状态
+        setTimeout(function() {
+            $confirmBtn.text(originalText).prop('disabled', false);
+        }, 1000);
+        
+        $deleteTargetTr = null;
+        deleteCategoryId = null;
     });
 
     // 批量操作功能增强 - 第一部分：批量操作管理和选项切换
@@ -1132,8 +1365,13 @@ $(function(){
             // 显示切换中状态
             $span.text('切换中...').addClass('godo-status-switching');
             
-            // 模拟网络延迟
-            setTimeout(function() {
+            // 调用更新API
+            var updateData = {
+                category_id: parseInt(categoryId),
+                status: newStatus
+            };
+            
+            apiRequest('update-category-api', 'POST', updateData, function(data) {
                 // 更新状态数据
                 $span.data('status', newStatus);
                 
@@ -1151,7 +1389,11 @@ $(function(){
                 // 更新本地数据
                 updateTableRowStatus(categoryId, newStatus);
                 
-            }, 500); // 模拟网络延迟
+            }, function(error) {
+                // 恢复原状态
+                $span.removeClass('godo-status-switching');
+                showError('状态切换失败：' + error);
+            });
         }
     });
     
@@ -1455,15 +1697,18 @@ $(function(){
             alert('请输入分类名称进行搜索！');
             return false;
         }
-        // 模拟AJAX请求，更新表格内容
-        updateCategoryTable(searchTerm);
+        // 使用AJAX请求搜索
+        loadCategoryList(1, {keyword: searchTerm});
         return false;
     });
 
     $('#godoClearSearch').on('click', function() {
-        $('#godoSearchInput').val('').trigger('input'); // 清空输入框并触发input事件
-        // 模拟AJAX请求，更新表格内容
-        updateCategoryTable('');
+        // 清空所有筛选条件
+        $('#godoSearchInput').val('');
+        $('#statusFilter').val('');
+        $('#parentFilter').val('');
+        // 重新加载第一页，不带搜索条件
+        loadCategoryList(1);
     });
 
     function updateCategoryTable(searchTerm) {

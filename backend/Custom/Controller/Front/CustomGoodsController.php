@@ -127,7 +127,13 @@ class CustomGoodsController extends \Controller\Front\Controller
             $this->setData('patterns_data', json_encode($formattedPatterns));
             $this->setData('has_patterns', !empty($patterns));
             
-            $this->setData('page_title', '商品定制 - ' . $goodsInfo['goodsNm']);
+            // 设置CSRF令牌
+            $this->setData('csrf_token', Session::get('csrf_token') ?: '');
+            
+            $this->setData('page_title', '상품 맞춤 제작 - ' . $goodsInfo['goodsNm']);
+            
+            // 设置模板页面名称（Godomall规范要求）
+            $this->getView()->setPageName('custom/goods_custom.html');
 
         } catch (AlertBackException $e) {
             throw $e;
@@ -137,6 +143,54 @@ class CustomGoodsController extends \Controller\Front\Controller
                 'goods_no' => $goodsNo ?? null
             ]);
             throw new AlertBackException('加载商品定制页面失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 获取商品所有尺寸（AJAX）
+     * 
+     * @return void
+     */
+    public function getGoodsAllSizes()
+    {
+        try {
+            $this->validateCsrfToken();
+
+            $postData = Request::post()->toArray();
+            $goodsNo = $postData['goods_id'] ?? null;
+            
+            if (!$goodsNo) {
+                $this->json([
+                    'success' => false,
+                    'message' => '상품 번호가 필요합니다'
+                ]);
+                return;
+            }
+
+            $result = $this->customGoods->getGoodsAllSizes($goodsNo);
+            
+            if ($result['success']) {
+                $this->json([
+                    'success' => true,
+                    'data' => $result['data']
+                ]);
+            } else {
+                $this->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ]);
+            }
+
+        } catch (Exception $e) {
+            Logger::error('상품 크기 조회 예외', [
+                'error' => $e->getMessage(),
+                'goods_no' => $goodsNo ?? null
+            ]);
+            
+            $this->json([
+                'success' => false,
+                'message' => '크기 정보를 가져오는 중 오류가 발생했습니다'
+            ]);
         }
     }
 
@@ -552,10 +606,15 @@ class CustomGoodsController extends \Controller\Front\Controller
      */
     private function validateCsrfToken()
     {
-        $token = Request::post()->get('csrf_token') ?? Request::get()->get('csrf_token');
+        // 从请求头获取CSRF令牌
+        $token = Request::server()->get('HTTP_X_CSRF_TOKEN') ?? 
+                 Request::post()->get('csrf_token') ?? 
+                 Request::get()->get('csrf_token');
         
-        if (!$token || !Session::get('csrf_token') || $token !== Session::get('csrf_token')) {
-            throw new Exception('CSRF令牌验证失败');
+        $sessionToken = Session::get('csrf_token');
+        
+        if (!$token || !$sessionToken || $token !== $sessionToken) {
+            throw new Exception('CSRF 토큰 검증에 실패했습니다');
         }
     }
 }

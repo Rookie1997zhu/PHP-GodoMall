@@ -692,20 +692,21 @@ class CustomGoodsEditor {
             
             // 构建请求数据
             const requestData = {
-                goodsNo: this.getGoodsNo(),
+                goods_no: this.getGoodsNo(),
                 quantity: this.quantity,
-                color: this.selectedColor,
-                size: this.selectedSize,
-                customizationData: customizationData
+                selected_color: this.selectedColor,
+                selected_size: this.selectedSize,
+                customization_data: customizationData
             };
 
-            console.log('添加到购物车请求数据:', requestData);
+            console.log('장바구니 추가 요청 데이터:', requestData);
 
             // 发送请求
-            const response = await fetch('../../Custom/Controller/Front/add_to_cart.php', {
+            const response = await fetch('/Custom/Controller/Front/CustomGoodsController.php?action=addToCart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRF-Token': this.getCsrfToken()
                 },
                 body: JSON.stringify(requestData)
             });
@@ -713,8 +714,8 @@ class CustomGoodsEditor {
             const result = await response.json();
 
             if (result.success) {
-                this.showSuccessMessage(result.message || '정제 상품이 장바구니에 성공적으로 추가되었습니다');
-                console.log('添加到购物车成功:', result);
+                this.showSuccessMessage(result.message || '맞춤 상품이 장바구니에 성공적으로 추가되었습니다');
+                console.log('장바구니 추가 성공:', result);
                 
                 // 延迟跳转到购物车
                 setTimeout(() => {
@@ -722,10 +723,10 @@ class CustomGoodsEditor {
                 }, 2000);
             } else {
                 this.showErrorMessage(result.message || '장바구니 추가에 실패했습니다');
-                console.error('添加到购物车失败:', result);
+                console.error('장바구니 추가 실패:', result);
             }
         } catch (error) {
-            console.error('添加到购物车出错:', error);
+            console.error('장바구니 추가 오류:', error);
             this.showErrorMessage('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     }
@@ -767,6 +768,14 @@ class CustomGoodsEditor {
     getGoodsNo() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('goodsNo') || '1';
+    }
+
+    /**
+     * 获取CSRF令牌
+     */
+    getCsrfToken() {
+        const pageConfig = JSON.parse(document.getElementById('pageConfig').textContent);
+        return pageConfig.csrf_token || '';
     }
 
     /**

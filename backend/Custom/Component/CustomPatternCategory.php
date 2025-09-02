@@ -119,8 +119,8 @@ class CustomPatternCategory extends Category
                     c1.parent_id,
                     c1.sort_order,
                     c1.status,
-                    c1.created_time,
-                    c1.updated_time,
+                    c1.created_at,
+                    c1.updated_at,
                     c2.category_name as parent_name,
                     (SELECT COUNT(*) FROM custom_pattern WHERE category_id = c1.category_id AND status = 1) as pattern_count
                 FROM custom_pattern_category c1
@@ -182,7 +182,7 @@ class CustomPatternCategory extends Category
                     parent_id,
                     sort_order,
                     status,
-                    created_time
+                    created_at
                 FROM custom_pattern_category 
                 WHERE status = 1
                 ORDER BY sort_order ASC, category_id ASC
@@ -249,8 +249,8 @@ class CustomPatternCategory extends Category
                 'parent_id' => $categoryData['parent_id'] ?? 0,
                 'sort_order' => $categoryData['sort_order'] ?? 0,
                 'status' => $categoryData['status'] ?? 1,
-                'created_time' => date('Y-m-d H:i:s'),
-                'updated_time' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
             ];
             
             // 插入数据库
@@ -345,7 +345,7 @@ class CustomPatternCategory extends Category
                 $updateData['status'] = $categoryData['status'];
             }
             
-            $updateData['updated_time'] = date('Y-m-d H:i:s');
+            $updateData['updated_at'] = date('Y-m-d H:i:s');
             
             // 更新数据库
             $result = $this->updateCategoryData($categoryId, $updateData);
@@ -469,7 +469,7 @@ class CustomPatternCategory extends Category
                         continue;
                     }
                     
-                    $sql = "UPDATE custom_pattern_category SET sort_order = ?, updated_time = ? WHERE category_id = ?";
+                    $sql = "UPDATE custom_pattern_category SET sort_order = ?, updated_at = ? WHERE category_id = ?";
                     $this->db->query($sql, [$sortOrder, date('Y-m-d H:i:s'), $categoryId]);
                 }
                 
@@ -525,8 +525,8 @@ class CustomPatternCategory extends Category
                     c1.parent_id,
                     c1.sort_order,
                     c1.status,
-                    c1.created_time,
-                    c1.updated_time,
+                    c1.created_at,
+                    c1.updated_at,
                     c2.category_name as parent_name
                 FROM custom_pattern_category c1
                 LEFT JOIN custom_pattern_category c2 ON c1.parent_id = c2.category_id
@@ -539,8 +539,8 @@ class CustomPatternCategory extends Category
                 $category = $result[0];
                 
                 // 格式化时间
-                $category['created_time_formatted'] = DateTimeUtils::formatDateTime($category['created_time']);
-                $category['updated_time_formatted'] = DateTimeUtils::formatDateTime($category['updated_time']);
+                $category['created_at_formatted'] = DateTimeUtils::formatDateTime($category['created_at']);
+                $category['updated_at_formatted'] = DateTimeUtils::formatDateTime($category['updated_at']);
                 
                 return [
                     'success' => true,
@@ -577,7 +577,7 @@ class CustomPatternCategory extends Category
      * @param int $excludeId 排除的分类ID（用于更新时检查）
      * @return bool 是否重复
      */
-    private function checkCategoryNameExists($categoryName, $parentId = 0, $excludeId = 0)
+    public function checkCategoryNameExists($categoryName, $parentId = 0, $excludeId = 0)
     {
         try {
             $sql = "SELECT category_id FROM custom_pattern_category WHERE category_name = ? AND parent_id = ?";
@@ -659,7 +659,7 @@ class CustomPatternCategory extends Category
         try {
             $sql = "
                 INSERT INTO custom_pattern_category 
-                (category_name, category_description, parent_id, sort_order, status, created_time, updated_time)
+                (category_name, category_description, parent_id, sort_order, status, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ";
             
@@ -669,8 +669,8 @@ class CustomPatternCategory extends Category
                 $insertData['parent_id'],
                 $insertData['sort_order'],
                 $insertData['status'],
-                $insertData['created_time'],
-                $insertData['updated_time']
+                $insertData['created_at'],
+                $insertData['updated_at']
             ];
             
             $result = $this->db->query($sql, $params);
@@ -798,13 +798,13 @@ class CustomPatternCategory extends Category
                 'category_name' => $category['category_name'],
                 'category_description' => $category['category_description'],
                 'parent_id' => (int)$category['parent_id'],
-                'parent_name' => $category['parent_name'],
+                'parent_name' => $category['parent_name'] ?: null,
                 'sort_order' => (int)$category['sort_order'],
                 'status' => (int)$category['status'],
                 'pattern_count' => (int)$category['pattern_count'],
-                'created_time' => $category['created_time'],
-                'created_time_formatted' => DateTimeUtils::formatDateTime($category['created_time']),
-                'updated_time' => $category['updated_time']
+                'created_at' => $category['created_at'],
+                'created_at_formatted' => DateTimeUtils::formatDateTime($category['created_at']),
+                'updated_at' => $category['updated_at']
             ];
         }
         

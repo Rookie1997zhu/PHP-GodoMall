@@ -322,7 +322,7 @@
             "max_upload_size": {=max_upload_size},
             "allowed_image_types": {=allowed_image_types},
             "goods_image_url": "{=goods_image_url}",
-            "size_api_url": "/Custom/Controller/Front/CustomGoodsController.php?action=getGoodsAllSizesAPI",
+            "size_api_url": "/Custom/Controller/Front/CustomGoodsController.php?action=getGoodsAllSizes",
             "csrf_token": "{=csrf_token}"
         }
     </script>
@@ -351,12 +351,11 @@
             fetch(pageConfig.size_api_url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-json',
+                    'Content-Type': 'application/json',
                     'X-CSRF-Token': pageConfig.csrf_token
                 },
                 body: JSON.stringify({
-                    goods_id: pageConfig.goods_id,
-                    action: 'getGoodsAllSizes'
+                    goods_id: pageConfig.goods_id
                 })
             })
             .then(response => response.json())

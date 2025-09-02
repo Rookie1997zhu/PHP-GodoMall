@@ -125,12 +125,26 @@ class CustomTableField extends DBTableField
                     'null' => false,
                     'comment' => '图案文件URL'
                 ],
+                'pattern_thumbnail' => [
+                    'type' => 'VARCHAR',
+                    'length' => 255,
+                    'null' => true,
+                    'default' => null,
+                    'comment' => '缩略图URL'
+                ],
                 'pattern_category' => [
                     'type' => 'VARCHAR',
                     'length' => 50,
                     'null' => true,
                     'default' => null,
                     'comment' => '图案分类'
+                ],
+                'category' => [
+                    'type' => 'VARCHAR',
+                    'length' => 50,
+                    'null' => true,
+                    'default' => null,
+                    'comment' => '分类（简化字段）'
                 ],
                 'pattern_group' => [
                     'type' => 'VARCHAR',
@@ -139,11 +153,24 @@ class CustomTableField extends DBTableField
                     'default' => null,
                     'comment' => '图案分组'
                 ],
+                'tags' => [
+                    'type' => 'VARCHAR',
+                    'length' => 255,
+                    'null' => true,
+                    'default' => null,
+                    'comment' => '标签'
+                ],
                 'pattern_description' => [
                     'type' => 'TEXT',
                     'null' => true,
                     'default' => null,
                     'comment' => '图案描述'
+                ],
+                'description' => [
+                    'type' => 'TEXT',
+                    'null' => true,
+                    'default' => null,
+                    'comment' => '描述（简化字段）'
                 ],
                 'uploader' => [
                     'type' => 'VARCHAR',
@@ -165,6 +192,13 @@ class CustomTableField extends DBTableField
                     'null' => true,
                     'default' => null,
                     'comment' => '文件类型'
+                ],
+                'sort_order' => [
+                    'type' => 'INT',
+                    'length' => 11,
+                    'null' => false,
+                    'default' => 0,
+                    'comment' => '排序顺序'
                 ],
                 'status' => [
                     'type' => 'TINYINT',
@@ -195,9 +229,21 @@ class CustomTableField extends DBTableField
                     'type' => 'INDEX',
                     'fields' => ['pattern_category']
                 ],
+                'idx_category' => [
+                    'type' => 'INDEX',
+                    'fields' => ['category']
+                ],
                 'idx_pattern_group' => [
                     'type' => 'INDEX',
                     'fields' => ['pattern_group']
+                ],
+                'idx_tags' => [
+                    'type' => 'INDEX',
+                    'fields' => ['tags']
+                ],
+                'idx_sort_order' => [
+                    'type' => 'INDEX',
+                    'fields' => ['sort_order']
                 ],
                 'idx_status' => [
                     'type' => 'INDEX',
@@ -309,12 +355,26 @@ class CustomTableField extends DBTableField
                 'default' => '',
                 'comment' => '图案文件URL'
             ],
+            'pattern_thumbnail' => [
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => true,
+                'default' => null,
+                'comment' => '缩略图URL'
+            ],
             'pattern_category' => [
                 'type' => 'varchar',
                 'length' => 50,
                 'null' => true,
                 'default' => null,
                 'comment' => '图案分类'
+            ],
+            'category' => [
+                'type' => 'varchar',
+                'length' => 50,
+                'null' => true,
+                'default' => null,
+                'comment' => '分类（简化字段）'
             ],
             'pattern_group' => [
                 'type' => 'varchar',
@@ -323,11 +383,24 @@ class CustomTableField extends DBTableField
                 'default' => null,
                 'comment' => '图案分组'
             ],
+            'tags' => [
+                'type' => 'varchar',
+                'length' => 255,
+                'null' => true,
+                'default' => null,
+                'comment' => '标签'
+            ],
             'pattern_description' => [
                 'type' => 'text',
                 'null' => true,
                 'default' => null,
                 'comment' => '图案描述'
+            ],
+            'description' => [
+                'type' => 'text',
+                'null' => true,
+                'default' => null,
+                'comment' => '描述（简化字段）'
             ],
             'uploader' => [
                 'type' => 'varchar',
@@ -349,6 +422,13 @@ class CustomTableField extends DBTableField
                 'null' => true,
                 'default' => null,
                 'comment' => '文件类型'
+            ],
+            'sort_order' => [
+                'type' => 'int',
+                'length' => 11,
+                'null' => false,
+                'default' => 0,
+                'comment' => '排序顺序'
             ],
             'status' => [
                 'type' => 'tinyint',
@@ -423,13 +503,13 @@ class CustomTableField extends DBTableField
                 'default' => 1,
                 'comment' => '状态：0-禁用，1-启用'
             ],
-            'created_time' => [
+            'created_at' => [
                 'type' => 'datetime',
                 'null' => false,
                 'default' => 'CURRENT_TIMESTAMP',
                 'comment' => '创建时间'
             ],
-            'updated_time' => [
+            'updated_at' => [
                 'type' => 'datetime',
                 'null' => false,
                 'default' => 'CURRENT_TIMESTAMP',
@@ -493,13 +573,13 @@ class CustomTableField extends DBTableField
                     'default' => 1,
                     'comment' => '状态：0-禁用，1-启用'
                 ],
-                'created_time' => [
+                'created_at' => [
                     'type' => 'DATETIME',
                     'null' => false,
                     'default' => 'CURRENT_TIMESTAMP',
                     'comment' => '创建时间'
                 ],
-                'updated_time' => [
+                'updated_at' => [
                     'type' => 'DATETIME',
                     'null' => false,
                     'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
@@ -527,9 +607,9 @@ class CustomTableField extends DBTableField
                     'type' => 'INDEX',
                     'fields' => ['category_name']
                 ],
-                'idx_created_time' => [
+                'idx_created_at' => [
                     'type' => 'INDEX',
-                    'fields' => ['created_time']
+                    'fields' => ['created_at']
                 ]
             ]
         ];
