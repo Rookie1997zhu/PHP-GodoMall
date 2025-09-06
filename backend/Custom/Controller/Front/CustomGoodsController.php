@@ -15,6 +15,7 @@ namespace Controller\Front\Custom;
 
 use Custom\Component\CustomGoods;
 use Custom\Component\CustomPattern;
+use Custom\Component\CustomErrorHandler;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -41,6 +42,12 @@ class CustomGoodsController extends \Controller\Front\Controller
     private $customPattern;
 
     /**
+     * 错误处理器
+     * @var CustomErrorHandler
+     */
+    private $errorHandler;
+
+    /**
      * 构造函数
      */
     public function __construct()
@@ -48,6 +55,7 @@ class CustomGoodsController extends \Controller\Front\Controller
         parent::__construct();
         $this->customGoods = new CustomGoods();
         $this->customPattern = new CustomPattern();
+        $this->errorHandler = new CustomErrorHandler();
     }
 
     /**
@@ -58,23 +66,30 @@ class CustomGoodsController extends \Controller\Front\Controller
         try {
             $goodsNo = Request::get()->get('goodsNo');
             
+            // 参数验证
             if (!$goodsNo) {
+                $this->errorHandler->logError('商品定制页面', '商品编号不能为空', ['goodsNo' => $goodsNo]);
                 throw new AlertBackException('商品编号不能为空');
             }
 
             // 获取商品基本信息
             $goodsInfo = $this->getGoodsInfo($goodsNo);
             if (!$goodsInfo) {
+                $this->errorHandler->logError('商品定制页面', '商品不存在', ['goodsNo' => $goodsNo]);
                 throw new AlertBackException('商品不存在');
             }
 
             // 检查商品是否支持定制
             if (!$goodsInfo['is_customizable']) {
+                $this->errorHandler->logError('商品定制页面', '商品不支持定制', ['goodsNo' => $goodsNo, 'is_customizable' => $goodsInfo['is_customizable']]);
                 throw new AlertBackException('该商品不支持定制功能');
             }
 
             // 获取商品定制图案
             $patternsResult = $this->customGoods->getGoodsPatterns($goodsNo, ['status' => 1]);
+            if (!$patternsResult['success']) {
+                $this->errorHandler->logError('商品定制页面', '获取图案失败', ['goodsNo' => $goodsNo, 'error' => $patternsResult['message']]);
+            }
             $patterns = $patternsResult['success'] ? $patternsResult['data']['patterns'] : [];
 
             // 获取商品颜色选项
@@ -94,22 +109,22 @@ class CustomGoodsController extends \Controller\Front\Controller
                 'allowed_image_types' => ['jpg', 'jpeg', 'png', 'gif']
             ];
 
-            // 设置模板变量
-            $this->setData('goods_id', $goodsInfo['goodsNo']);
-            $this->setData('goods_name', $goodsInfo['goodsNm']);
-            $this->setData('goods_price_display', number_format($goodsInfo['goodsPrice']) . '원');
-            $this->setData('goods_base_price', number_format($goodsInfo['goodsPrice']) . '원');
-            $this->setData('goods_rating', $goodsInfo['rating'] ?? '4.5');
-            $this->setData('goods_review_count', $goodsInfo['review_count'] ?? '0');
-            $this->setData('goods_image_url', $goodsInfo['goods_image_url']);
-            $this->setData('can_customize', $goodsInfo['is_customizable']);
-            $this->setData('max_upload_size', 5 * 1024 * 1024);
-            $this->setData('allowed_image_types', ['jpg', 'jpeg', 'png', 'gif']);
+            // 设置模板变量 - 统一使用Godomall官方字段命名
+            $this->setData('goodsNo', $goodsInfo['goodsNo']);
+            $this->setData('goodsNm', $goodsInfo['goodsNm']);
+            $this->setData('goodsPriceDisplay', number_format($goodsInfo['goodsPrice']) . '원');
+            $this->setData('goodsBasePrice', number_format($goodsInfo['goodsPrice']) . '원');
+            $this->setData('goodsRating', $goodsInfo['rating'] ?? '4.5');
+            $this->setData('goodsReviewCount', $goodsInfo['review_count'] ?? '0');
+            $this->setData('goodsImage', $goodsInfo['goods_image_url']);
+            $this->setData('is_customizable', $goodsInfo['is_customizable']);
+            $this->setData('maxUploadSize', 5 * 1024 * 1024);
+            $this->setData('allowedImageTypes', ['jpg', 'jpeg', 'png', 'gif']);
             
-            // 设置颜色和尺寸数据
-            $this->setData('goods_colors', $this->buildColorsHtml($colors));
-            $this->setData('goods_sizes', $this->buildSizesHtml($sizes));
-            $this->setData('selected_color_name', $goodsInfo['default_color'] ?? 'Navy');
+            // 设置颜色和尺寸数据 - 统一字段命名
+            $this->setData('goodsColors', $this->buildColorsHtml($colors));
+            $this->setData('goodsSizes', $this->buildSizesHtml($sizes));
+            $this->setData('selectedColorName', $goodsInfo['default_color'] ?? 'Navy');
             
             // 设置图案数据 - 修复字段映射
             $formattedPatterns = array_map(function($pattern) {
@@ -124,11 +139,11 @@ class CustomGoodsController extends \Controller\Front\Controller
                 ];
             }, $patterns);
             
-            $this->setData('patterns_data', json_encode($formattedPatterns));
-            $this->setData('has_patterns', !empty($patterns));
+            $this->setData('patternsData', json_encode($formattedPatterns));
+            $this->setData('hasPatterns', !empty($patterns));
             
             // 设置CSRF令牌
-            $this->setData('csrf_token', Session::get('csrf_token') ?: '');
+            $this->setData('csrfToken', Session::get('csrf_token') ?: '');
             
             $this->setData('page_title', '상품 맞춤 제작 - ' . $goodsInfo['goodsNm']);
             
@@ -138,11 +153,12 @@ class CustomGoodsController extends \Controller\Front\Controller
         } catch (AlertBackException $e) {
             throw $e;
         } catch (Exception $e) {
-            Logger::error('商品定制页面异常', [
+            $this->errorHandler->logError('商品定制页面', '页面加载异常', [
                 'error' => $e->getMessage(),
-                'goods_no' => $goodsNo ?? null
+                'goods_no' => $goodsNo ?? null,
+                'trace' => $e->getTraceAsString()
             ]);
-            throw new AlertBackException('加载商品定制页面失败：' . $e->getMessage());
+            throw new AlertBackException('加载商品定制页面失败，请稍后重试');
         }
     }
 
@@ -157,12 +173,16 @@ class CustomGoodsController extends \Controller\Front\Controller
             $this->validateCsrfToken();
 
             $postData = Request::post()->toArray();
-            $goodsNo = $postData['goods_id'] ?? null;
+            $goodsNo = $postData['goodsNo'] ?? null;
             
-            if (!$goodsNo) {
+            // 参数验证
+            $validation = $this->validateGoodsParams(['goodsNo' => $goodsNo]);
+            if (!$validation['valid']) {
+                $this->errorHandler->logError('获取商品尺寸', $validation['message'], ['postData' => $postData]);
                 $this->json([
                     'success' => false,
-                    'message' => '상품 번호가 필요합니다'
+                    'message' => $validation['message'],
+                    'data' => $validation['details']
                 ]);
                 return;
             }
@@ -172,24 +192,28 @@ class CustomGoodsController extends \Controller\Front\Controller
             if ($result['success']) {
                 $this->json([
                     'success' => true,
-                    'data' => $result['data']
+                    'data' => $result['data'],
+                    'message' => '상품 크기 정보를 성공적으로 가져왔습니다'
                 ]);
             } else {
+                $this->errorHandler->logError('获取商品尺寸', '获取尺寸失败', ['goodsNo' => $goodsNo, 'error' => $result['message']]);
                 $this->json([
                     'success' => false,
-                    'message' => $result['message']
+                    'message' => $result['message'],
+                    'data' => null
                 ]);
             }
 
         } catch (Exception $e) {
-            Logger::error('상품 크기 조회 예외', [
+            $this->errorHandler->logError('获取商品尺寸', 'API调用异常', [
                 'error' => $e->getMessage(),
                 'goods_no' => $goodsNo ?? null
             ]);
             
             $this->json([
                 'success' => false,
-                'message' => '크기 정보를 가져오는 중 오류가 발생했습니다'
+                'message' => '크기 정보를 가져오는 중 오류가 발생했습니다',
+                'data' => null
             ]);
         }
     }
@@ -224,12 +248,17 @@ class CustomGoodsController extends \Controller\Front\Controller
                 
                 echo json_encode([
                     'success' => true,
-                    'data' => $formattedPatterns
+                    'message' => '패턴 정보를 성공적으로 가져왔습니다',
+                    'data' => [
+                        'patterns' => $formattedPatterns,
+                        'total' => count($formattedPatterns)
+                    ]
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => $patternsResult['message']
+                    'message' => $patternsResult['message'],
+                    'data' => null
                 ]);
             }
 
@@ -241,7 +270,8 @@ class CustomGoodsController extends \Controller\Front\Controller
             
             echo json_encode([
                 'success' => false,
-                'message' => '获取图案失败：' . $e->getMessage()
+                'message' => '获取图案失败：' . $e->getMessage(),
+                'data' => null
             ]);
         }
     }
@@ -256,16 +286,23 @@ class CustomGoodsController extends \Controller\Front\Controller
 
             $postData = Request::post()->toArray();
             
-            if (empty($postData['goods_no']) || empty($postData['customization_data'])) {
-                throw new Exception('参数不完整');
+            // 数据验证
+            $validation = $this->validateCustomizationData($postData);
+            if (!$validation['valid']) {
+                $this->json([
+                    'success' => false,
+                    'message' => $validation['message'],
+                    'data' => $validation['details']
+                ]);
+                return;
             }
 
             $customizationData = [
-                'goods_no' => $postData['goods_no'],
-                'customization_data' => $postData['customization_data'],
-                'selected_color' => $postData['selected_color'] ?? null,
-                'selected_size' => $postData['selected_size'] ?? null,
-                'user_id' => Session::get('member.sno') ?? 0
+                'goodsNo' => $postData['goodsNo'],
+                'customizationData' => $postData['customizationData'],
+                'selectedColor' => $postData['selectedColor'] ?? null,
+                'selectedSize' => $postData['selectedSize'] ?? null,
+                'userId' => Session::get('member.sno') ?? 0
             ];
 
             $result = $this->customGoods->saveCustomization($customizationData);
@@ -274,12 +311,15 @@ class CustomGoodsController extends \Controller\Front\Controller
                 echo json_encode([
                     'success' => true,
                     'message' => '定制数据保存成功',
-                    'customization_id' => $result['data']['customization_id']
+                    'data' => [
+                        'customizationId' => $result['data']['customization_id']
+                    ]
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => $result['message']
+                    'message' => $result['message'],
+                    'data' => null
                 ]);
             }
 
@@ -291,7 +331,8 @@ class CustomGoodsController extends \Controller\Front\Controller
             
             echo json_encode([
                 'success' => false,
-                'message' => '保存失败：' . $e->getMessage()
+                'message' => '保存失败：' . $e->getMessage(),
+                'data' => null
             ]);
         }
     }
@@ -306,17 +347,17 @@ class CustomGoodsController extends \Controller\Front\Controller
 
             $postData = Request::post()->toArray();
             
-            if (empty($postData['goods_no']) || empty($postData['quantity'])) {
+            if (empty($postData['goodsNo']) || empty($postData['quantity'])) {
                 throw new Exception('参数不完整');
             }
 
             $cartData = [
-                'goods_no' => $postData['goods_no'],
+                'goodsNo' => $postData['goodsNo'],
                 'quantity' => $postData['quantity'],
-                'customization_data' => $postData['customization_data'] ?? null,
-                'selected_color' => $postData['selected_color'] ?? null,
-                'selected_size' => $postData['selected_size'] ?? null,
-                'user_id' => Session::get('member.sno') ?? 0
+                'customizationData' => $postData['customizationData'] ?? null,
+                'selectedColor' => $postData['selectedColor'] ?? null,
+                'selectedSize' => $postData['selectedSize'] ?? null,
+                'userId' => Session::get('member.sno') ?? 0
             ];
 
             $result = $this->customGoods->addCustomGoodsToCart($cartData);
@@ -325,12 +366,15 @@ class CustomGoodsController extends \Controller\Front\Controller
                 echo json_encode([
                     'success' => true,
                     'message' => '定制商品已添加到购物车',
-                    'cart_item_id' => $result['data']['cart_item_id']
+                    'data' => [
+                        'cartItemId' => $result['data']['cart_item_id'] ?? null
+                    ]
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => $result['message']
+                    'message' => $result['message'],
+                    'data' => null
                 ]);
             }
 
@@ -342,7 +386,8 @@ class CustomGoodsController extends \Controller\Front\Controller
             
             echo json_encode([
                 'success' => false,
-                'message' => '添加到购物车失败：' . $e->getMessage()
+                'message' => '添加到购物车失败：' . $e->getMessage(),
+                'data' => null
             ]);
         }
     }
@@ -374,13 +419,16 @@ class CustomGoodsController extends \Controller\Front\Controller
                 echo json_encode([
                     'success' => true,
                     'message' => '图片上传成功',
-                    'image_url' => $result['data']['image_url'],
-                    'thumbnail_url' => $result['data']['thumbnail_url']
+                    'data' => [
+                        'imageUrl' => $result['data']['image_url'],
+                        'thumbnailUrl' => $result['data']['thumbnail_url']
+                    ]
                 ]);
             } else {
                 echo json_encode([
                     'success' => false,
-                    'message' => $result['message']
+                    'message' => $result['message'],
+                    'data' => null
                 ]);
             }
 
@@ -392,7 +440,8 @@ class CustomGoodsController extends \Controller\Front\Controller
             
             echo json_encode([
                 'success' => false,
-                'message' => '图片上传失败：' . $e->getMessage()
+                'message' => '图片上传失败：' . $e->getMessage(),
+                'data' => null
             ]);
         }
     }
@@ -616,5 +665,82 @@ class CustomGoodsController extends \Controller\Front\Controller
         if (!$token || !$sessionToken || $token !== $sessionToken) {
             throw new Exception('CSRF 토큰 검증에 실패했습니다');
         }
+    }
+
+    /**
+     * 验证商品参数
+     * 
+     * @param array $params 请求参数
+     * @return array 验证结果
+     */
+    private function validateGoodsParams($params)
+    {
+        $errors = [];
+
+        // 商品编号验证
+        if (empty($params['goodsNo'])) {
+            $errors[] = '商品编号不能为空';
+        } elseif (!is_numeric($params['goodsNo']) || $params['goodsNo'] <= 0) {
+            $errors[] = '商品编号格式无效';
+        }
+
+        if (empty($errors)) {
+            return ['valid' => true, 'message' => '', 'details' => []];
+        }
+
+        return [
+            'valid' => false, 
+            'message' => '参数验证失败', 
+            'details' => $errors
+        ];
+    }
+
+    /**
+     * 验证定制数据
+     * 
+     * @param array $data 定制数据
+     * @return array 验证结果
+     */
+    private function validateCustomizationData($data)
+    {
+        $errors = [];
+
+        // 商品编号验证
+        if (empty($data['goodsNo'])) {
+            $errors[] = '商品编号不能为空';
+        } elseif (!is_numeric($data['goodsNo']) || $data['goodsNo'] <= 0) {
+            $errors[] = '商品编号格式无效';
+        }
+
+        // 定制数据验证
+        if (empty($data['customizationData'])) {
+            $errors[] = '定制数据不能为空';
+        } elseif (!is_array($data['customizationData']) && !is_string($data['customizationData'])) {
+            $errors[] = '定制数据格式无效';
+        }
+
+        // 颜色验证
+        if (isset($data['selectedColor']) && !empty($data['selectedColor'])) {
+            if (strlen($data['selectedColor']) > 50) {
+                $errors[] = '颜色名称不能超过50个字符';
+            }
+        }
+
+        // 尺寸验证
+        if (isset($data['selectedSize']) && !empty($data['selectedSize'])) {
+            if (strlen($data['selectedSize']) > 50) {
+                $errors[] = '尺寸名称不能超过50个字符';
+            }
+        }
+
+        if (empty($errors)) {
+            return ['valid' => true, 'message' => '', 'details' => []];
+        }
+
+        return [
+            'valid' => false, 
+            'message' => '数据验证失败', 
+            'details' => $errors
+        ];
     }
 }

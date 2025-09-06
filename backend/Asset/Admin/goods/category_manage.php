@@ -611,7 +611,7 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
                     <td><?=htmlspecialchars($cat['pattern_count'])?></td>
                     <td><?=htmlspecialchars($cat['created_at_formatted'])?></td>
                     <td>
-                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="<?=htmlspecialchars($cat['category_id'])?>" data-name="<?=htmlspecialchars($cat['category_name'])?>" data-desc="<?=htmlspecialchars($cat['category_description'])?>" data-parent="<?=htmlspecialchars($cat['parent_id'])?>" data-sort="<?=htmlspecialchars($cat['sort_order'])?>" data-status="<?=htmlspecialchars($cat['status'])?>"><span>编辑</span></button>
+                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-category-id="<?=htmlspecialchars($cat['category_id'])?>" data-category-name="<?=htmlspecialchars($cat['category_name'])?>" data-category-description="<?=htmlspecialchars($cat['category_description'])?>" data-parent-id="<?=htmlspecialchars($cat['parent_id'])?>" data-sort-order="<?=htmlspecialchars($cat['sort_order'])?>" data-status="<?=htmlspecialchars($cat['status'])?>"><span>编辑</span></button>
                         <button class="godo-btn godo-btn-xs godo-btn-view" title="分配图案"><span>分配图案</span></button>
                         <button class="godo-btn godo-btn-xs godo-btn-del" title="删除"><span>删除</span></button>
                     </td>
@@ -793,9 +793,11 @@ function generatePaginationHtml($currentPage, $totalPages, $baseUrl = '') {
     </div>
 </div>
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="/Asset/Front/mplshop/custom/js/custom-validator.js"></script>
+  <script src="/Asset/Front/mplshop/custom/js/custom-error-handler.js"></script>
   <script>
 // 全局配置
-var API_BASE_URL = '/admin/custom/custom-pattern-category/';
+var API_BASE_URL = '/Custom/Controller/Admin/Custom/CustomPatternCategoryController.php?action=';
 var currentPage = 1;
 var perPage = 3;
 
@@ -888,7 +890,7 @@ function loadCategoryList(page, searchParams) {
         params.parent_id = parentFilter;
     }
     
-    apiRequest('get-category-list-api', 'GET', params, function(data) {
+    apiRequest('getCategoryListAPI', 'GET', params, function(data) {
         renderCategoryTable(data.categories);
         updatePagination(data.pagination);
         currentPage = data.pagination.current_page;
@@ -920,7 +922,7 @@ function renderCategoryTable(categories) {
                 '<td>' + cat.pattern_count + '</td>' +
                 '<td>' + escapeHtml(cat.created_at_formatted) + '</td>' +
                 '<td>' +
-                    '<button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="' + cat.category_id + '" data-name="' + escapeHtml(cat.category_name) + '" data-desc="' + escapeHtml(cat.category_description) + '" data-parent="' + cat.parent_id + '" data-sort="' + cat.sort_order + '" data-status="' + cat.status + '"><span>编辑</span></button> ' +
+                    '<button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-category-id="' + cat.category_id + '" data-category-name="' + escapeHtml(cat.category_name) + '" data-category-description="' + escapeHtml(cat.category_description) + '" data-parent-id="' + cat.parent_id + '" data-sort-order="' + cat.sort_order + '" data-status="' + cat.status + '"><span>编辑</span></button> ' +
                     '<button class="godo-btn godo-btn-xs godo-btn-view" title="分配图案"><span>分配图案</span></button> ' +
                     '<button class="godo-btn godo-btn-xs godo-btn-del" title="删除"><span>删除</span></button>' +
                 '</td>' +
@@ -963,11 +965,11 @@ $(function(){
     // 打开编辑分类弹窗
     $('.godo-btn-edit[title="编辑"]').on('click', function() {
         var $btn = $(this);
-        var id = $btn.data('id');
-        var name = $btn.data('name');
-        var desc = $btn.data('desc');
-        var parent = $btn.data('parent');
-        var sort = $btn.data('sort');
+        var id = $btn.data('category-id');
+        var name = $btn.data('category-name');
+        var desc = $btn.data('category-description');
+        var parent = $btn.data('parent-id');
+        var sort = $btn.data('sort-order');
         var status = $btn.data('status');
         
         // 设置弹窗标题和按钮文字
@@ -1000,21 +1002,19 @@ $(function(){
         $('.godo-form-error').remove();
         var valid = true;
         
-        // 校验分类名称
-        var name = $(this).find('[name="category_name"]').val().trim();
-        if (!name) {
-            valid = false;
-            $(this).find('[name="category_name"]').after('<div class="godo-form-error">请输入分类名称</div>');
-        } else if (name.length > 100) {
-            valid = false;
-            $(this).find('[name="category_name"]').after('<div class="godo-form-error">名称不能超过100字符</div>');
-        }
+        // 使用自定义验证器
+        var formData = {
+            category_name: $(this).find('[name="category_name"]').val().trim(),
+            category_description: $(this).find('[name="category_description"]').val().trim(),
+            parent_id: parseInt($(this).find('[name="parent_id"]').val()) || 0,
+            sort_order: parseInt($(this).find('[name="sort_order"]').val()) || 0,
+            status: parseInt($(this).find('[name="status"]').val()) || 1
+        };
         
-        // 校验描述长度
-        var desc = $(this).find('[name="category_description"]').val();
-        if (desc && desc.length > 500) {
-            valid = false;
-            $(this).find('[name="category_description"]').after('<div class="godo-form-error">描述不能超过500字符</div>');
+        var validation = CustomValidator.validateCategoryData(formData);
+        if (!validation.valid) {
+            CustomErrorHandler.showError(validation.details);
+            return;
         }
         
         // 校验排序为数字且范围合法
@@ -1024,7 +1024,7 @@ $(function(){
             $(this).find('[name="sort_order"]').after('<div class="godo-form-error">排序请输入0~9999的数字</div>');
         }
         
-        if (!valid) return false;
+
         
         // 准备提交数据
         var categoryId = $(this).find('[name="category_id"]').val();
@@ -1045,21 +1045,21 @@ $(function(){
         if (categoryId) {
             // 编辑分类
             formData.category_id = parseInt(categoryId);
-            apiRequest('update-category-api', 'POST', formData, function(data) {
-                showSuccess('分类更新成功');
+            apiRequest('updateCategoryAPI', 'POST', formData, function(data) {
+                CustomErrorHandler.showSuccess('分类更新成功');
                 $('#godoCategoryModal').hide();
                 loadCategoryList(currentPage); // 重新加载当前页
             }, function(error) {
-                showError('分类更新失败：' + error);
+                CustomErrorHandler.showError('分类更新失败：' + error);
             });
         } else {
             // 新增分类
-            apiRequest('add-category-api', 'POST', formData, function(data) {
-                showSuccess('分类添加成功');
+            apiRequest('addCategoryAPI', 'POST', formData, function(data) {
+                CustomErrorHandler.showSuccess('分类添加成功');
                 $('#godoCategoryModal').hide();
                 loadCategoryList(1); // 跳转到第一页
             }, function(error) {
-                showError('分类添加失败：' + error);
+                CustomErrorHandler.showError('分类添加失败：' + error);
             });
         }
         
@@ -1089,7 +1089,7 @@ $(function(){
         $confirmBtn.text('删除中...').prop('disabled', true);
         
         // 调用删除API
-        apiRequest('delete-category-api', 'POST', {category_id: parseInt(deleteCategoryId)}, function(data) {
+        apiRequest('deleteCategoryAPI', 'POST', {category_id: parseInt(deleteCategoryId)}, function(data) {
             showSuccess('分类删除成功');
             $('#godoDeleteConfirmModal').hide();
             loadCategoryList(currentPage); // 重新加载当前页
@@ -1371,7 +1371,7 @@ $(function(){
                 status: newStatus
             };
             
-            apiRequest('update-category-api', 'POST', updateData, function(data) {
+            apiRequest('updateCategoryAPI', 'POST', updateData, function(data) {
                 // 更新状态数据
                 $span.data('status', newStatus);
                 

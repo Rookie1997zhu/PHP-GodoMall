@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품 맞춤 제작 - {=goods_name}</title>
+    <title>상품 맞춤 제작 - {=goodsNm}</title>
     
     <!-- Fabric.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    
+    <!-- 错误处理器 -->
+    <script src="../js/error-handler.js"></script>
     
     <!-- 样式文件 -->
     <link rel="stylesheet" href="../css/custom/goods_custom.css">
@@ -103,7 +106,7 @@
                 <div class="canvas-container">
                     <!-- 商品背景图片 -->
                     <div class="product-background" id="productBackground">
-                        <img src="{=goods_image_url}" alt="{=goods_name}" id="backgroundImage">
+                        <img src="{=goodsImage}" alt="{=goodsNm}" id="backgroundImage">
                     </div>
                     <!-- 定制画布 -->
                     <canvas id="customCanvas" width="400" height="400"></canvas>
@@ -131,7 +134,7 @@
                     <span>텍스트 맞춤</span>
                 </button>
                 
-                <button class="option-btn" id="btnPatternLibrary" title="패턴 라이브러리" {=has_patterns ? '' : 'disabled'}>
+                <button class="option-btn" id="btnPatternLibrary" title="패턴 라이브러리" {=hasPatterns ? '' : 'disabled'}>
                     <i class="icon-palette"></i>
                     <span>패턴 라이브러리</span>
                     <span class="new-badge">NEW</span>
@@ -148,19 +151,19 @@
         <div class="product-info">
             <!-- 商品头部信息 -->
             <div class="product-header">
-                <h1 class="product-name">{=goods_name}</h1>
+                <h1 class="product-name">{=goodsNm}</h1>
                 <div class="product-price">
-                    <span class="price-amount">{=goods_price_display}</span>
+                    <span class="price-amount">{=goodsPriceDisplay}</span>
                 </div>
                 <div class="product-rating">
-                    <span class="stars">★ {=goods_rating}</span>
-                    <span class="reviews">리뷰 {=goods_review_count}개</span>
+                    <span class="stars">★ {=goodsRating}</span>
+                    <span class="reviews">리뷰 {=goodsReviewCount}개</span>
                 </div>
                 <div class="product-actions">
-                    <button class="action-btn" id="btnShare" title="공유" data-goods-id="{=goods_id}">
+                    <button class="action-btn" id="btnShare" title="공유" data-goods-id="{=goodsNo}">
                         <i class="icon-share"></i>
                     </button>
-                    <button class="action-btn" id="btnFavorite" title="즐겨찾기" data-goods-id="{=goods_id}">
+                    <button class="action-btn" id="btnFavorite" title="즐겨찾기" data-goods-id="{=goodsNo}">
                         <i class="icon-heart"></i>
                     </button>
                 </div>
@@ -169,15 +172,15 @@
             <!-- 商品图片显示 -->
             <div class="product-image-section">
                 <div class="product-image">
-                    <img src="{=goods_image_url}" alt="{=goods_name}" id="productImage">
+                    <img src="{=goodsImage}" alt="{=goodsNm}" id="productImage">
                 </div>
             </div>
             
             <!-- 색상 선택 -->
             <div class="option-section">
-                <label class="option-label">색상 - {=selected_color_name}</label>
+                <label class="option-label">색상 - {=selectedColorName}</label>
                 <div class="color-options">
-                    {=goods_colors}
+                    {=goodsColors}
                 </div>
             </div>
             
@@ -215,17 +218,17 @@
                         <span id="summaryQuantity">1</span>개
                     </span>
                     <span class="summary-price">
-                        <span id="summaryPrice">{=goods_base_price}</span>
+                        <span id="summaryPrice">{=goodsBasePrice}</span>
                     </span>
                 </div>
                 <div class="total-line">
                     <span class="total-label">총액:</span>
-                    <span class="total-price" id="totalPrice">{=goods_base_price}</span>
+                    <span class="total-price" id="totalPrice">{=goodsBasePrice}</span>
                 </div>
                 
                 <!-- 구매 옵션 -->
                 <div class="purchase-options">
-                    <button class="add-to-cart-btn" id="btnAddToCart" data-goods-id="{=goods_id}">
+                    <button class="add-to-cart-btn" id="btnAddToCart" data-goods-id="{=goodsNo}">
                         <i class="icon-cart"></i>
                         장바구니에 추가
                     </button>
@@ -311,19 +314,19 @@
     
     <!-- 隐藏的图案数据（由后端渲染） -->
     <script id="patternsData" type="application/json" style="display: none;">
-        {=patterns_data}
+        {=patternsData}
     </script>
     
     <!-- 页面配置数据 -->
     <script id="pageConfig" type="application/json" style="display: none;">
         {
-            "goods_id": "{=goods_id}",
-            "can_customize": {=can_customize},
-            "max_upload_size": {=max_upload_size},
-            "allowed_image_types": {=allowed_image_types},
-            "goods_image_url": "{=goods_image_url}",
-            "size_api_url": "/Custom/Controller/Front/CustomGoodsController.php?action=getGoodsAllSizes",
-            "csrf_token": "{=csrf_token}"
+            "goodsNo": "{=goodsNo}",
+            "is_customizable": {=is_customizable},
+            "maxUploadSize": {=maxUploadSize},
+            "allowedImageTypes": {=allowedImageTypes},
+            "goodsImage": "{=goodsImage}",
+            "sizeApiUrl": "/Custom/Controller/Front/CustomGoodsController.php?action=getGoodsAllSizes",
+            "csrfToken": "{=csrfToken}"
         }
     </script>
     
@@ -344,22 +347,29 @@
         function loadGoodsSizes() {
             const sizeOptionsContainer = document.getElementById('sizeOptions');
             
-            // 显示加载状态
-            sizeOptionsContainer.innerHTML = '<div class="size-loading"><i class="fa fa-spinner fa-spin"></i> 크기 로딩 중...</div>';
-            
             // 调用后端API获取尺寸数据
-            fetch(pageConfig.size_api_url, {
+            fetch(pageConfig.sizeApiUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': pageConfig.csrf_token
+                    'X-CSRF-Token': pageConfig.csrfToken
                 },
                 body: JSON.stringify({
-                    goods_id: pageConfig.goods_id
+                    goodsNo: pageConfig.goodsNo
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                // 使用错误处理器处理API响应
+                if (window.customErrorHandler && window.customErrorHandler.handleApiError(data, '크기 정보 로딩')) {
+                    return;
+                }
+                
                 if (data.success) {
                     availableSizes = data.data || [];
                     renderSizeOptions();
@@ -369,7 +379,18 @@
             })
             .catch(error => {
                 console.error('크기 로딩 오류:', error);
-                showSizeError('네트워크 오류로 크기를 불러올 수 없습니다');
+                
+                // 使用错误处理器处理网络错误
+                if (window.customErrorHandler) {
+                    window.customErrorHandler.logError('크기 정보 로딩', {
+                        error: error.message,
+                        url: pageConfig.sizeApiUrl,
+                        goodsNo: pageConfig.goodsNo
+                    });
+                    window.customErrorHandler.showUserFriendlyError('NETWORK_ERROR');
+                } else {
+                    showSizeError('네트워크 오류로 크기를 불러올 수 없습니다');
+                }
             });
         }
 

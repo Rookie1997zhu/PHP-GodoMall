@@ -16,6 +16,7 @@ namespace Custom\Component;
 use Bundle\Component\Goods\Goods;
 use Component\Storage\CustomStorage;
 use Custom\Component\Database\CustomTableField;
+use Custom\Component\CustomErrorHandler;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
@@ -50,6 +51,12 @@ class CustomGoods extends Goods
     private $customPattern;
 
     /**
+     * 错误处理器
+     * @var CustomErrorHandler
+     */
+    private $errorHandler;
+
+    /**
      * 构造函数
      */
     public function __construct()
@@ -58,6 +65,7 @@ class CustomGoods extends Goods
         $this->db = \App::load('DB');
         $this->tableField = new CustomTableField();
         $this->customPattern = new CustomPattern();
+        $this->errorHandler = new CustomErrorHandler();
     }
 
     /**
@@ -70,9 +78,28 @@ class CustomGoods extends Goods
     public function setGoodsCustomizable($goodsNo, $customData)
     {
         try {
+            // 参数验证
+            $validation = $this->errorHandler->validateInput(['goodsNo' => $goodsNo], [
+                'goodsNo' => ['required' => true, 'type' => 'int']
+            ], 'CustomGoods::setGoodsCustomizable');
+
+            if (!$validation['valid']) {
+                $this->errorHandler->logValidationError('CustomGoods::setGoodsCustomizable', 'goodsNo', '参数验证失败', $validation['errors']);
+                return [
+                    'success' => false,
+                    'message' => $this->errorHandler->getUserFriendlyMessage('VALIDATION_ERROR'),
+                    'data' => null
+                ];
+            }
+
             // 验证商品是否存在
             if (!$this->isGoodsExists($goodsNo)) {
-                throw new AlertBackException('商品不存在');
+                $this->errorHandler->logError('CustomGoods::setGoodsCustomizable', '商品不存在', ['goodsNo' => $goodsNo]);
+                return [
+                    'success' => false,
+                    'message' => $this->errorHandler->getUserFriendlyMessage('GOODS_NOT_FOUND'),
+                    'data' => null
+                ];
             }
 
             // 验证数据
@@ -94,7 +121,8 @@ class CustomGoods extends Goods
 
                 return [
                     'success' => true,
-                    'message' => '商品定制属性设置成功'
+                    'message' => '商品定制属性设置成功',
+                    'data' => null
                 ];
             } else {
                 throw new AlertBackException('数据库更新失败');
@@ -103,12 +131,10 @@ class CustomGoods extends Goods
         } catch (AlertBackException $e) {
             throw $e;
         } catch (Exception $e) {
-            Logger::error('设置商品定制属性异常', [
-                'error' => $e->getMessage(),
+            return $this->errorHandler->handleException($e, 'CustomGoods::setGoodsCustomizable', [
                 'goods_no' => $goodsNo,
                 'data' => $customData
             ]);
-            throw new AlertBackException('设置商品定制属性失败：' . $e->getMessage());
         }
     }
 
@@ -197,8 +223,8 @@ class CustomGoods extends Goods
                 'success' => true,
                 'message' => "成功设置 {$successCount} 个图案",
                 'data' => [
-                    'goods_no' => $goodsNo,
-                    'pattern_count' => $successCount
+                    'goodsNo' => $goodsNo,
+                    'patternCount' => $successCount
                 ]
             ];
 
@@ -253,6 +279,7 @@ class CustomGoods extends Goods
 
             return [
                 'success' => true,
+                'message' => '상품 패턴 정보를 성공적으로 가져왔습니다',
                 'data' => [
                     'patterns' => $patterns,
                     'total' => count($patterns)
@@ -268,7 +295,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => '获取商品定制图案失败：' . $e->getMessage()
+                'message' => '获取商品定制图案失败：' . $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -303,13 +331,13 @@ class CustomGoods extends Goods
                     'affected_rows' => $affectedRows
                 ]);
 
-            return [
-                    'success' => true,
-                    'message' => "成功删除 {$affectedRows} 个关联",
-                    'data' => [
-                        'affected_rows' => $affectedRows
-                    ]
-                ];
+                        return [
+                'success' => true,
+                'message' => "成功删除 {$affectedRows} 个关联",
+                'data' => [
+                    'affectedRows' => $affectedRows
+                ]
+            ];
             } else {
                 throw new AlertBackException('数据库删除失败');
             }
@@ -395,12 +423,13 @@ class CustomGoods extends Goods
 
             return [
                 'success' => true,
+                'message' => '사용 가능한 패턴 목록을 성공적으로 가져왔습니다',
                 'data' => [
                     'patterns' => $patterns,
                     'total' => $total,
                     'page' => $params['page'],
                     'limit' => $params['limit'],
-                    'total_pages' => ceil($total / $params['limit'])
+                    'totalPages' => ceil($total / $params['limit'])
                 ]
             ];
 
@@ -412,7 +441,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => '获取可选图案库失败：' . $e->getMessage()
+                'message' => '获取可选图案库失败：' . $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -462,13 +492,13 @@ class CustomGoods extends Goods
 
             return [
                 'success' => true,
+                'message' => "批量设置完成：成功 {$successCount} 个，失败 {$failedCount} 个",
                 'data' => [
                     'total' => count($goodsNos),
-                    'success_count' => $successCount,
-                    'failed_count' => $failedCount,
+                    'successCount' => $successCount,
+                    'failedCount' => $failedCount,
                     'errors' => $errors
-                ],
-                'message' => "批量设置完成：成功 {$successCount} 个，失败 {$failedCount} 个"
+                ]
             ];
 
         } catch (AlertBackException $e) {
@@ -542,11 +572,12 @@ class CustomGoods extends Goods
 
             return [
                 'success' => true,
+                'message' => '상품 맞춤 정보를 성공적으로 가져왔습니다',
                 'data' => [
-                    'goods_no' => $goodsNo,
+                    'goodsNo' => $goodsNo,
                     'is_customizable' => true,
                     'patterns' => $patternsResult['data']['patterns'],
-                    'pattern_count' => $patternsResult['data']['total']
+                    'patternCount' => $patternsResult['data']['total']
                 ]
             ];
 
@@ -558,7 +589,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => '获取商品定制信息失败：' . $e->getMessage()
+                'message' => '获取商品定制信息失败：' . $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -735,13 +767,13 @@ class CustomGoods extends Goods
                     'user_id' => $cartData['user_id'] ?? 0
                 ]);
 
-                return [
-                    'success' => true,
-                    'message' => '定制商品已添加到购物车',
-                    'data' => [
-                        'cart_result' => $result
-                    ]
-                ];
+                            return [
+                'success' => true,
+                'message' => '定制商品已添加到购物车',
+                'data' => [
+                    'cartResult' => $result
+                ]
+            ];
             } else {
                 throw new AlertBackException('添加到购物车失败');
             }
@@ -754,7 +786,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -820,7 +853,7 @@ class CustomGoods extends Goods
                 'success' => true,
                 'message' => '定制数据保存成功',
                 'data' => [
-                    'customization_id' => $customizationId
+                    'customizationId' => $customizationId
                 ]
             ];
 
@@ -832,7 +865,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -886,9 +920,9 @@ class CustomGoods extends Goods
                     'success' => true,
                     'message' => '图片上传成功',
                     'data' => [
-                        'image_url' => $imageUrl,
-                        'thumbnail_url' => $imageUrl, // 暂时使用同一张图片
-                        'file_name' => $fileName
+                        'imageUrl' => $imageUrl,
+                        'thumbnailUrl' => $imageUrl, // 暂时使用同一张图片
+                        'fileName' => $fileName
                     ]
                 ];
             } else {
@@ -903,7 +937,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -955,13 +990,13 @@ class CustomGoods extends Goods
 
             return [
                 'success' => true,
+                'message' => '定制图片保存成功',
                 'data' => [
-                    'file_name' => $fileName,
-                    'file_path' => $filePath,
-                    'image_url' => $imageUrl,
-                    'file_size' => strlen($imageData)
-                ],
-                'message' => '定制图片保存成功'
+                    'fileName' => $fileName,
+                    'filePath' => $filePath,
+                    'imageUrl' => $imageUrl,
+                    'fileSize' => strlen($imageData)
+                ]
             ];
 
         } catch (Exception $e) {
@@ -973,7 +1008,8 @@ class CustomGoods extends Goods
 
             return [
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -1106,9 +1142,9 @@ class CustomGoods extends Goods
                 'success' => true,
                 'message' => '商品图案添加成功',
                 'data' => [
-                    'added_count' => $insertedCount,
-                    'total_count' => count($existingPatternIds) + $insertedCount,
-                    'new_pattern_ids' => $newPatternIds
+                    'addedCount' => $insertedCount,
+                    'totalCount' => count($existingPatternIds) + $insertedCount,
+                    'newPatternIds' => $newPatternIds
                 ]
             ];
             
@@ -1165,8 +1201,8 @@ class CustomGoods extends Goods
                 'success' => true,
                 'message' => '商品图案移除成功',
                 'data' => [
-                    'removed_count' => $removedCount,
-                    'pattern_ids' => $patternIds
+                    'removedCount' => $removedCount,
+                    'patternIds' => $patternIds
                 ]
             ];
             
@@ -1324,17 +1360,17 @@ class CustomGoods extends Goods
                     'custom_size_id' => $result
                 ]);
                 
-                return [
-                    'success' => true,
-                    'message' => '사용자 정의 크기가 성공적으로 추가되었습니다.',
-                    'data' => [
-                        'custom_size_id' => $result,
-                        'size_name' => $sizeData['size_name'],
-                        'size_width' => $sizeData['size_width'],
-                        'size_height' => $sizeData['size_height'],
-                        'size_unit' => $sizeData['size_unit']
-                    ]
-                ];
+                            return [
+                'success' => true,
+                'message' => '사용자 정의 크기가 성공적으로 추가되었습니다.',
+                'data' => [
+                    'customSizeId' => $result,
+                    'sizeName' => $sizeData['size_name'],
+                    'sizeWidth' => $sizeData['size_width'],
+                    'sizeHeight' => $sizeData['size_height'],
+                    'sizeUnit' => $sizeData['size_unit']
+                ]
+            ];
                 
             } catch (\Exception $e) {
                 // 回滚事务
@@ -1351,7 +1387,8 @@ class CustomGoods extends Goods
             
             return [
                 'success' => false,
-                'message' => '사용자 정의 크기 추가 중 오류가 발생했습니다: ' . $e->getMessage()
+                'message' => '사용자 정의 크기 추가 중 오류가 발생했습니다: ' . $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -1412,6 +1449,7 @@ class CustomGoods extends Goods
             
             return [
                 'success' => true,
+                'message' => '상품 크기 정보를 성공적으로 가져왔습니다',
                 'data' => $allSizes
             ];
             
@@ -1423,7 +1461,8 @@ class CustomGoods extends Goods
             
             return [
                 'success' => false,
-                'message' => '상품 크기 정보를 가져오는 중 오류가 발생했습니다: ' . $e->getMessage()
+                'message' => '상품 크기 정보를 가져오는 중 오류가 발생했습니다: ' . $e->getMessage(),
+                'data' => null
             ];
         }
     }
@@ -1467,13 +1506,15 @@ class CustomGoods extends Goods
                 
                 return [
                     'success' => true,
-                    'message' => '사용자 정의 크기가 성공적으로 삭제되었습니다.'
+                    'message' => '사용자 정의 크기가 성공적으로 삭제되었습니다.',
+                    'data' => null
                 ];
             }
             
             return [
                 'success' => false,
-                'message' => '사용자 정의 크기 삭제에 실패했습니다.'
+                'message' => '사용자 정의 크기 삭제에 실패했습니다.',
+                'data' => null
             ];
             
         } catch (\Exception $e) {
@@ -1484,7 +1525,8 @@ class CustomGoods extends Goods
             
             return [
                 'success' => false,
-                'message' => '사용자 정의 크기 삭제 중 오류가 발생했습니다: ' . $e->getMessage()
+                'message' => '사용자 정의 크기 삭제 중 오류가 발생했습니다: ' . $e->getMessage(),
+                'data' => null
             ];
         }
     }

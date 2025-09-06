@@ -3,11 +3,11 @@
 if (!isset($categoryList) || empty($categoryList)) {
     $categoryList = [
         [
-            'id' => 1,
-            'name' => '测试分类',
-            'desc' => '这是一个测试分类',
-            'parent' => '',
-            'sort' => 1,
+            'category_id' => 1,
+            'category_name' => '测试分类',
+            'category_description' => '这是一个测试分类',
+            'parent_id' => 0,
+            'sort_order' => 1,
             'status' => 1,
             'pattern_count' => 0,
             'created_at' => date('Y-m-d H:i:s')
@@ -19,24 +19,24 @@ if (!isset($categoryList) || empty($categoryList)) {
 if (!isset($patternList) || empty($patternList)) {
     $patternList = [
         [
-            'id' => 1,
-            'name' => '测试图案1',
-            'thumb' => '/assets/images/pattern1_thumb.jpg',
-            'category' => '测试分类',
-            'group' => '默认分组',
+            'pattern_id' => 1,
+            'pattern_name' => '测试图案1',
+            'pattern_thumbnail' => '/assets/images/pattern1_thumb.jpg',
+            'pattern_category' => '测试分类',
+            'pattern_group' => '默认分组',
             'uploader' => 'admin',
-            'size' => '2.5 MB',
+            'file_size' => '2.5 MB',
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s')
         ],
         [
-            'id' => 2,
-            'name' => '测试图案2',
-            'thumb' => '/assets/images/pattern2_thumb.jpg',
-            'category' => '设计分类',
-            'group' => '创意组',
+            'pattern_id' => 2,
+            'pattern_name' => '测试图案2',
+            'pattern_thumbnail' => '/assets/images/pattern2_thumb.jpg',
+            'pattern_category' => '设计分类',
+            'pattern_group' => '创意组',
             'uploader' => 'designer',
-            'size' => '1.8 MB',
+            'file_size' => '1.8 MB',
             'status' => 1,
             'created_at' => date('Y-m-d H:i:s', strtotime('-1 hour'))
         ]
@@ -333,7 +333,7 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
                 <option value="">全部</option>
                 <?php if (!empty($categoryList)) : ?>
                 <?php foreach ($categoryList as $category) : ?>
-                <option value="<?=htmlspecialchars($category['id'])?>"><?=htmlspecialchars($category['name'])?></option>
+                <option value="<?=htmlspecialchars($category['category_id'])?>"><?=htmlspecialchars($category['category_name'])?></option>
                 <?php endforeach; ?>
                 <?php endif; ?>
             </select>
@@ -368,13 +368,13 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
                 <?php if (!empty($patternList)) : ?>
                 <?php foreach ($patternList as $pattern) : ?>
                 <tr>
-                    <td><input type="checkbox" name="pattern_ids[]" value="<?=htmlspecialchars($pattern['id'])?>"></td>
-                    <td><img src="<?=htmlspecialchars($pattern['thumb'])?>" alt="预览" style="width:40px;height:40px;border:1px solid #eee;"></td>
-                    <td><?=htmlspecialchars($pattern['name'])?></td>
-                    <td><?=htmlspecialchars($pattern['category'])?></td>
-                    <td><?=htmlspecialchars($pattern['group'])?></td>
+                    <td><input type="checkbox" name="pattern_ids[]" value="<?=htmlspecialchars($pattern['pattern_id'])?>"></td>
+                    <td><img src="<?=htmlspecialchars($pattern['pattern_thumbnail'])?>" alt="预览" style="width:40px;height:40px;border:1px solid #eee;"></td>
+                    <td><?=htmlspecialchars($pattern['pattern_name'])?></td>
+                    <td><?=htmlspecialchars($pattern['pattern_category'])?></td>
+                    <td><?=htmlspecialchars($pattern['pattern_group'])?></td>
                     <td><?=htmlspecialchars($pattern['uploader'])?></td>
-                    <td><?=htmlspecialchars($pattern['size'])?></td>
+                    <td><?=htmlspecialchars($pattern['file_size'])?></td>
                     <td>
                         <?php if ($pattern['status']) : ?>
                             <span class="godo-status godo-status-on">启用</span>
@@ -384,9 +384,9 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
                     </td>
                     <td><?=htmlspecialchars($pattern['created_at'])?></td>
                     <td>
-                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑"><span>编辑</span></button>
-                        <button class="godo-btn godo-btn-xs godo-btn-view" title="预览"><span>预览</span></button>
-                        <button class="godo-btn godo-btn-xs godo-btn-del" title="删除"><span>删除</span></button>
+                        <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="<?=htmlspecialchars($pattern['pattern_id'])?>"><span>编辑</span></button>
+                        <button class="godo-btn godo-btn-xs godo-btn-view" title="预览" data-id="<?=htmlspecialchars($pattern['pattern_id'])?>"><span>预览</span></button>
+                        <button class="godo-btn godo-btn-xs godo-btn-del" title="删除" data-id="<?=htmlspecialchars($pattern['pattern_id'])?>"><span>删除</span></button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -412,7 +412,7 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
             <form id="godoPatternForm" class="godo-modal-body">
                 <div class="godo-form-row">
                     <label>图案名称 <span class="godo-required">*</span></label>
-                    <input type="text" name="name" class="godo-input" required maxlength="30">
+                    <input type="text" name="name" class="godo-input" required maxlength="100">
                 </div>
                 <div class="godo-form-row">
                     <label>分类 <span class="godo-required">*</span></label>
@@ -420,7 +420,7 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
                         <option value="">请选择</option>
                         <?php if (!empty($categoryList)) : ?>
                         <?php foreach ($categoryList as $category) : ?>
-                        <option value="<?=htmlspecialchars($category['id'])?>"><?=htmlspecialchars($category['name'])?></option>
+                        <option value="<?=htmlspecialchars($category['category_id'])?>"><?=htmlspecialchars($category['category_name'])?></option>
                         <?php endforeach; ?>
                         <?php endif; ?>
                     </select>
@@ -436,7 +436,7 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
                 </div>
                 <div class="godo-form-row">
                     <label>描述</label>
-                    <textarea name="desc" class="godo-input" rows="2" maxlength="250"></textarea>
+                    <textarea name="desc" class="godo-input" rows="2" maxlength="500"></textarea>
                 </div>
                 <div class="godo-form-row">
                     <label>状态</label>
@@ -554,7 +554,7 @@ echo '<!-- $patternList count: ' . count($patternList) . ' -->';
 // ========================================
 
 // AJAX请求基础配置
-const API_BASE_URL = '/admin/custom/pattern';
+const API_BASE_URL = '/Custom/Controller/Admin/Custom/CustomPatternController.php?action=';
 const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content') || '';
 
 // 通用AJAX请求函数
@@ -608,11 +608,11 @@ function loadPatternList(page = 1, filters = {}) {
     // 显示加载状态
     $('.godo-table tbody').html('<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;"><div>加载中...</div></td></tr>');
     
-    return apiRequest('/list?' + $.param(params))
+    return apiRequest('getPatternListAPI', 'GET', params)
         .done(function(response) {
             if (response.success) {
-                renderPatternTable(response.data);
-                updatePagination(response.pagination);
+                renderPatternTable(response.data.patterns);
+                updatePagination(response.data.pagination);
             } else {
                 showMessage(response.message || '加载数据失败', 'error');
             }
@@ -633,19 +633,19 @@ function renderPatternTable(patterns) {
         
         html += `
             <tr>
-                <td><input type="checkbox" name="pattern_ids[]" value="${pattern.id}"></td>
-                <td><img src="${pattern.thumb}" alt="预览" style="width:40px;height:40px;border:1px solid #eee;"></td>
-                <td>${pattern.name}</td>
-                <td>${pattern.category}</td>
-                <td>${pattern.group}</td>
+                <td><input type="checkbox" name="pattern_ids[]" value="${pattern.pattern_id}"></td>
+                <td><img src="${pattern.pattern_thumbnail}" alt="预览" style="width:40px;height:40px;border:1px solid #eee;"></td>
+                <td>${pattern.pattern_name}</td>
+                <td>${pattern.pattern_category}</td>
+                <td>${pattern.pattern_group}</td>
                 <td>${pattern.uploader}</td>
-                <td>${pattern.size}</td>
+                <td>${pattern.file_size}</td>
                 <td><span class="godo-status ${statusClass}">${statusText}</span></td>
                 <td>${pattern.created_at}</td>
                 <td>
-                    <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="${pattern.id}"><span>编辑</span></button>
-                    <button class="godo-btn godo-btn-xs godo-btn-view" title="预览" data-id="${pattern.id}"><span>预览</span></button>
-                    <button class="godo-btn godo-btn-xs godo-btn-del" title="删除" data-id="${pattern.id}"><span>删除</span></button>
+                    <button class="godo-btn godo-btn-xs godo-btn-edit" title="编辑" data-id="${pattern.pattern_id}"><span>编辑</span></button>
+                    <button class="godo-btn godo-btn-xs godo-btn-view" title="预览" data-id="${pattern.pattern_id}"><span>预览</span></button>
+                    <button class="godo-btn godo-btn-xs godo-btn-del" title="删除" data-id="${pattern.pattern_id}"><span>删除</span></button>
                 </td>
             </tr>
         `;
@@ -695,7 +695,7 @@ function loadPatternForEdit(patternId) {
     $('#godoPatternModal').show();
     
     // 获取图案详情
-    apiRequest('/get?pattern_id=' + patternId)
+    apiRequest('getPatternDetailAPI', 'GET', {pattern_id: patternId})
         .done(function(response) {
             if (response.success) {
                 fillPatternForm(response.data);
@@ -719,12 +719,12 @@ function fillPatternForm(pattern) {
     
     // 填充数据
     $form.find('[name="pattern_id"]').remove(); // 移除旧的ID
-    $form.append(`<input type="hidden" name="pattern_id" value="${pattern.id}">`);
+    $form.append(`<input type="hidden" name="pattern_id" value="${pattern.pattern_id}">`);
     
-    $form.find('[name="name"]').val(pattern.name);
-    $form.find('[name="category"]').val(pattern.category);
-    $form.find('[name="group"]').val(pattern.group);
-    $form.find('[name="desc"]').val(pattern.description);
+    $form.find('[name="name"]').val(pattern.pattern_name);
+    $form.find('[name="category"]').val(pattern.pattern_category);
+    $form.find('[name="group"]').val(pattern.pattern_group);
+    $form.find('[name="desc"]').val(pattern.pattern_description);
     $form.find('[name="status"]').val(pattern.status);
     
     // 图片上传字段设为可选（编辑时）
@@ -742,7 +742,7 @@ function showImagePreview(patternId, patternName, patternThumb) {
     $('#godoImagePreviewInfo').hide();
     
     // 获取图案详细信息
-    apiRequest('/get?pattern_id=' + patternId)
+    apiRequest('getPatternDetailAPI', 'GET', {pattern_id: patternId})
         .done(function(response) {
             if (response.success) {
                 loadImagePreview(response.data);
@@ -771,8 +771,8 @@ function loadImagePreview(patternData) {
         $info.show();
         
         // 填充图片信息
-        $('#godoImageName').text(patternData.name || '未知');
-        $('#godoImageSize').text(patternData.size || '未知');
+        $('#godoImageName').text(patternData.pattern_name || '未知');
+        $('#godoImageSize').text(patternData.file_size || '未知');
         $('#godoImageUploadTime').text(patternData.created_at || '未知');
         
         // 获取图片尺寸
@@ -919,7 +919,7 @@ function deletePattern(patternId) {
         pattern_id: patternId
     };
     
-    apiRequest('/delete', 'POST', data)
+    apiRequest('deletePatternAPI', 'POST', data)
         .done(function(response) {
             if (response.success) {
                 showMessage(response.message || '删除成功', 'success');
@@ -965,12 +965,11 @@ $('#godoPatternForm').on('submit', function(e) {
     submitBtn.text('提交中...').prop('disabled', true);
     
     // 提交数据
-    const url = patternId ? '/update' : '/upload-pattern';
-    const method = 'POST';
+    const action = patternId ? 'updatePatternAPI' : 'addPatternAPI';
     
     $.ajax({
-        url: API_BASE_URL + url,
-        method: method,
+        url: API_BASE_URL + action,
+        method: 'POST',
         data: formData,
         processData: false,
         contentType: false,
@@ -1005,9 +1004,9 @@ function validatePatternForm() {
     if (!name) {
         valid = false;
         $form.find('[name="name"]').after('<div class="godo-form-error">请输入图案名称</div>');
-    } else if (name.length > 30) {
+    } else if (name.length > 100) {
         valid = false;
-        $form.find('[name="name"]').after('<div class="godo-form-error">名称不能超过30字符</div>');
+        $form.find('[name="name"]').after('<div class="godo-form-error">名称不能超过100字符</div>');
     }
     
     // 校验分类
@@ -1039,9 +1038,9 @@ function validatePatternForm() {
     
     // 校验描述长度
     const desc = $form.find('[name="desc"]').val();
-    if (desc && desc.length > 250) {
+    if (desc && desc.length > 500) {
         valid = false;
-        $form.find('[name="desc"]').after('<div class="godo-form-error">描述不能超过250字符</div>');
+        $form.find('[name="desc"]').after('<div class="godo-form-error">描述不能超过500字符</div>');
     }
     
     return valid;
@@ -1094,16 +1093,16 @@ $('#godoBatchForm').on('submit', function(e) {
 
 // 执行批量操作
 function executeBatchOperation(action, patternIds) {
-    let url, data, message;
+    let actionName, data, message;
     
     switch (action) {
         case 'enable':
-            url = '/batch-update-status';
+            actionName = 'batchUpdatePatternStatusAPI';
             data = { pattern_ids: patternIds, status: 1 };
             message = '批量启用';
             break;
         case 'disable':
-            url = '/batch-update-status';
+            actionName = 'batchUpdatePatternStatusAPI';
             data = { pattern_ids: patternIds, status: 0 };
             message = '批量禁用';
             break;
@@ -1111,7 +1110,7 @@ function executeBatchOperation(action, patternIds) {
             if (!confirm(`确定要删除选中的 ${patternIds.length} 个图案吗？此操作不可恢复！`)) {
                 return;
             }
-            url = '/batch-delete';
+            actionName = 'batchDeletePatternAPI';
             data = { pattern_ids: patternIds };
             message = '批量删除';
             break;
@@ -1123,7 +1122,7 @@ function executeBatchOperation(action, patternIds) {
     // 显示操作状态
     showMessage(`${message}中...`, 'info');
     
-    apiRequest(url, 'POST', data)
+    apiRequest(actionName, 'POST', data)
         .done(function(response) {
             if (response.success) {
                 showMessage(response.message || `${message}成功`, 'success');
@@ -1159,7 +1158,7 @@ $(document).on('click', '.godo-status', function() {
             status: newStatus ? 1 : 0
         };
         
-        apiRequest('/batch-update-status', 'POST', data)
+        apiRequest('batchUpdatePatternStatusAPI', 'POST', data)
             .done(function(response) {
                 if (response.success) {
                     // 更新状态显示
