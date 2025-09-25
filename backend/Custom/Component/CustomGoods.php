@@ -881,9 +881,9 @@ class CustomGoods extends Goods
     {
         try {
             // 验证文件类型
-            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/svg+xml'];
             if (!in_array($file['type'], $allowedTypes)) {
-                throw new AlertBackException('不支持的图片格式');
+                throw new AlertBackException('不支持的图片格式，请选择JPEG、PNG、GIF或SVG格式');
             }
 
             // 验证文件大小（5MB限制）
@@ -955,20 +955,37 @@ class CustomGoods extends Goods
     {
         try {
             // 验证Base64数据
-            if (empty($base64Data) || !preg_match('/^data:image\/(png|jpeg|jpg);base64,/', $base64Data)) {
+            if (empty($base64Data) || !preg_match('/^data:image\/(png|jpeg|jpg|svg\+xml);base64,/', $base64Data)) {
                 throw new AlertBackException('无效的图片数据格式');
             }
 
             // 提取Base64数据
-            $base64String = preg_replace('/^data:image\/(png|jpeg|jpg);base64,/', '', $base64Data);
+            $base64String = preg_replace('/^data:image\/(png|jpeg|jpg|svg\+xml);base64,/', '', $base64Data);
             $imageData = base64_decode($base64String);
 
             if ($imageData === false) {
                 throw new AlertBackException('Base64解码失败');
             }
 
+            // 根据Base64数据确定文件扩展名
+            $extension = 'png'; // 默认扩展名
+            if (preg_match('/^data:image\/(png|jpeg|jpg|svg\+xml);base64,/', $base64Data, $matches)) {
+                switch ($matches[1]) {
+                    case 'jpeg':
+                    case 'jpg':
+                        $extension = 'jpg';
+                        break;
+                    case 'png':
+                        $extension = 'png';
+                        break;
+                    case 'svg+xml':
+                        $extension = 'svg';
+                        break;
+                }
+            }
+            
             // 生成文件名
-            $fileName = 'custom_' . $userId . '_' . $goodsNo . '_' . time() . '.png';
+            $fileName = 'custom_' . $userId . '_' . $goodsNo . '_' . time() . '.' . $extension;
             
             // 保存文件到定制图片目录
             $filePath = $this->saveImageToFile($imageData, $fileName);

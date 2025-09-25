@@ -19,6 +19,7 @@ use Custom\Component\CustomErrorHandler;
 use Framework\Debug\Exception\AlertBackException;
 use Framework\Utility\ArrayUtils;
 use Framework\Utility\StringUtils;
+use Framework\Utility\SkinUtils;
 use Exception;
 use Logger;
 use Request;
@@ -34,6 +35,18 @@ class CustomGoodsController extends \Controller\Front\Controller
      * @var CustomGoods
      */
     private $customGoods;
+    
+    /**
+     * 商品数据
+     * @var array
+     */
+    private $goodsData;
+    
+    /**
+     * 商品编号
+     * @var string
+     */
+    private $goodsNo;
 
     /**
      * 定制图案组件
@@ -78,6 +91,10 @@ class CustomGoodsController extends \Controller\Front\Controller
                 $this->errorHandler->logError('商品定制页面', '商品不存在', ['goodsNo' => $goodsNo]);
                 throw new AlertBackException('商品不存在');
             }
+            
+            // 保存商品数据供buildImageUrl使用
+            $this->goodsData = $goodsInfo;
+            $this->goodsNo = $goodsNo;
 
             // 检查商品是否支持定制
             if (!$goodsInfo['is_customizable']) {
@@ -119,7 +136,7 @@ class CustomGoodsController extends \Controller\Front\Controller
             $this->setData('goodsImage', $goodsInfo['goods_image_url']);
             $this->setData('is_customizable', $goodsInfo['is_customizable']);
             $this->setData('maxUploadSize', 5 * 1024 * 1024);
-            $this->setData('allowedImageTypes', ['jpg', 'jpeg', 'png', 'gif']);
+            $this->setData('allowedImageTypes', ['jpg', 'jpeg', 'png', 'gif', 'svg']);
             
             // 设置颜色和尺寸数据 - 统一字段命名
             $this->setData('goodsColors', $this->buildColorsHtml($colors));
@@ -575,22 +592,37 @@ class CustomGoodsController extends \Controller\Front\Controller
             return '';
         }
 
-        // 如果是完整URL，直接返回
-        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
-            return $imagePath;
+        // 使用Godomall官方方法生成图片URL，与商品详情页保持一致
+        $goods = \App::load('\\Component\\Goods\\Goods');
+        $goodsImage = $goods->getGoodsImage($this->goodsNo, 'main');
+        if ($goodsImage) {
+            $goodsImageName = $goodsImage[0]['goodsImageStorage'] == 'obs' ? 
+                $goodsImage[0]['imageUrl'] : $goodsImage[0]['imageName'];
+            $goodsImageSize = $goodsImage[0]['imageSize'];
+            $_imageInfo = pathinfo($goodsImageName);
+            if (!$goodsImageSize) {
+                $goodsImageSize = SkinUtils::getGoodsImageSize($_imageInfo['extension']);
+                $goodsImageSize = $goodsImageSize['size1'];
+            }
+            
+            $goodsImageSrc = SkinUtils::imageViewStorageConfig(
+                $goodsImageName, 
+                $this->goodsData['imagePath'], 
+                $this->goodsData['imageStorage'], 
+                $goodsImageSize, 
+                'goods', 
+                false
+            )[0];
+            
+            if($this->goodsData['imageStorage'] == 'local'){
+                $goodsImageSrc = str_replace('https', 'http', $goodsImageSrc);
+                $goodsImageSrc = str_replace(':443', '', $goodsImageSrc);
+            }
+            
+            return $goodsImageSrc;
         }
 
-        // 使用官方Request类获取主机名
-        $host = Request::server()->get('HTTP_HOST');
-        $scheme = Request::server()->get('REQUEST_SCHEME') ?: 'http';
-
-        // 如果是相对路径，构建完整URL
-        if (strpos($imagePath, '/') === 0) {
-            return $scheme . '://' . $host . $imagePath;
-        }
-
-        // 默认图片目录
-        return $scheme . '://' . $host . '/data/goods/' . $imagePath;
+        return '';
     }
 
     /**

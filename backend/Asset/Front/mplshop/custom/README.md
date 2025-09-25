@@ -66,14 +66,16 @@ backend/
 
 由于移动到mplshop目录，相关API路径已更新：
 
-**原路径**：
-```javascript
-fetch('../custom/custom_goods_controller.php?mode=addToCart', {...})
-```
-
-**新路径**：
+**正确的API调用方式**：
 ```javascript  
+// 方式1：直接调用Controller方法
 fetch('../../Custom/Controller/Front/add_to_cart.php', {...})
+
+// 方式2：通过专门的API文件
+fetch('../../Custom/Controller/Front/CustomGoodsController.php', {
+    method: 'POST',
+    body: JSON.stringify({mode: 'addToCart', ...})
+})
 ```
 
 **注意**：`add_to_cart.php` 文件已移动到正确的后端Controller目录 `backend/Custom/Controller/Front/` 中，遵循Godomall的MVC架构规范。

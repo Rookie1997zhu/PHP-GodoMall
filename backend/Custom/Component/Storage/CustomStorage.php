@@ -282,8 +282,8 @@ class CustomStorage extends Storage
      */
     public static function validateImageFile($filePath)
     {
-        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
         
         // 检查文件是否存在
         if (!file_exists($filePath)) {
@@ -310,7 +310,17 @@ class CustomStorage extends Storage
             return false;
         }
         
-        // 验证图片文件完整性
+        // SVG文件特殊处理 - 不需要getimagesize验证
+        if ($extension === 'svg') {
+            // 验证SVG文件基本格式
+            $svgContent = file_get_contents($filePath);
+            if (strpos($svgContent, '<svg') === false || strpos($svgContent, '</svg>') === false) {
+                return false;
+            }
+            return true;
+        }
+        
+        // 验证其他图片文件完整性
         $imageInfo = @getimagesize($filePath);
         if ($imageInfo === false) {
             return false;
