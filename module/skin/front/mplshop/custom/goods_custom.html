@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 맞춤 제작 - {=customGoodsView['goodsNm']}</title>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    
+    <!-- Fabric.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js" defer></script>
+    
+    <!-- 样式文件 -->
+    <link rel="stylesheet" href="../css/custom/goods_custom.css">
+    
+    <!-- 디자인 검수 안내 팝업 전용 스타일 -->
+    <style>
+        .design-check-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+        }
+        .design-check-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .design-check-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 550px;
+            max-width: 95%;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px 24px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            font-family: inherit;
+        }
+        .design-check-header {
+            margin-bottom: 16px;
+        }
+        .design-check-title-main {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        .design-check-body {
+            border-top: 1px solid #eee;
+            margin-top: 12px;
+            padding-top: 12px;
+        }
+        .design-check-body {
+            font-size: 16px;
+        }
+        .design-check-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .design-check-list li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .design-check-confirm {
+            margin-top: 14px;
+            width: 100%;
+            height: 44px;
+            border: 1px solid #007BFF;
+            border-radius: 10px;
+            background: #007BFF;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .design-check-confirm:hover {
+            background: #007BFF;
+        }
+    </style>
+    
+    <!-- Controller 调试信息 -->
+    {=debugScript}
+</head>
+<body>
+    <div class="custom-container">
+        <!-- 左侧定制工作区 -->
+        <div class="custom-workspace">
+            <!-- 顶部工具栏 -->
+            <div class="custom-toolbar">
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnUndo" title="실행 취소" disabled>
+                        <i class="tool-icon icon-undo"></i>
+                    </button>
+                    <button class="tool-btn" id="btnRedo" title="다시 실행" disabled>
+                        <i class="tool-icon icon-redo"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnDelete" title="삭제" disabled>
+                        <i class="tool-icon icon-delete"></i>
+                    </button>
+                    <button class="tool-btn" id="btnFlipH" title="좌우 반전" disabled>
+                        <i class="tool-icon icon-flip-h"></i>
+                    </button>
+                    <button class="tool-btn" id="btnFlipV" title="상하 반전" disabled>
+                        <i class="tool-icon icon-flip-v"></i>
+                    </button>
+                    <button class="tool-btn" id="btnRotate90" title="90° 회전" disabled>
+                        <i class="tool-icon icon-rotate-90"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnBringForward" title="앞으로 이동" disabled>
+                        <i class="tool-icon icon-bring-forward"></i>
+                    </button>
+                    <button class="tool-btn" id="btnSendBackward" title="뒤로 이동" disabled>
+                        <i class="tool-icon icon-send-backward"></i>
+                    </button>
+                    <button class="tool-btn" id="btnBringToFront" title="맨 앞으로" disabled>
+                        <i class="tool-icon icon-bring-to-front"></i>
+                    </button>
+                    <button class="tool-btn" id="btnSendToBack" title="맨 뒤로" disabled>
+                        <i class="tool-icon icon-send-to-back"></i>
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="tool-btn" id="btnGroup" title="그룹화" disabled>
+                        <i class="tool-icon icon-group"></i>
+                    </button>
+                    <button class="tool-btn" id="btnUngroup" title="그룹 해제" disabled>
+                        <i class="tool-icon icon-ungroup"></i>
+                    </button>
+                </div>
+
+                <!-- 외부몰 주문 모드 토글 버튼 제거: URL 파라미터로만 제어 -->
+            </div>
+            
+            <!-- 주의사항 버튼 -->
+            <div class="check-button-container">
+                <button class="check-btn" id="btnCheck">
+                    주의사항
+                </button>
+                
+                <!-- 전체 디자인 선택 버튼 -->
+                <div class="design-dropdown">
+                    <button type="button" class="check-btn design-dropdown-toggle">
+                        디자인 영역
+                        <span class="design-dropdown-arrow">▼</span>
+                    </button>
+                    <div class="design-dropdown-menu">
+                        <!-- 기본 상품图：名称 = 商品名 -->
+                        <button type="button"
+                                class="design-dropdown-item is-active"
+                                data-image-src="{=customGoodsView['goodsImage']}"
+                                data-design-id="base">
+                            {=customGoodsView['goodsNm']}
+                        </button>
+                        <!-- 추가 상품图：来自 custom_goods_extra_images -->
+                        <!--{ @ customGoodsView['extra_images'] }-->
+                        <button type="button"
+                                class="design-dropdown-item"
+                                data-image-src="{=.image_path}"
+                                data-design-id="{=.image_id}">
+                            {=.image_name}
+                        </button>
+                        <!--{ / }-->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 产品预览区域 -->
+            <div class="preview-container">
+                <div class="canvas-container">
+                    <!-- ✅ 商品背景图片 - 使用 customGoodsView -->
+                    <div class="product-background" id="productBackground">
+                        <img src="{=customGoodsView['goodsImage']}" alt="{=customGoodsView['goodsNm']}" id="backgroundImage" loading="lazy">
+                    </div>
+                    <!-- 定制画布 - 分辨率已更新为860x860，实际尺寸按DPR放大 -->
+                    <canvas id="customCanvas"></canvas>
+                </div>
+
+                <div class="image-controls" id="imageControls" style="display: none;">
+                    <button type="button" class="image-control-btn" id="btnBackgroundRemoval">
+                        <span class="image-control-icon checkbox-placeholder"></span>
+                        <span class="image-control-text">배경제거 요청</span>
+                    </button>
+                    <span class="image-control-divider"></span>
+                    <button type="button" class="image-control-btn" id="btnToggleLock">
+                        <img src="/data/skin/front/mplshop/_mplshop/images/icon/good_custom/unlock_icon.png" alt="잠금" class="image-control-icon lock-icon" loading="lazy">
+                        <span class="image-control-text lock-label">잠금</span>
+                    </button>
+                </div>
+
+            </div>
+            
+            <!-- 오른쪽 맞춤 옵션 -->
+            <div class="custom-options">
+                <button class="option-btn" id="btnUploadImage" title="이미지 업로드">
+                    <span class="option-text">이미지</span>
+                    <img src="../_mplshop/images/icon/good_custom/image_icon.png" alt="{=__('이미지 아이콘')}" class="option-icon" loading="lazy">
+                </button>
+                
+                <button class="option-btn" id="btnAddText" title="텍스트 추가">
+                    <span class="option-text">텍스트</span>
+                    <img src="../_mplshop/images/icon/good_custom/text_icon.png" alt="{=__('텍스트 아이콘')}" class="option-icon" loading="lazy">
+                </button>
+                
+                <button class="option-btn" id="btnPatternLibrary" title="패턴 라이브러리" {=hasPatterns ? '' : 'disabled'}>
+                    <span class="option-text">라이브러리</span>
+                    <img src="../_mplshop/images/icon/good_custom/library_icon.png" alt="{=__('라이브러리 아이콘')}" class="option-icon" loading="lazy">
+                </button>
+                
+                <div class="layers-panel">
+                    <div class="layers-header">
+                        <span class="layers-title">레이어</span>
+                    <img src="../_mplshop/images/icon/good_custom/layer_icon.png" alt="{=__('레이어 아이콘')}" class="layers-header-icon" loading="lazy">
+                    </div>
+                    <ul class="layers-list" id="layersList"></ul>
+                </div>
+                
+                <!--<button class="option-btn" id="btnDownload" title="다운로드">
+                    <span class="option-text">다운로드</span>
+                    <img src="../_mplshop/images/icon/download_icon.png" alt="{=__('다운로드 아이콘')}" class="option-icon">
+                </button>-->
+                
+                <!-- 隐藏的文件上传输入框 - 仅允许 PNG/JPG -->
+                <input type="file" id="imageUpload" accept="image/png,image/jpeg" multiple style="display: none;">
+            </div>
+        </div>
+        
+        <!-- 右侧商品信息 -->
+        <div class="product-info">
+            <!-- ✅ 商品头部信息 - 使用 customGoodsView（字段名与数据库一致） -->
+            <div class="product-header">
+                <h1 class="product-name">{=customGoodsView['goodsNm']}</h1>
+                <div class="product-price">
+                    <span class="price-amount">{=customGoodsView['goods_price_display']}</span>
+                </div>
+            </div>
+            
+            <!-- ✅ 显示定制尺寸信息（多尺寸，每条一行） -->
+            <!--{ ? customGoodsView['sizes'] && count(customGoodsView['sizes']) > 0 }-->
+            <div class="option-section custom-size-section">
+                <label class="option-label">사이즈</label>
+                <div class="custom-size-display">
+                    <!--{ @ customGoodsView['sizes'] }-->
+                    <div class="custom-size-line">
+                        <span>{=.size_name} : {=.size_width} x {=.size_height} mm</span>
+                    </div>
+                    <!--{ / }-->
+                </div>
+            </div>
+            <!--{ / }-->
+            
+            <!-- ✅ 색상 선택 - 使用 Godomall 模板语法循环 -->
+            <div class="option-section">
+                <label class="option-label">색상</label>
+                <div class="color-options">
+                    <!--{ @ customGoodsView['colors'] }-->
+                    <div class="color-item 
+                         <!--{ ? (customGoodsView['default_color_id'] && customGoodsView['default_color_id'] == .color_id) }-->active
+                         <!--{ : !customGoodsView['default_color_id'] && .index_ == 0 }-->active<!--{ / }--> 
+                         <!--{ ? .stock_status != '1' }-->soldout<!--{ / }-->" 
+                         data-color="{=.color_code}"
+                         data-color-hex="{=.color_hex}"
+                         data-svg-path="{=.svg_image_path}"
+                         data-stock-status="{=.stock_status}"
+                         title="{=.color_name}">
+                    </div>
+                    <!--{ / }-->
+                </div>
+            </div>
+
+            <!-- ✅ 官方选项同步展示在颜色区下方 -->
+            <!--{ ? customGoodsView['optionFl'] == 'y' }-->
+            <div class="option-section official-option-section official-option-inline">
+                <div class="item_add_option_box">
+                    <!--{ ? customGoodsView['optionDisplayFl'] == 's' }-->
+                    <!-- 一体型选项 -->
+                    <dl>
+                        <dt class="official-option-label">
+                            <span class="extra-option-label">
+                                <!--{ ? customGoodsView['optionEachCntFl'] == 'one' && empty(customGoodsView['optionName']) === false }-->
+                                {=customGoodsView['optionName']}
+                                <!--{ : }-->
+                                옵션 선택
+                                <!--{ / }-->
+                            </span>
+                        </dt>
+                        <dd>
+                            <select name="optionSnoInput" id="officialOptionSelect" class="official-option-select"
+                                    <!--{ ? customGoodsView['orderPossible'] == 'y' }-->
+                                    onchange="handleOfficialOptionChange(this);"
+                                    <!--{ : }-->
+                                    disabled="disabled"
+                                    <!--{ / }-->>
+                                <option value="">
+                                    = <!--{ ? customGoodsView['optionEachCntFl'] == 'many' && empty(customGoodsView['optionName']) === false }-->{=customGoodsView['optionName']}<!--{ : }-->옵션<!--{ / }--> : 가격 <!--{ ? customGoodsView['stockFl'] == 'y' }-->: 재고<!--{ / }--> =
+                                </option>
+                                <!--{ @ customGoodsView['option'] }-->
+                                <!--{ ? .optionViewFl == 'y' }-->
+                                <option value="{=.sno}"
+                                        data-option-price="{=.optionPrice}"
+                                        data-stock-cnt="{=.stockCnt}"
+                                        <!--{ ? (customGoodsView['stockFl'] == 'y' && .stockCnt == '0') || .optionSellFl == 'n' || .optionSellFl == 't' }-->
+                                        disabled="disabled"
+                                        <!--{ / }-->>
+                                    {=.optionValue}
+                                    <!--{ ? gd_isset(.optionPrice) != '0' }-->
+                                     : <!--{ ? gd_isset(.optionPrice) > 0 }-->+<!--{ / }-->{=number_format(.optionPrice)}원
+                                    <!--{ / }-->
+                                    <!--{ ? (.optionSellFl == 't') }-->[품절]
+                                    <!--{ : (customGoodsView['stockFl'] == 'y' && .stockCnt == '0') || .optionSellFl == 'n' }-->[품절]
+                                    <!--{ : }-->
+                                    <!--{ ? customGoodsView['stockFl'] == 'y' }--> : {=number_format(.stockCnt)}개<!--{ / }-->
+                                    <!--{ / }-->
+                                </option>
+                                <!--{ / }-->
+                                <!--{ / }-->
+                            </select>
+                        </dd>
+                    </dl>
+                    <!--{ : customGoodsView['optionDisplayFl'] == 'd' }-->
+                    <!-- 分离型选项 -->
+                    <!--{ @ customGoodsView['optionName'] }-->
+                    <!--{ ? .index_ == 0 }-->
+                    <input type="hidden" name="optionSnoInput" value="" />
+                    <input type="hidden" name="optionCntInput" value="{=.size_}" />
+                    <!--{ / }-->
+                    <dl>
+                        <dt class="official-option-label"><span class="extra-option-label">{=.value_}</span></dt>
+                        <dd>
+                            <select name="optionNo_{=.index_}" class="official-option-select" <!--{ ? customGoodsView['orderPossible'] == 'y' }-->onchange="handleDivisionOptionChange(this, '{=.index_}', '{=gd_isset(customGoodsView['optionName'][(.index_ + 1)])}');"<!--{ / }--><!--{ ? .index_ > 0 || customGoodsView['orderPossible'] != 'y' }--> disabled="disabled"<!--{ / }-->>
+                                <option value="">= <!--{ ? .index_ == 0 }-->{=.value_} 선택<!--{ : }-->{=customGoodsView['optionName'][(.index_ - 1)]}을 먼저 선택해 주세요<!--{ / }--> =</option>
+                                <!--{ ? .index_ == 0 }-->
+                                <!--{ @ customGoodsView['optionDivision'] }-->
+                                <option value="{=..value_}" <!--{ ? (customGoodsView['stockFl'] == 'y' && customGoodsView['optionDivisionStock'][..key_]['stockCnt'] == '0') || customGoodsView['optionDivisionStock'][..key_]['optionSellFl'] == 'n' || customGoodsView['optionDivisionStock'][..key_]['optionSellFl'] == 't' }-->disabled="disabled"<!--{ / }-->>{=..value_}<!--{ ? (customGoodsView['optionDivisionStock'][..key_]['optionSellFl'] == 't') }-->[품절]<!--{ : (customGoodsView['stockFl'] == 'y' && customGoodsView['optionDivisionStock'][..key_]['stockCnt'] == '0') || customGoodsView['optionDivisionStock'][..key_]['optionSellFl'] == 'n' }-->[품절]<!--{ / }--></option>
+                                <!--{ / }-->
+                                <!--{ / }-->
+                            </select>
+                        </dd>
+                    </dl>
+                    <!--{ / }-->
+                    
+                    <!--{ ? customGoodsView['optionTextFl'] == 'y' }-->
+                    <!-- 文本输入选项 -->
+                    <!--{ @ customGoodsView['optionText'] }-->
+                    <dl>
+                        <!--{ ? .index_ == 0 }-->
+                        <input type="hidden" id="optionTextCnt" value="{=.size_}" />
+                        <!--{ / }-->
+                        <dt class="official-option-label">
+                            <input type="hidden" name="optionTextMust_{=.index_}" value="{=.mustFl}" />
+                            <input type="hidden" name="optionTextLimit_{=.index_}" value="{=.inputLimit}" />
+                            <span class="extra-option-label optionTextNm_{=.index_}">{=.optionName}<!--{ ? .mustFl == 'y' }--><span class="extra-option-required">필수</span><!--{ / }--></span>
+                        </dt>
+                        <dd>
+                            <input type="hidden" name="optionTextSno_{=.index_}" value="{=.sno}"/>
+                            <input type="text"
+                                   name="optionTextInput_{=.index_}"
+                                   value=""
+                                   class="official-option-select"
+                                   style="height: 44px;"
+                                   data-option-text-sno="{=.sno}"
+                                   onchange="handleOptionTextChange(this)"
+                                   placeholder="{=.inputLimit}글자를 입력하세요."
+                                   maxlength="{=.inputLimit+1}"
+                                   <!--{ ? customGoodsView['orderPossible'] != 'y' }-->disabled="disabled"<!--{ / }-->/>
+                            <input type="hidden" value="{=.addPrice}"/>
+                            <!--{ ? .addPrice != 0 }-->
+                            <small style="color: #666; margin-top: 4px; display: block;">※ 작성시 +{=number_format(.addPrice)}원 추가</small>
+                            <!--{ / }-->
+                        </dd>
+                    </dl>
+                    <!--{ / }-->
+                    <!--{ / }-->
+                    <!--{ / }-->
+                </div>
+            </div>
+            <!--{ / }-->
+
+            <!-- ✅ 추가 옵션 - 仅当存在附加选项时显示 -->
+            <!--{ ? customGoodsView['extra_options'] && count(customGoodsView['extra_options']) > 0 }-->
+            <div class="option-section extra-options-section">
+                <div class="extra-options-list">
+                    <!--{ @ customGoodsView['extra_options'] }-->
+                    <div class="extra-option-item"
+                         data-option-id="{=.option_id}"
+                         data-input-type="{=.input_type}"
+                         data-option-group="{=.option_group}"
+                         data-extra-price="{=.extra_price}"
+                         data-price-type="{=.price_type}"
+                         data-is-required="{=.is_required}">
+                        <div class="extra-option-header">
+                            <label class="option-label">
+                                <span class="extra-option-label">{=.option_label}</span>
+                                <!--{ ? .is_required == 1 }-->
+                                <span class="extra-option-required">필수</span>
+                                <!--{ / }-->
+                            </label>
+                            <!--{ ? .extra_price > 0 }-->
+                            <div class="extra-option-meta">
+                                <span class="extra-option-price">
+                                    +{=number_format(.extra_price)}원
+                                    <!--{ ? .price_type == 'per_order' }-->
+                                    (주문당)
+                                    <!--{ : }-->
+                                    (수량당)
+                                    <!--{ / }-->
+                                </span>
+                            </div>
+                            <!--{ / }-->
+                            <!--{ ? .option_desc }-->
+                            <div class="extra-option-desc">{=.option_desc}</div>
+                            <!--{ / }-->
+                        </div>
+                        <div class="extra-option-control">
+                            <!--{ ? .input_type == 'checkbox' }-->
+                            <label class="extra-option-control-inner">
+                                <input type="checkbox"
+                                       class="extra-option-input extra-option-checkbox"
+                                       name="extra_option_{=.option_id}"
+                                       value="{=.option_id}">
+                                <span>선택</span>
+                            </label>
+                            <!--{ : .input_type == 'radio' }-->
+                            <label class="extra-option-control-inner">
+                                <input type="radio"
+                                       class="extra-option-input extra-option-radio"
+                                       name="extra_group_{=.option_group}"
+                                       value="{=.option_id}">
+                                <span>선택</span>
+                            </label>
+                            <!--{ : .input_type == 'color_palette' }-->
+                            <div class="extra-color-palette" data-option-id="{=.option_id}">
+                                <!--{ @ .colors }-->
+                                <div class="extra-color-item"
+                                     data-color-code="{=..color_code}"
+                                     data-color-hex="{=..color_hex}"
+                                     title="{=..color_name}">
+                                </div>
+                                <!--{ / }-->
+                            </div>
+                            <!--{ / }-->
+                        </div>
+                    </div>
+                    <!--{ / }-->
+                </div>
+            </div>
+            <!--{ / }-->
+
+            
+            <!-- 크기 选择区域暂时隐藏（使用 custom_goods_extension 的尺寸） -->
+            <div class="option-section" style="display: none;">
+                <label class="option-label">크기</label>
+                <div class="size-options" id="sizeOptions">
+                    <!-- 暂时不使用动态尺寸加载 -->
+                </div>
+            </div>
+            
+            <!-- 수량 선택 -->
+            <div class="option-section">
+                <label class="option-label">수량</label>
+                <div class="quantity-container">
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" id="btnDecrease">-</button>
+                        <input type="number" class="quantity-input" id="quantityInput" value="1" min="1">
+                        <button class="quantity-btn" id="btnIncrease">+</button>
+                    </div>
+                    <div class="min-order">최소 주문 1개</div>
+                </div>
+            </div>
+            
+            <!-- ✅ 주문 요약 - 使用 customGoodsView -->
+            <div class="order-summary">
+                <div class="summary-line">
+                    <span class="summary-quantity">
+                        <span id="summaryQuantity">1</span>개
+                    </span>
+                    <span class="summary-price">
+                        <span id="summaryPrice">{=customGoodsView['goods_price_display']}</span>
+                    </span>
+                </div>
+                
+                <!-- 구매 옵션 -->
+                <div class="purchase-options">
+                    <button class="add-to-cart-btn" id="btnAddToCart" data-goods-id="{=customGoodsView['goodsNo']}">
+                        <i class="icon-cart"></i>
+                        장바구니에 추가
+                    </button>
+                    
+                    <!-- 根据用户需求：定制商品必须走购物车流程 -->
+                    <div class="purchase-notice">
+                        <small>💡 맞춤 상품은 장바구니에 추가되며, 장바구니에서 확인 및 결제하실 수 있습니다</small>
+                    </div>
+                </div>
+                
+                <!-- 오류 처리 알림 -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <span class="error-text"></span>
+                </div>
+                
+                <!-- 성공 알림 -->
+                <div class="success-message" id="successMessage" style="display: none;">
+                    <span class="success-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 패턴 라이브러리 팝업 -->
+    <div class="pattern-modal" id="patternModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>패턴 라이브러리</h3>
+                <button class="modal-close" id="btnCloseModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="pattern-search">
+                    <input type="text" id="patternSearch" placeholder="패턴 검색...">
+                </div>
+                <div class="pattern-grid" id="patternGrid">
+                    <!-- 패턴은 JavaScript를 통해 동적으로 로드됨 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 텍스트 편집 팝업 -->
+    <div class="text-modal" id="textModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>텍스트 추가</h3>
+                <button class="modal-close" id="btnCloseTextModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="text-input-group">
+                    <label>텍스트 내용：</label>
+                    <input type="text" id="textContent" placeholder="텍스트 내용을 입력하세요">
+                </div>
+                <div class="text-input-group">
+                    <label>글꼴 크기：</label>
+                    <input type="number" id="textSize" value="20" min="8" max="100">
+                </div>
+                <div class="text-input-group">
+                    <label>색상</label>
+                    <input type="color" id="textColor" value="#000000">
+                </div>
+                <div class="text-input-group">
+                    <label>글꼴：</label>
+                    <div class="text-font-picker" id="textFontPicker">
+                        <button type="button" class="font-picker-toggle" id="fontPickerToggle" aria-label="글꼴 선택">
+                            <span class="font-thumb" id="fontPickerThumb" aria-hidden="true"></span>
+                            <span class="font-arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <ul class="font-picker-menu" id="fontPickerMenu" role="listbox"></ul>
+                        <select id="textFont" class="font-picker-native" aria-label="글꼴 선택">
+                        <option value="Ongleaff Park Dahyeon">Ongleaff Park Dahyeon</option>
+                        <option value="Baedal Minjok Jua">Baedal Minjok Jua</option>
+                        <option value="Baegle Fat">Baegle Fat</option>
+                        <option value="PyeongChang Peace">PyeongChang Peace</option>
+                        <option value="Hancom MallangMallang">Hancom MallangMallang</option>
+                        <option value="Coper Black">Coper Black</option>
+                        <option value="Yeogiotte Jallanchae">Yeogiotte Jallanchae</option>
+                        <option value="Pretendard">Pretendard</option>
+                        <option value="Baemin Dohyeon">Baemin Dohyeon</option>
+                        <option value="NEXON Lv1 Gothic">NEXON Lv1 Gothic</option>
+                    </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" id="btnCancelText">취소</button>
+                    <button class="btn-confirm" id="btnConfirmText">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 외부몰 주문용 팝업 -->
+    <div class="text-modal" id="externalOrderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>주문 정보</h3>
+                <button class="modal-close" id="btnCloseExternalOrder">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="externalOrderBodyLayout">
+                    <!-- ✅ 왼쪽: 페이지 전환과 무관하게 항상 표시되는 첨부 이미지 -->
+                    <div class="externalOrderBodyLeft">
+                        <div class="text-input-group">
+                            <label style="display:flex; align-items:center; gap:6px;">
+                                <span>첨부 이미지 <span style="color:#e03131;">*</span></span>
+                                <span style="font-size:10px; color:#9DA0A3;">클릭하여 이미지를 확인하세요</span>
+                            </label>
+                            <div class="externalOrderImagesPanel" style="margin-top:8px;">
+                                <div id="externalOrderImagesPreview"
+                                     style="display:flex; flex-direction:column; gap:8px;"></div>
+                                <div id="externalOrderImagePreviewBox" class="externalOrderImagePreviewBox">
+                                    <div id="externalOrderImagePreviewEmpty" class="externalOrderImagePreviewEmpty">
+                                        이미지를 선택해주세요
+                                    </div>
+                                    <img id="externalOrderImagePreviewImg" alt="preview" style="display:none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ✅ 가운데 구분선 -->
+                    <div class="externalOrderBodyDivider" aria-hidden="true"></div>
+
+                    <!-- ✅ 오른쪽: 페이지(1/2) 전환 영역 -->
+                    <div class="externalOrderBodyRight">
+                        <!-- ✅ 1페이지 -->
+                        <div id="externalOrderPage1">
+                            <div class="text-input-group">
+                                <label>네이버 아이디</label>
+                                <input type="text" id="externalOrderAccountId" placeholder="네이버 아이디를 입력해주세요.">
+                            </div>
+                            <div class="text-input-group">
+                                <label>수령인 <span style="color:#e03131;">*</span></label>
+                                <input type="text" id="externalOrderReceiver" placeholder="수령인 이름을 입력해주세요.">
+                            </div>
+                            <div class="text-input-group">
+                                <label>이메일 <span style="color:#e03131;">*</span></label>
+                                <input type="email" id="externalOrderEmail" placeholder="이메일 주소만 입력해주세요.">
+                            </div>
+                            <div class="text-input-group">
+                                <label>연락처 <span style="color:#e03131;">*</span></label>
+                                <input type="text" id="externalOrderContact" placeholder="휴대폰 번호 또는 기타 연락처(선택)">
+                            </div>
+                            <div class="text-input-group">
+                                <label>요청사항</label>
+                                <textarea id="externalOrderRequestNote"
+                                          placeholder="주문과 관련된 추가 요청사항을 기입해주세요.&#10;상담이 필요한 경우 카카오채널 ‘박순희와 오덕구’로 문의해주세요!"
+                                          style="width:100%; min-height:90px; resize:vertical;"></textarea>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn-confirm" id="btnExternalOrderNext">다음</button>
+                            </div>
+                        </div>
+
+                        <!-- ✅ 2페이지 -->
+                        <div id="externalOrderPage2" style="display:none;">
+                            <div class="text-input-group">
+                                <label style="display:flex; align-items:center; gap:8px;">
+                                    <img src="../_mplshop/images/naver image/NaverLogo.png"
+                                         alt="Naver"
+                                         style="width:18px;height:18px;object-fit:contain;">
+                                    네이버 결제 금액 안내
+                                </label>
+                                <div id="externalOrderCustomizationInfo" style="border:1px solid #C5C8CB; border-radius:6px; padding:10px; font-size:13px;"></div>
+
+                                <div class="text-input-group paymentGuide" style="margin-top:12px;">
+                                    <label style="font-weight:700;">*주문서 전송 이후 결제 방법 안내</label>
+                                    <div class="paymentGuideRow" style="border:1px solid #C5C8CB; border-radius:8px; padding:12px; background:#fff;">
+                                        <div class="paymentGuideText">
+                                            <div style="font-family:Pretendard, sans-serif; font-size:13px; color:#25282B; line-height:1.5;">
+                                                1. 주문서 전송 후 해당 제품 페이지로 이동합니다.<br>
+                                                2. 장바구니에서 확인한 최종 결제 수량을 입력합니다.<br>
+                                                3. 구매하기까지 완료하시면 담당자가 최종 확인 후 제작을 시작합니다.
+                                            </div>
+                                        </div>
+                                        <div class="paymentGuideImg">
+                                            <img src="../_mplshop/images/naver image/PaymentExample.jpg"
+                                                 alt="Payment Example"
+                                                 style="width:100%; max-width:360px; display:block;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-actions" style="display:flex; gap:6px; width:100%;">
+                                <button class="btn-cancel" type="button" id="btnExternalOrderPrev"
+                                        style="flex:1; border:1px solid #007BFF; background:#fff; color:#007BFF; border-radius:8px; height:44px; font-family:Pretendard, sans-serif; font-weight:700; font-size:18pt;">
+                                    이전
+                                </button>
+                                <button class="btn-confirm" id="btnSendExternalOrder"
+                                        style="flex:1; border:1px solid #007BFF; background:#007BFF; color:#fff; border-radius:8px; height:44px; font-family:Pretendard, sans-serif; font-weight:700; font-size:18pt;">
+                                    주문서 전송
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 디자인 검수 안내 팝업 -->
+    <div class="design-check-modal" id="designCheckModal">
+        <div class="design-check-backdrop"></div>
+        <div class="design-check-content">
+            <div class="design-check-header">
+                <div class="design-check-title-main">
+                    각 항목을 확인 후, 주문을 진행해주세요!
+                </div>
+            </div>
+
+            <div class="design-check-body">
+                <ul class="design-check-list">
+                    <li>글자나 로고, 이미지가 실제 인쇄 크기에서 작지 않은가요?</li>
+                    <li>삽입한 이미지가 흐리게 보이거나 해상도가 낮지는 않은가요?</li>
+                    <li>재단선 안쪽으로 중요한 요소가 들어가 있나요?</li>
+                    <li>모든 정보를 정확하게 입력했나요?</li>
+                </ul>
+
+                <button type="button" class="design-check-confirm" id="btnConfirmDesignCheck">확인했습니다</button>
+                </div>
+        </div>
+    </div>
+    
+    <!-- 이미지 업로드 경고 -->
+    <div id="imageUploadWarning" class="custom-alert-overlay" role="alertdialog" aria-modal="true" style="display: none;">
+        <div class="custom-alert-box">
+            <img src="../_mplshop/images/icon/icon_warning.png" alt="경고" class="custom-alert-icon" loading="lazy">
+            <p class="custom-alert-text">3,000 픽셀 미만의 이미지를 사용해주세요.</p>
+            <p class="custom-alert-desc"></p>
+            <button type="button" class="custom-alert-close">확인</button>
+        </div>
+    </div>
+    
+    <!-- ✅ 页面配置数据 - 使用 customGoodsView（字段名与数据库一致） -->
+    <script id="pageConfig" type="application/json" style="display: none;">
+        {
+            "goodsNo": "{=customGoodsView['goodsNo']}",
+            "goodsNm": "{=customGoodsView['goodsNm']}",
+            "goodsPrice": {=customGoodsView['goodsPrice']},
+            "goodsImage": "{=customGoodsView['goodsImage']}",
+            "custom_width": {=customGoodsView['custom_width']},
+            "custom_height": {=customGoodsView['custom_height']},
+            "custom_size_display": "{=customGoodsView['custom_size_display']}",
+            "is_customizable": {=customGoodsView['is_customizable']},
+            "color_count": {=customGoodsView['color_count']},
+            "viewBoxWidth": {=customGoodsView['template_viewbox_width']},
+            "viewBoxHeight": {=customGoodsView['template_viewbox_height']},
+            "clipRegions": {=customGoodsView['clip_regions_json']},
+            "max_upload_size": {=max_upload_size},
+            "allowed_image_types": {=allowed_image_types},
+            "csrf_token": "{=csrf_token}"
+        }
+    </script>
+    
+    <!-- ✅ 颜色数据 - 使用 customGoodsView（字段名与数据库一致） -->
+    <script id="colorsData" type="application/json" style="display: none;">
+        {=customGoodsView['colors_json']}
+    </script>
+
+    <!-- ✅ 附加选项数据 - 供前端 JS 使用 -->
+    <script id="extraOptionsData" type="application/json" style="display: none;">
+        {=customGoodsView['extra_options_json']}
+    </script>
+    
+    <!-- ✅ JavaScript 初始化 - 使用 customGoodsView -->
+    <script>
+        // ✅ 页面配置数据（从 customGoodsView 获取）
+        var rawPageConfig = (document.getElementById('pageConfig').textContent || '').trim();
+        var pageConfig = rawPageConfig ? JSON.parse(rawPageConfig) : {};
+        var rawColors = (document.getElementById('colorsData').textContent || '').trim();
+        var colorsData = rawColors ? JSON.parse(rawColors) : [];
+        // 追加选项直接从 DOM 构建，不再解析 extraOptionsData 的 JSON
+        var extraOptionsState = {};
+        var officialOptionTextState = {};
+        
+        // ✅ 尺寸数据已从后端获取，无需 AJAX 动态加载（字段名与数据库一致）
+        var selectedSize = {
+            width: pageConfig.custom_width,
+            height: pageConfig.custom_height,
+            display: pageConfig.custom_size_display
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeColorOptions();
+            bindEvents();
+            initializeExtraOptions();
+            updateOrderSummary();
+        });
+
+        // ✅ 初始化颜色选项（从 customGoodsView.colors 获取）
+        function initializeColorOptions() {
+            const colorItems = document.querySelectorAll('.color-item');
+            colorItems.forEach((item, index) => {
+                const hex = item.getAttribute('data-color-hex');
+                if (hex) {
+                    item.style.backgroundColor = hex;
+                }
+                item.addEventListener('click', function() {
+                    if (this.classList.contains('soldout')) {
+                        alert('품절된 색상입니다.');
+                        return;
+                    }
+                    // 移除其他颜色的active类
+                    colorItems.forEach(c => c.classList.remove('active'));
+                    // 添加当前颜色的active类
+                    this.classList.add('active');
+                    
+                    // 如果有SVG图片，更新背景图片
+                    const svgPath = this.getAttribute('data-svg-path');
+                    if (svgPath) {
+                        const bgImage = document.getElementById('backgroundImage');
+                        if (bgImage) {
+                            bgImage.src = svgPath;
+                        }
+                    }
+                });
+            });
+        }
+
+        // ✅ 绑定基础事件（已简化）
+        function bindEvents() {
+            // 数量增加
+            const btnIncrease = document.getElementById('btnIncrease');
+            if (btnIncrease) {
+                btnIncrease.addEventListener('click', function() {
+                    const input = document.getElementById('quantityInput');
+                    const currentValue = parseInt(input.value) || 1;
+                    input.value = currentValue + 1;
+                    updateOrderSummary();
+                });
+            }
+            
+            // 数量减少
+            const btnDecrease = document.getElementById('btnDecrease');
+            if (btnDecrease) {
+                btnDecrease.addEventListener('click', function() {
+                    const input = document.getElementById('quantityInput');
+                    const currentValue = parseInt(input.value) || 1;
+                    if (currentValue > 1) {
+                        input.value = currentValue - 1;
+                        updateOrderSummary();
+                    }
+                });
+            }
+            
+            // 数量手动输入
+            const quantityInput = document.getElementById('quantityInput');
+            if (quantityInput) {
+                quantityInput.addEventListener('change', function() {
+                    const value = parseInt(this.value) || 1;
+                    this.value = value < 1 ? 1 : value;
+                    updateOrderSummary();
+                });
+            }
+        }
+
+        // ✅ 初始化追加选项事件与状态（直接从 DOM 读取 data-* 属性）
+        function initializeExtraOptions() {
+            var nodes = document.querySelectorAll('.extra-option-item');
+            if (!nodes.length) {
+                return;
+            }
+
+            nodes.forEach(function (node) {
+                var optionId = String(node.getAttribute('data-option-id') || '');
+                if (!optionId) {
+                    return;
+                }
+
+                var state = {
+                    optionId: optionId,
+                    optionGroup: node.getAttribute('data-option-group') || '',
+                    inputType: node.getAttribute('data-input-type') || 'checkbox',
+                    extraPrice: parseInt(node.getAttribute('data-extra-price') || '0', 10) || 0,
+                    priceType: node.getAttribute('data-price-type') || 'per_unit',
+                    isRequired: parseInt(node.getAttribute('data-is-required') || '0', 10) === 1,
+                    selected: false,
+                    selectedColor: null
+                };
+
+                extraOptionsState[optionId] = state;
+
+                var checkbox = node.querySelector('.extra-option-checkbox');
+                if (checkbox) {
+                    checkbox.addEventListener('change', function () {
+                        state.selected = !!checkbox.checked;
+                        updateOrderSummary();
+                    });
+                }
+
+                var radio = node.querySelector('.extra-option-radio');
+                if (radio) {
+                    radio.addEventListener('change', function () {
+                        Object.keys(extraOptionsState).forEach(function (id) {
+                            var s = extraOptionsState[id];
+                            if (!s) return;
+                            if (s.optionGroup === state.optionGroup && s.inputType === 'radio') {
+                                s.selected = (id === optionId);
+                                var relatedRadio = document.querySelector(
+                                    '.extra-option-item[data-option-id="' + id + '"] .extra-option-radio'
+                                );
+                                if (relatedRadio) {
+                                    relatedRadio.checked = (id === optionId);
+                                }
+                            }
+                        });
+                        updateOrderSummary();
+                    });
+                }
+
+                var palette = node.querySelector('.extra-color-palette');
+                if (palette) {
+                    var colorItems = palette.querySelectorAll('.extra-color-item');
+                    colorItems.forEach(function (colorItem) {
+                        var colorHex = colorItem.getAttribute('data-color-hex');
+                        if (colorHex) {
+                            colorItem.style.backgroundColor = colorHex;
+                        }
+                        colorItem.addEventListener('click', function () {
+                            var alreadyActive = colorItem.classList.contains('active');
+                            colorItems.forEach(function (ci) {
+                                ci.classList.remove('active');
+                            });
+
+                            if (!alreadyActive || state.isRequired) {
+                                colorItem.classList.add('active');
+                                state.selected = true;
+                                state.selectedColor =
+                                    colorItem.getAttribute('data-color-code') ||
+                                    colorItem.getAttribute('data-color-hex') || '';
+                            } else {
+                                state.selected = false;
+                                state.selectedColor = null;
+                            }
+                            updateOrderSummary();
+                        });
+                    });
+
+                    // 必选 + 有颜色时，默认选第一种颜色
+                    if (state.isRequired && colorItems.length > 0) {
+                        var first = colorItems[0];
+                        first.classList.add('active');
+                        state.selected = true;
+                        state.selectedColor =
+                            first.getAttribute('data-color-code') ||
+                            first.getAttribute('data-color-hex') || '';
+                    }
+                }
+            });
+        }
+
+        // ✅ 更新订单摘要（只显示：商品基础价 + 官方选项价格；不叠加自定义附加选项金额）
+        function updateOrderSummary() {
+            const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
+            const basePrice = pageConfig.goodsPrice || 0;
+
+            // 仍然计算 extra（供 addToCart 内的 getExtraOptionsPriceSummaryForRequest 使用），
+            // 但本函数不把 extra 金额叠加到展示价格中
+            const extra = calculateExtraPrices(quantity);
+
+            // 获取官方选项价格
+            const officialOptionPrice = getSelectedOfficialOptionPrice();
+
+            // 单价 = 商品基础价 + 官方选项价（不含任何自定义附加选项金额）
+            const unitPrice = basePrice + officialOptionPrice;
+            const totalPrice = unitPrice * quantity;
+            
+            // 更新数量显示
+            const summaryQuantity = document.getElementById('summaryQuantity');
+            if (summaryQuantity) {
+                summaryQuantity.textContent = quantity;
+            }
+            
+            // 在 summaryPrice 上仅显示“基础价 + 官方选项价”的合计
+            const summaryPriceElement = document.getElementById('summaryPrice');
+            if (summaryPriceElement) {
+                summaryPriceElement.textContent = formatPrice(totalPrice);
+            }
+        }
+
+        // ✅ 获取当前选中的官方选项价格（支持一体型和分离型）
+        function getSelectedOfficialOptionPrice() {
+            // 一体型选项
+            var select = document.getElementById('officialOptionSelect');
+            if (select) {
+                var selectedOption = select.options[select.selectedIndex];
+                if (selectedOption && selectedOption.value) {
+                    return parseInt(selectedOption.getAttribute('data-option-price'), 10) || 0;
+                }
+                return 0;
+            }
+            
+            // 分离型选项 - 从 optionSnoInput 解析价格
+            var optionSnoInput = document.querySelector('input[name="optionSnoInput"]');
+            if (optionSnoInput && optionSnoInput.value) {
+                // 格式: sno||price^^value... 提取 price
+                var parts = optionSnoInput.value.split('||');
+                if (parts.length >= 2) {
+                    var pricePart = parts[1].split('^^')[0];
+                    return parseInt(pricePart, 10) || 0;
+                }
+            }
+            return 0;
+        }
+
+        // ✅ 获取当前选中的官方选项 sno（支持一体型和分离型）
+        function getSelectedOfficialOptionSno() {
+            // 一体型选项
+            var select = document.getElementById('officialOptionSelect');
+            if (select && select.value) {
+                return parseInt(select.value, 10) || 0;
+            }
+            
+            // 分离型选项 - 从 optionSnoInput 解析 sno
+            var optionSnoInput = document.querySelector('input[name="optionSnoInput"]');
+            if (optionSnoInput && optionSnoInput.value) {
+                // 格式: sno||price^^value... 提取 sno
+                var parts = optionSnoInput.value.split('||');
+                if (parts.length >= 1) {
+                    return parseInt(parts[0], 10) || 0;
+                }
+            }
+            return 0;
+        }
+
+        // ✅ 官方选项变更处理函数（一体型）
+        function handleOfficialOptionChange(selectElement) {
+            updateOrderSummary();
+        }
+
+        // ✅ 分离型选项变更处理函数（参考 Godomall 原生 gd_goods_view.js）
+        function handleDivisionOptionChange(selectElement, currentIndex, nextOptionName) {
+            var currentIdx = parseInt(currentIndex, 10);
+            var optionCntInput = document.querySelector('input[name="optionCntInput"]');
+            var optionCnt = optionCntInput ? parseInt(optionCntInput.value, 10) : 0;
+            var goodsNo = '{=customGoodsView["goodsNo"]}';
+            var stockFl = '{=customGoodsView["stockFl"]}';
+            
+            // 收集已选择的值（数组格式）
+            var optionVal = [];
+            for (var i = 0; i <= currentIdx; i++) {
+                var sel = document.querySelector('select[name="optionNo_' + i + '"]');
+                optionVal[i] = sel ? sel.value : '';
+                
+                // 如果某层没有选择，禁用后续所有选项
+                if (optionVal[i] === '') {
+                    for (var j = i + 1; j < optionCnt; j++) {
+                        var nextSel = document.querySelector('select[name="optionNo_' + j + '"]');
+                        if (nextSel) {
+                            nextSel.disabled = true;
+                        }
+                    }
+                    document.querySelector('input[name="optionSnoInput"]').value = '';
+                    updateOrderSummary();
+                    return;
+                }
+            }
+            
+            // 清空已选择的选项 sno
+            document.querySelector('input[name="optionSnoInput"]').value = '';
+            
+            // 通过 AJAX 获取下一层选项（使用数组格式的 optionVal）
+            $.post('../goods/goods_ps.php', {
+                'mode': 'option_select',
+                'optionVal': optionVal,
+                'optionKey': currentIdx,
+                'goodsNo': goodsNo,
+                'mileageFl': 'n'
+            }, function(data) {
+                // 如果返回了 optionSno，说明已选择完所有层级
+                if (typeof data.optionSno === 'string') {
+                    var optionInfo = data.optionSno.split('||');
+                    if (data.optionPrice && data.optionPrice[0]) {
+                        optionInfo[1] = data.optionPrice[0];
+                    }
+                    var optionSnoValue = optionInfo.join('||') + '^^' + optionVal.join('/');
+                    document.querySelector('input[name="optionSnoInput"]').value = optionSnoValue;
+                    updateOrderSummary();
+                    return;
+                }
+                
+                // 还有下一层选项需要加载
+                for (var i = 0; i < optionCnt; i++) {
+                    var sel = document.querySelector('select[name="optionNo_' + i + '"]');
+                    if (!sel) continue;
+                    
+                    if (i <= data.nextKey) {
+                        sel.disabled = false;
+                        
+                        // 填充下一层选项
+                        if (i == data.nextKey && data.nextOption) {
+                            sel.innerHTML = '';
+                            var addSelectOption = '';
+                            
+                            for (var j = 0; j < data.nextOption.length; j++) {
+                                if (data.optionViewFl && data.optionViewFl[j] === 'y') {
+                                    if (j === 0) {
+                                        // 默认提示选项
+                                        addSelectOption += '<option value="">= ' + nextOptionName + ' 선택';
+                                        // 最后一层显示价格和库存
+                                        if ((parseInt(data.nextKey) + 1) == parseInt(optionCnt)) {
+                                            addSelectOption += ' : 가격';
+                                            if (stockFl === 'y') {
+                                                addSelectOption += ' : 재고';
+                                            }
+                                        }
+                                        addSelectOption += ' =</option>';
+                                    }
+                                    
+                                    // 选项值
+                                    var isDisabled = false;
+                                    var soldOutText = '';
+                                    
+                                    if (data.optionSellFl && (data.optionSellFl[j] === 'n' || data.optionSellFl[j] === 't')) {
+                                        isDisabled = true;
+                                        soldOutText = '[품절]';
+                                    } else if (stockFl === 'y' && data.stockCnt && parseInt(data.stockCnt[j]) === 0) {
+                                        isDisabled = true;
+                                        soldOutText = '[품절]';
+                                    }
+                                    
+                                    addSelectOption += '<option value="' + data.nextOption[j] + '"';
+                                    if (isDisabled) {
+                                        addSelectOption += ' disabled="disabled"';
+                                    }
+                                    addSelectOption += '>' + data.nextOption[j];
+                                    
+                                    // 最后一层显示价格
+                                    if ((parseInt(data.nextKey) + 1) == parseInt(optionCnt) && data.optionPrice && data.optionPrice[j]) {
+                                        var price = parseInt(data.optionPrice[j]);
+                                        if (price !== 0) {
+                                            addSelectOption += ' : ' + (price > 0 ? '+' : '') + price.toLocaleString() + '원';
+                                        }
+                                    }
+                                    
+                                    addSelectOption += soldOutText + '</option>';
+                                }
+                            }
+                            
+                            sel.innerHTML = addSelectOption;
+                        }
+                    } else {
+                        sel.disabled = true;
+                        // 重置后续选项的提示文字
+                        var prevOptionName = '';
+                        var prevSel = document.querySelector('select[name="optionNo_' + (i-1) + '"]');
+                        if (prevSel && prevSel.options[0]) {
+                            var match = prevSel.options[0].textContent.match(/=\s*(.+?)\s*선택/);
+                            if (match) {
+                                prevOptionName = match[1];
+                            }
+                        }
+                        sel.innerHTML = '<option value="">= ' + prevOptionName + '을 먼저 선택해 주세요 =</option>';
+                    }
+                }
+                
+                updateOrderSummary();
+            }, 'json');
+        }
+
+        // ✅ 文本输入选项变更处理函数
+        function handleOptionTextChange(inputElement) {
+            var sno = inputElement.getAttribute('data-option-text-sno');
+            if (sno) {
+                officialOptionTextState[sno] = inputElement.value.trim();
+            }
+            updateOrderSummary();
+        }
+
+        // 暴露到全局，便于 goods_custom.js 调用
+        window.getSelectedOfficialOptionSno = getSelectedOfficialOptionSno;
+        window.getSelectedOfficialOptionPrice = getSelectedOfficialOptionPrice;
+        window.handleOfficialOptionChange = handleOfficialOptionChange;
+        window.handleDivisionOptionChange = handleDivisionOptionChange;
+        window.handleOptionTextChange = handleOptionTextChange;
+        window.getOfficialOptionTextPayload = function () {
+            var payload = {};
+            Object.keys(officialOptionTextState).forEach(function (key) {
+                var value = officialOptionTextState[key];
+                if (typeof value === 'string' && value.trim() !== '') {
+                    payload[key] = value.trim();
+                }
+            });
+            return payload;
+        };
+
+        // ✅ 计算追加选项价格
+        function calculateExtraPrices(quantity) {
+            var perUnitExtra = 0;
+            var perOrderExtra = 0;
+
+            Object.keys(extraOptionsState).forEach(function (optionId) {
+                var state = extraOptionsState[optionId];
+                if (!state || !state.selected) {
+                    return;
+                }
+                var price = state.extraPrice || 0;
+                if (price <= 0) {
+                    return;
+                }
+                if (state.priceType === 'per_order') {
+                    perOrderExtra += price;
+                } else {
+                    perUnitExtra += price;
+                }
+            });
+
+            return {
+                perUnitExtra: perUnitExtra,
+                perOrderExtra: perOrderExtra
+            };
+        }
+
+        // ⭐ 新增：给 goods_custom.js 用的“附加费用”汇总（按当前数量）
+        function getExtraOptionsPriceSummaryForRequest() {
+            var quantityInput = document.getElementById('quantityInput');
+            var quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
+
+            var extra = calculateExtraPrices(quantity) || {};
+            var perUnit = extra.perUnitExtra || 0;
+            var perOrder = extra.perOrderExtra || 0;
+
+            return {
+                perUnitExtra: perUnit,
+                perOrderExtra: perOrder,
+                totalExtraPrice: (perUnit * quantity) + perOrder
+            };
+        }
+        
+        // ✅ 格式化价格
+        function formatPrice(price) {
+            return price.toLocaleString('ko-KR') + '원';
+        }
+
+        // ✅ 导出当前追加选项选择，供 goods_custom.js 使用
+        function getExtraOptionsPayload() {
+            var payload = {
+                options: [],
+                colorPalettes: []
+            };
+
+            Object.keys(extraOptionsState).forEach(function (optionId) {
+                var state = extraOptionsState[optionId];
+                if (!state || !state.selected) {
+                    return;
+                }
+
+                payload.options.push({
+                    option_id: state.optionId,
+                    option_group: state.optionGroup,
+                    input_type: state.inputType,
+                    extra_price: state.extraPrice,
+                    price_type: state.priceType
+                });
+
+                if (state.inputType === 'color_palette' && state.selectedColor) {
+                    payload.colorPalettes.push({
+                        option_id: state.optionId,
+                        selected_color: state.selectedColor
+                    });
+                }
+            });
+
+            return payload;
+        }
+
+        // ✅ 将当前已选追加选项转成文本，用于写入 customization_data.extraoption
+        function getExtraOptionsSummaryText() {
+            var lines = [];
+            if (!window.extraOptionsState) {
+                return '';
+            }
+
+            Object.keys(extraOptionsState).forEach(function (optionId) {
+                var state = extraOptionsState[optionId];
+                if (!state || !state.selected) {
+                    return;
+                }
+
+                var selector = '.extra-option-item[data-option-id="' + optionId + '"]';
+                var node = document.querySelector(selector);
+                if (!node) {
+                    return;
+                }
+
+                var text = (node.innerText || node.textContent || '').replace(/\s+/g, ' ').trim();
+                if (text) {
+                    lines.push(text);
+                }
+            });
+
+            return lines.join(' / ');
+        }
+
+        // 暴露到全局，便于其它脚本访问
+        window.getExtraOptionsPayload = getExtraOptionsPayload;
+        window.getExtraOptionsSummaryText = getExtraOptionsSummaryText;
+        window.getExtraOptionsPriceSummaryForRequest = getExtraOptionsPriceSummaryForRequest;
+
+        // ✅ 获取当前选中的尺寸（已简化）
+        function getSelectedSize() {
+            return selectedSize;
+        }
+    </script>
+    
+    <!-- JavaScript文件 -->
+    <script src="../js/custom/goods_custom.js" defer></script>
+    <script src="../js/custom/goods_custom_for_naver.js" defer></script>
+</body>
+</html> 

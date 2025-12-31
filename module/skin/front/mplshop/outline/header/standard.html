@@ -1,0 +1,118 @@
+{*** 상단 기본파일 | main/index.php ***}
+<!--{ ? gCurrentPageName == 'main/index'}--><!--{ = includeFile( "_mplshop/include/top_banner.html" ) }--><!--{ / }-->
+<div id="header">
+	<div class="headerContent">
+		<div class="inner">
+			<div class="headerTopRow">
+			<div class="headerLeftContents">
+				<div class="headerLogo  -showDom">
+					<!--{ @dataBanner('912521278') }-->{.tag}<!--{ / }-->
+                </div>
+            </div>
+			<div class="headerRightContents">
+				<!-- 상단 로그인 영역 수정부분 -->
+				<div class="headerMember">
+					<ul>
+						<!--{ ? gd_is_login() === false }-->
+						<li>
+                            <a href="../member/login.php">LOGIN</a>
+                        </li>
+                        <li>
+                            <a href="../member/join_method.php">JOIN</a>
+                        </li>
+						<!--{ : }-->
+						<li>
+                            <a href="../member/logout.php?returnUrl={=logoutReturnUrl}">LOGOUT</a>
+                        </li>
+						<!--{ / }-->
+						<li>
+                            <a href="../order/cart.php">CART</a>
+                        </li>
+						<li>
+                            <a href="../mypage/index.php">MYPAGE</a>
+                        </li>
+                        <li>
+                            <div class="headerCategoryAll -showDom">
+                                <div class="asideBtn">ALL LIST</div>
+                            </div>
+                        </li>
+					</ul>
+                    <ul class="isPcOnly">
+                        <li class="headerSearch">
+                            {=includeWidget('proc/_header_search.html')}
+                            {=includeFile('_mplshop/include/search_hot_list.html')}
+                        </li>
+                    </ul>
+					</div>
+				</div>
+			</div>
+			<div class="headerNavRow">
+				<div class="headerGnb">
+					<div class="categorySlide">                    
+						<div class="headerMegaMenuBtn">
+							<div class="megaMenuTrigger">모든 상품 <span class="arrow-down">▼</span></div>
+							<div class="megaMenuContainer">
+								<div class="megaMenuInner">
+									<div class="megaMenuLeft">
+										<div class="megaMenuSearch">
+											<form name="frmMegaMenuSearch" class="frmMegaMenuSearch" action="../goods/goods_search.php" method="get">
+												<fieldset>
+													<legend>{=__('검색폼')}</legend>
+													<input type="text" name="keyword" class="top_srarch_text" title="{=__('상품 검색을 해보세요')}" placeholder="{=__('상품 검색을 해보세요')}" autocomplete="off">
+												</fieldset>
+											</form>
+										</div>
+										<div class="megaMenuSection megaMenuSection-category">
+											<div class="megaMenuSectionTitle">CATEGORY</div>
+											<div class="megaMenuCategoryList">
+								{=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all')}
+											</div>
+										</div>
+									</div>
+									<div class="megaMenuRight">
+										<div class="megaMenuSection megaMenuSection-community">
+											<div class="megaMenuSectionTitle">
+												<a href="https://www.xn--2e0b25i8pimogprf1ev44j.com/board/list.php?bdId=lookbook" target="_blank" rel="noopener noreferrer">PORTFOLIO</a>
+											</div>
+											<ul class="megaMenuCommunityList">
+												<li><a href="../board/list.php?bdId=notice">NOTICE</a></li>
+												<li><a href="../board/list.php?bdId=event">EVENT</a></li>
+												<li><a href="../board/list.php?bdId=goodsreview">REVIEW</a></li>
+												<li><a href="../service/faq.php">FAQ</a></li>
+											</ul>
+										</div>
+										<div class="megaMenuSection megaMenuSection-customer">
+											<div class="megaMenuSectionTitle">견적 문의</div>
+											<div class="megaMenuCustomerNumber"><a href="tel:070-8656-2922">070-8656-2922</a></div>
+											<p class="megaMenuCustomerDesc">월 - 금 오전 10시 ~ 오후 7시<br>점심 12시 30분 ~ 오후 1시 30분<br>주말, 공휴일 휴무</p>
+										</div>
+										<div class="megaMenuSection megaMenuSection-kakao">
+											<a class="megaMenuKakaoButton" href="https://pf.kakao.com/_xjLVcxb" target="_blank" rel="noopener noreferrer">카카오톡채널 문의하기</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						{=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all')}
+					</div>                
+				</div>
+	            <!-- 모바일 해상도 상단 카테고리 사용시 displaynone 을 제거 하시기 바랍니다. -->
+	            <div class="displaynone">
+	                <div class="categoryMobile">
+	                    <div class="categoryAllBtn"><span id="allMenuIcon"></span></div>
+	                    {=includeWidget('proc/category_side', 'type', 'top','cateType','cate','menuType','all','showType','mobile')}
+	                    <div class="categoryMore"></div>
+	                </div>
+	                <div class="mobileAddMenu">
+	                    <div class="mobileAddMenuContainer">
+	                        <ul class="addCategory1"></ul>
+	                        <ul class="addCategory2"></ul>
+	                    </div>
+	                </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- //header -->

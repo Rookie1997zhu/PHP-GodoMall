@@ -1,0 +1,31 @@
+{*** 우측 스크롤 배너 | proc/scroll_banner_right.htm ***}
+<div class="quickBtn">
+    <!--{ @dataBanner('559008885', true) }--> 
+    
+	<!--
+	<a <!--{ ? .bannerLink }--> href="#none" onclick="winPop('{.bannerLink}'); return false;"<!--{ / }--> class="<!--{ ? strpos(.bannerLink, 'naver.com' ) !== false }-->addQuick<!--{ / }--><!--{ ? strpos(.bannerLink, 'kakao.com' ) !== false }-->addQuick<!--{ / }-->">
+        <img src="{.bannerImageUrl}" alt="{.bannerImageAlt}">
+    </a>
+	-->
+    
+	<!--{ / }-->
+    <!-- 
+        우측 퀵 SNS 아이콘 영역    href="#none"   #none 부분을 연결링크로 수정
+        새창으로 연결시 href="연결링크" target="_blank"  부분을 추가하여 사용하시기 바랍니다.
+     -->
+    <div class="quickBtnItem">
+        <a href="http://pf.kakao.com/_xjLVcxb" target="_blank"><img src="../../_mplshop/images/sns/kakao.jpg" alt="카카오채널"></a>
+        <span>견적 문의</span>
+    </div>
+    <div class="quickBtnItem">
+        <a href="https://youtube.com/channel/UCGsa6hr042cMpeb4lnKqhdQ?si=U-NmP5lmtDfBsF-4" target="_blank"><img src="../../_mplshop/images/sns/youtube.jpg" alt="youtube"></a>
+        <span>제품 영상</span>
+    </div>
+    <div class="quickBtnItem">
+        <a href="https://www.xn--2e0b25i8pimogprf1ev44j.com/board/list.php?bdId=lookbook" target="_blank"><img src="../../_mplshop/images/sns/portfolio.jpg" alt="portfolio"></a>
+        <span>제작 내역</span>
+    </div>
+    <!-- <a href="#none" target="_blank"><img src="../../_mplshop/images/sns/sns_03.png" alt="인스타그램"></a> -->
+    <!-- <a href="#none" target="_blank"><img src="../../_mplshop/images/sns/sns_04.png" alt="페이스북"></a> -->				
+    
+</div>

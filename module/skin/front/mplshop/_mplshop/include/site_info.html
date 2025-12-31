@@ -1,0 +1,172 @@
+{***  | _mplshop/include/site_info.php ***}
+<div id="basicInfo">
+
+	<!-- 고객센터 정보-->
+	<div class="basicShopInfo">
+		<!-- 
+			변경시 : 텍스트부분만 수정 처리해주시기 바랍니다.
+			삭제시 : <div> ~ </div> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+			추가시 : <div> ~ </div> 형태를 복사하여 반복시키시면 추가 가능합니다. ( 마지막 부분에 추가됩니다. )
+		-->
+		<div class="centerOpen">월-금 오전10시~오후7시</div>						<!-- 고객센터 운영시간 -->
+		<div class="centerLunch"></div>							<!-- 고객센터 점심시간 -->
+		<div class="centerOff">주말,공휴일 휴무</div>							        <!-- 고객센터 휴무일 -->
+	</div>
+
+	<!-- 입금계좌 정보 -->
+	<div class="basicShopBank">
+		<!-- 
+			변경시 : 텍스트부분만 수정 처리해주시기 바랍니다.
+			삭제시 : <div> ~ </div> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+		-->
+		<div class="bankAccountHolder">예금주 : (주)헬로우미스터리</div>					<!-- 예금주 -->
+		<div class="bankAccountNumber">하나은행&nbsp;&nbsp;380-910013-82204</div>	<!-- 계좌정보 -->
+	</div>
+
+    <!-- 
+        상단 커뮤니티 / 커뮤니티 메인 / 하단 BOARD 공통
+
+        해당 부분을 사용 안하실 경우 <li> ~ </li> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+        메뉴를 더추가하실 경우는 <li> ~ </li> 형태를 복사하여 반복시키시면 추가 가능합니다. 
+    -->
+	<div class="basicBoard">
+		
+		<!-- <li><a href="../service/company.php">{=__('회사소개')}</a></li>-->
+		
+		<li><a href='../board/list.php?bdId=notice'>{=__('NOTICE')}</a></li>
+		 <li><a href='../board/list.php?bdId=event'>{=__('EVENT')}</a></li> 
+		<!-- <li><a href='../board/list.php?bdId=goodsqa'>{=__('Q&A')}</a></li> -->
+		<li><a href='../board/list.php?bdId=goodsreview'>{=__('REVIEW')}</a></li>
+		<!-- <li><a href='../board/list.php?bdId=lookbook'>{=__('LOOKBOOK')}</a></li> -->
+		<li><a href='../service/faq.php'>{=__('FAQ')}</a></li>
+        <!-- <li><a href='../board/list.php?bdId=store'>{=__('SHOPLIST')}</a></li> -->   
+		<li><a href='../board/list.php?bdId=qa'>{=__('1:1문의')}</a></li>
+	</div>
+
+    <!-- 
+        하단 FAVORITE 링크
+
+        해당 부분을 사용 안하실 경우 <li> ~ </li> 부분을 주석 처리하시거나 삭제하시기 바랍니다.
+        메뉴를 더추가하실 경우는 <li> ~ </li> 형태를 복사하여 반복시키시면 추가 가능합니다. 
+    -->
+    <div class="basicFavorite">
+		<li><a href="../board/list.php?bdId=event">이벤트</a></li>
+		<li><a href="../order/cart.php">장바구니</a></li>
+		<li><a href="../mypage/wish_list.php">찜한상품</a></li>
+		<li><a href="../mypage/order_list.php">주문조회</a></li>
+		<li><a href="../mypage/index.php">마이페이지</a></li>
+	</div>
+
+    <!-- 
+        모바일 추가 메뉴 윗 부분
+
+        해당 추가메뉴를 사용안하실 경우는 아래 <div class="addCategory1">~~ </div> 전체영역을 주석처리하시기 바랍니다.
+        추가메뉴 등록,삭제는 <li>~</li> 반복 부분을 추가하시거나 삭제하시기 바랍니다.
+    -->
+	<div class="addCategory1">
+		<ul>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+			<li><a href="#">추가매뉴1</a></li>
+            <li><a href="#">추가매뉴1</a></li>
+		</ul>
+	</div>
+
+    <!-- 
+        모바일 추가 메뉴 아랫 부분
+
+        해당 추가메뉴를 사용안하실 경우는 아래 <div class="addCategory2">~~ </div> 전체영역을 주석처리하시기 바랍니다.
+        추가메뉴 등록,삭제는 <li>~</li> 반복 부분을 추가하시거나 삭제하시기 바랍니다.
+    -->
+	<div class="addCategory2">
+		<ul>
+			<li><a href="#">추가매뉴2</a></li>
+			<li><a href="#">추가매뉴2</a></li>
+		</ul>
+	</div>
+
+    <!-- 
+        카테고리 마우스 오버시 이미지 노출 부분        
+    -->
+	<div class="categoryBannerArea">
+        <!--
+        예) 대메뉴 갯수 10개 아래 <div>~</div> 부분 10개
+        첫번째 대메뉴 하위에 배너를 삽입할경우 
+        첫번째 <div></div> 반복되는 부분에 배너 삽입 
+        예) <div><a href="#"><img src="../images/category/overimg1.jpg" alt="" /></a></div>
+            ftp 주소 > skin > front > 작업폴더(mplshop) > _mplshop > images > category  폴더에 업로드
+        대메뉴에 배너가 없을 경우는 <div></div>
+        
+        배너링크 :  <a href="연결되는 주소 삽입">
+        -->
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+		<div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+	</div>
+</div>
+
+<script>													
+//메인슬라이드 모바일 이미지 적용설정
+var useMobileImage = true;	
+//회원가입 포인트 문구 사용설정
+var useJoinPoint = true;
+//회원가입 포인트													
+var joinPoint = "2,000";													
+//상품이미지 마우스오버시 확대
+var goodsThumb = true;                
+/* 상품리스트 상단 슬라이드 사용설정  사용안할 경우 true = false 로 변경*/                                      
+var subTopBannerUse = true;           
+/*
+	인스타그램 사용설정
+	사용함 > instagramUse:true  // 사용안함 > instagramUse:false
+*/
+var instagramUse = false;
+$(window).load(function() {	
+    /* 
+		상단 탑배너 사용설정
+		사용함 > operation:true  // 사용안함 > operation:false
+	*/
+	$(".topBanner").Topbanner({
+		operation:false,	//사용설정
+		responsive:true,	//모바일이미지 사용설정
+		responsiveSize:700	//모바일이미지 적용 가로사이즈
+	});
+    if($(".topBanner").find(".topBannerImage li").length < 1){ $(".topBanner").find(".topBannerDirectionNav").hide();}	
+	/*
+		하단 팝업 사용설정
+		사용함 > operation:true  // 사용안함 > operation:false
+	*/
+	$("#bottomBanner").bottomBanner({
+		operation:true,   //사용설정
+		bottom:20,
+		bottomSpace:30
+	});
+	$(".bottomBannerImage .imageContents").slick({
+		speed: 600,
+		autoplay: true,
+		autoplaySpeed: 5000,
+		arrows:false,
+		dots: true,
+		slidesToScroll: 1
+	});
+});
+$(document).ready(function(){	
+    /* 이미지 타이틀 공백으로 변경 */
+    $('img').attr('title','');
+});
+</script>
+<style>
+/* 상품 리스트 리뷰 카운트 미사용  display:none;  //  리뷰 카운트 사용  display:inline-block; */
+.item_review_cnt {display:inline-block;} 
+</style>
