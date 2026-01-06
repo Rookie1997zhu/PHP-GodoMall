@@ -130,9 +130,49 @@ class GoodsCustomController extends \Controller\Front\Controller
                 throw new AlertBackException('이 상품은 맞춤 제작이 불가능합니다.');
             }
 
+            // ✅ 외부몰 주문 모드(SSR): 서버에서도 "명시적 진입"만 허용 (方案A)
+            // - 허용: orderMode=external AND (platform=naver|cafe24 OR naver=1 OR cafe24=1)
+            // - 차단: k=... 만으로는 외부모드 진입 불가 (복사 링크 방지)
+            // - 차단 시: 안내 페이지로 redirect
+            $isExternalOrderMode = false;
+            try {
+                $get = Request::get();
+
+                $orderMode = (string)$get->get('orderMode');
+                $platform = strtolower((string)$get->get('platform'));
+                $naver = (string)$get->get('naver');
+                $cafe24 = (string)$get->get('cafe24');
+                $k = strtolower((string)$get->get('k'));
+
+                $hasPlatform = ($platform === 'naver' || $platform === 'cafe24' || $naver === '1' || $cafe24 === '1');
+                $explicitEntry = ($orderMode === 'external' && $hasPlatform);
+
+                if ($explicitEntry) {
+                    $isExternalOrderMode = true;
+                } else {
+                    // ✅ 遮罩 URL(带 k) 直接进入 → 跳提示页
+                    if (!empty($k)) {
+                        header('Location: /data/skin/front/mplshop/custom/external_order_entry_required.html', true, 302);
+                        exit;
+                    }
+                }
+            } catch (\Exception $e) {
+                // ignore
+            }
+
             // ✅ 使用 Godomall 标准方式传递数据到模板
             // 传递整个 customGoodsView 对象（类似官方的 goodsView）
             $this->setData('customGoodsView', $customGoodsView);
+
+            // ✅ 首屏(SSR) 버튼/안내 문구
+            $this->setData('isExternalOrderMode', $isExternalOrderMode ? '1' : '0');
+            $this->setData('addToCartBtnText', $isExternalOrderMode ? '주문 확인' : '장바구니에 추가');
+            $this->setData(
+                'purchaseNoticeText',
+                $isExternalOrderMode
+                    ? '외부몰 주문 모드입니다. 디자인을 확인한 후 주문서를 판매자에게 전송하세요.'
+                    : '💡 맞춤 상품은 장바구니에 추가되며, 장바구니에서 확인 및 결제하실 수 있습니다'
+            );
             
             // ✅ 生成颜色选项HTML
             $goodsColorsHtml = $this->customGoods->renderColorOptionsHtml($customGoodsView['colors']);

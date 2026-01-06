@@ -172,45 +172,45 @@ body {
     background-size: contain;
 }
 
-.tool-btn:disabled .icon-undo { background-image: url('../../_mplshop/images/Toolbox/1.실행 취소_1.jpg'); }
-.tool-btn:not(:disabled) .icon-undo { background-image: url('../../_mplshop/images/Toolbox/1.실행 취소.jpg'); }
+.tool-btn:disabled .icon-undo { background-image: url("../../_mplshop/images/ToolBox(PNG)/1.실행 취소_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-undo { background-image: url("../../_mplshop/images/ToolBox(PNG)/1.실행 취소.png"); }
 
-.tool-btn:disabled .icon-redo { background-image: url('../../_mplshop/images/Toolbox/2.다시 실행_1.jpg'); }
-.tool-btn:not(:disabled) .icon-redo { background-image: url('../../_mplshop/images/Toolbox/2.다시 실행.jpg'); }
+.tool-btn:disabled .icon-redo { background-image: url("../../_mplshop/images/ToolBox(PNG)/2.다시 실행_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-redo { background-image: url("../../_mplshop/images/ToolBox(PNG)/2.다시 실행.png"); }
 
 .tool-btn:disabled .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기_1.jpg'); }
 .tool-btn:not(:disabled) .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기.jpg'); }
 
-.tool-btn:disabled .icon-delete { background-image: url('../../_mplshop/images/Toolbox/4.삭제_1.jpg'); }
-.tool-btn:not(:disabled) .icon-delete { background-image: url('../../_mplshop/images/Toolbox/4.삭제.jpg'); }
+.tool-btn:disabled .icon-delete { background-image: url("../../_mplshop/images/ToolBox(PNG)/3.삭제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-delete { background-image: url("../../_mplshop/images/ToolBox(PNG)/3.삭제.png"); }
 
-.tool-btn:disabled .icon-flip-h { background-image: url('../../_mplshop/images/Toolbox/5.좌우 반전_1.jpg'); }
-.tool-btn:not(:disabled) .icon-flip-h { background-image: url('../../_mplshop/images/Toolbox/5.좌우 반전.jpg'); }
+.tool-btn:disabled .icon-flip-h { background-image: url("../../_mplshop/images/ToolBox(PNG)/4.좌우 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-h { background-image: url("../../_mplshop/images/ToolBox(PNG)/4.좌우 반전.png"); }
 
-.tool-btn:disabled .icon-flip-v { background-image: url('../../_mplshop/images/Toolbox/6.상하 반전_1.jpg'); }
-.tool-btn:not(:disabled) .icon-flip-v { background-image: url('../../_mplshop/images/Toolbox/6.상하 반전.jpg'); }
+.tool-btn:disabled .icon-flip-v { background-image: url("../../_mplshop/images/ToolBox(PNG)/5.상하 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-v { background-image: url("../../_mplshop/images/ToolBox(PNG)/5.상하 반전.png"); }
 
 /* ✅ 90° 회전 */
 .tool-btn:disabled .icon-rotate-90 { background-image: url('../../_mplshop/images/Toolbox/회전 icon(Disabled).png'); }
 .tool-btn:not(:disabled) .icon-rotate-90 { background-image: url('../../_mplshop/images/Toolbox/회전 icon.png'); }
 
-.tool-btn:disabled .icon-bring-forward { background-image: url('../../_mplshop/images/Toolbox/7.앞으로 이동_1.jpg'); }
-.tool-btn:not(:disabled) .icon-bring-forward { background-image: url('../../_mplshop/images/Toolbox/7.앞으로 이동.jpg'); }
+.tool-btn:disabled .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBox(PNG)/6.앞으로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBox(PNG)/6.앞으로 이동.png"); }
 
-.tool-btn:disabled .icon-send-backward { background-image: url('../../_mplshop/images/Toolbox/8.뒤로 이동_1.jpg'); }
-.tool-btn:not(:disabled) .icon-send-backward { background-image: url('../../_mplshop/images/Toolbox/8.뒤로 이동.jpg'); }
+.tool-btn:disabled .icon-send-backward { background-image: url("../../_mplshop/images/ToolBox(PNG)/7.뒤로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-backward { background-image: url("../../_mplshop/images/ToolBox(PNG)/7.뒤로 이동.png"); }
 
-.tool-btn:disabled .icon-bring-to-front { background-image: url('../../_mplshop/images/Toolbox/9.맨 앞으로_1.jpg'); }
-.tool-btn:not(:disabled) .icon-bring-to-front { background-image: url('../../_mplshop/images/Toolbox/9.맨 앞으로.jpg'); }
+.tool-btn:disabled .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBox(PNG)/8.맨 앞으로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBox(PNG)/8.맨 앞으로.png"); }
 
-.tool-btn:disabled .icon-send-to-back { background-image: url('../../_mplshop/images/Toolbox/10.맨 뒤로_1.jpg'); }
-.tool-btn:not(:disabled) .icon-send-to-back { background-image: url('../../_mplshop/images/Toolbox/10.맨 뒤로.jpg'); }
+.tool-btn:disabled .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBox(PNG)/9.맨 뒤로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBox(PNG)/9.맨 뒤로.png"); }
 
-.tool-btn:disabled .icon-group { background-image: url('../../_mplshop/images/Toolbox/11.그룹화_1.jpg'); }
-.tool-btn:not(:disabled) .icon-group { background-image: url('../../_mplshop/images/Toolbox/11.그룹화.jpg'); }
+.tool-btn:disabled .icon-group { background-image: url("../../_mplshop/images/ToolBox(PNG)/10.그룹화_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-group { background-image: url("../../_mplshop/images/ToolBox(PNG)/10.그룹화.png"); }
 
-.tool-btn:disabled .icon-ungroup { background-image: url('../../_mplshop/images/Toolbox/12.그룹 해제_1.jpg'); }
-.tool-btn:not(:disabled) .icon-ungroup { background-image: url('../../_mplshop/images/Toolbox/12.그룹 해제.jpg'); }
+.tool-btn:disabled .icon-ungroup { background-image: url("../../_mplshop/images/ToolBox(PNG)/11.그룹 해제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-ungroup { background-image: url("../../_mplshop/images/ToolBox(PNG)/11.그룹 해제.png"); }
 
 /* 检查按钮 */
 .check-button-container {
@@ -1330,6 +1330,11 @@ body {
     overflow-y: visible;
 }
 
+/* ✅ Pickr 패널 absolute 포지셔닝 기준을 모달 본문으로 고정 */
+#textModal .modal-body {
+    position: relative;
+}
+
 /* ✅ 외부몰 주문 팝업: 스크롤은 팝업 내부에서만 (페이지 스크롤 방지) */
 #externalOrderModal .modal-content {
     display: flex;
@@ -1800,34 +1805,163 @@ body {
 }
 
 #textModal #textColor {
-    width: 100%;
-    height: 44px;
+    /* hidden input (Pickr 사용) */
+    width: 0;
+    height: 0;
     padding: 0;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: transparent;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-#textModal #textColor::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-#textModal #textColor::-webkit-color-swatch {
     border: 0;
-    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
 }
 
-#textModal #textColor::-moz-color-swatch {
-    border: 0;
-    border-radius: 6px;
-}
+/* NOTE: 기존 input[type=color] 커스텀용 pseudo 스타일은 Pickr 전환으로 불필요 */
 
 #textModal .modal-actions {
     display: flex;
     gap: 6px; /* ✅ 확인/취소 버튼 간격 */
+}
+
+/* ✅ Pickr 버튼(색상 선택 UI) */
+#textModal .text-color-btn{
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#textModal .text-color-btn:hover{
+    border-color: #94a3ff;
+    box-shadow: 0 6px 20px rgba(82, 96, 255, 0.12);
+}
+
+#textModal .text-color-swatch{
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,.15);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+#textModal .text-color-label{
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+/* ✅ Pickr 패널: 텍스트 추가(modal) 폭에 맞춰 풀-폭 */
+#textModal .pcr-app{
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+
+    /* ✅ 좌/우 정렬: 기본 마진/변환/오프셋 제거 */
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+}
+
+/* ✅ Pickr interaction 레이아웃: 2줄 구성
+   - 1줄(상단): #000000 입력(pcr-result) + HEXA 타입(pcr-type)
+   - 2줄(하단): 취소(pcr-cancel) + 확인(pcr-save) (간격 6px, 좌/우 정렬)
+*/
+#textModal .pcr-app .pcr-interaction{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ✅ 강제 줄바꿈: (pcr-result + pcr-type) 아래로 (취소 + 확인) 버튼을 항상 내린다 */
+#textModal .pcr-app .pcr-interaction::before{
+    content: "";
+    order: 9;
+    flex: 0 0 100%;
+    height: 0;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-result{
+    order: 1;
+    height: 44px;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-type{
+    order: 2;
+    height: 44px;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 0 0 72px !important;
+    min-width: 72px !important;
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-cancel{
+    order: 10;
+    height: 44px;
+    margin: 0 !important;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;     /* ✅ 두 버튼 한 줄로 균등 배치 */
+    min-width: 0 !important;
+    box-sizing: border-box;
+
+    border: 1px solid #007BFF;
+    background: #fff;
+    color: #007BFF;
+    border-radius: 8px;
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-save{
+    order: 11;
+    height: 44px;
+    margin: 0 !important;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;     /* ✅ 두 버튼 한 줄로 균등 배치 */
+    min-width: 0 !important;
+    box-sizing: border-box;
+
+    border: 1px solid #007BFF;
+    background: #007BFF;
+    color: #fff;
+    border-radius: 8px;
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ✅ Pickr 취소/확인 버튼 크기: 텍스트 추가(modal-actions) 버튼과 동일 */
+#textModal .pcr-app .pcr-interaction .pcr-cancel,
+#textModal .pcr-app .pcr-interaction .pcr-save{
+    padding: 0;
+    font-size: 18pt;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
 }
 
 #textModal .modal-actions .btn-cancel,
@@ -1861,6 +1995,20 @@ body {
     border: 1px solid #007BFF;
     background: #007BFF;
     color: #fff;
+}
+
+/* ✅ 텍스트 추가: 하단 취소 버튼 제거 + 확인 버튼 단독 전체폭(좌/우 정렬) */
+#textModal #btnCancelText{
+    display: none !important;
+}
+
+#textModal .modal-actions{
+    gap: 0;
+}
+
+#textModal #btnConfirmText{
+    flex: 1;
+    width: 100%;
 }
 
 /* ✅ 定制尺寸显示区域样式 */
@@ -2167,6 +2315,36 @@ body {
 .custom-loading-text {
     font-size: 15px;
     color: #111827;
+}
+
+/* ===== Global Error Modal (globalErrorModal) ===== */
+#globalErrorModal .global-error-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#globalErrorModal .global-error-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+#globalErrorModal .design-check-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+#globalErrorModal #globalErrorText {
+    font-size: 18px;          /* 16px -> 18px */
+    font-weight: 700;         /* bold */
+    line-height: 1.6;
+    color: #25282B;
+    white-space: pre-line;    /* 支持 \n 换行 */
 }
 
 body.custom-editor-processing .preview-container,

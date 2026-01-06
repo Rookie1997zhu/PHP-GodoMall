@@ -30,18 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✅ 플랫폼 구분 파라미터 지원
     // - 추천: &platform=naver | &platform=cafe24
     // - 호환: &naver=1 또는 &cafe24=1
-    // - 추가(1A): 주소창 마스킹 후 새로고침을 대비해 k=naver_xxx / k=cafe24_xxx 를 인식
-    function getMaskedPlatformFromK() {
-        try {
-            var url = new URL(window.location.href);
-            var k = (url.searchParams.get('k') || '').toLowerCase();
-            if (k.indexOf('naver_') === 0) return 'naver';
-            if (k.indexOf('cafe24_') === 0) return 'cafe24';
-            return '';
-        } catch (e) {
-            return '';
-        }
-    }
+    // ⚠️ 보안 요구사항: 마스킹된 k=naver_xxx 형태 URL은 "직접 진입"을 허용하지 않음.
+    // 새로고침만 허용하기 위해 history.state(현재 탭) 를 사용한다.
     function getExternalPlatform() {
         try {
             var url = new URL(window.location.href);
@@ -52,19 +42,100 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (sp.get('naver') === '1') return 'naver';
             if (sp.get('cafe24') === '1') return 'cafe24';
-            // 마스킹된 k에서 복원
-            return getMaskedPlatformFromK() || '';
+            return '';
         } catch (e) {
-            return getMaskedPlatformFromK() || '';
+            return '';
         }
     }
     editor.externalPlatform = getExternalPlatform(); // 'naver' | 'cafe24' | ''
 
+    // ✅ goodsNo 파라미터 (세션/마스킹/검증에 사용)
+    var __goodsNoForExternal = '';
+    try {
+        var __u = new URL(window.location.href);
+        __goodsNoForExternal = __u.searchParams.get('goodsNo') || __u.searchParams.get('goods_no') || '';
+    } catch (e) {}
+
+    // ✅ "마스킹 URL 진입 차단 + 새로고침 허용(현재 탭만)"을 위한 history.state 키
+    // - 새 탭/직접 주소창 입력/복사 링크 진입은 history.state 가 없으므로 차단됨
+    var EXTERNAL_HISTORY_STATE_KEY = '__external_mask_ok_v1';
+    var EXTERNAL_HISTORY_STATE_TTL = 2 * 60 * 60 * 1000; // 2시간
+    function loadExternalHistoryState(goodsNo) {
+        try {
+            if (!goodsNo) return null;
+            var st = (window.history && window.history.state && typeof window.history.state === 'object')
+                ? window.history.state
+                : null;
+            var obj = st ? st[EXTERNAL_HISTORY_STATE_KEY] : null;
+            if (!obj) return null;
+            if (String(obj.goodsNo || '') !== String(goodsNo || '')) return null;
+            if (obj.ts && EXTERNAL_HISTORY_STATE_TTL > 0 && (Date.now() - obj.ts) > EXTERNAL_HISTORY_STATE_TTL) return null;
+            return obj;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // ✅ 마스킹 URL(k=...)을 복사해서 "직접 진입"하는 것을 차단하고, 서버 404로 유도
+    // - 단, 동일 탭에서 "정상 진입(명시적 파라미터)" 후 새로고침은 history.state로 허용
+    // ✅ 마스킹 URL 직접 진입 시 안내 페이지로 이동
+    // (실 서비스에서 스킨은 보통 /data/skin/front/... 경로로 서빙됨)
+    var EXTERNAL_INVALID_REDIRECT_PATH = '/data/skin/front/mplshop/custom/external_order_entry_required.html';
+    function redirectTo404() {
+        try {
+            // 무한루프 방지 (이미 invalid 페이지면 아무것도 하지 않음)
+            if ((window.location && window.location.pathname) === EXTERNAL_INVALID_REDIRECT_PATH) return;
+        } catch (e) {}
+        try {
+            window.location.replace(EXTERNAL_INVALID_REDIRECT_PATH);
+        } catch (e) {
+            // ignore
+        }
+    }
+
+    function isExplicitExternalEntry() {
+        try {
+            var url = new URL(window.location.href);
+            var sp = url.searchParams;
+            var platform = (sp.get('platform') || '').toLowerCase();
+            // ✅ 강화: 반드시 orderMode=external 이면서 플랫폼 식별 파라미터가 있어야 함
+            // (orderMode만 단독으로는 외부모드 진입 불가)
+            var hasOrderMode = (sp.get(ORDER_MODE_PARAM) === ORDER_MODE_VALUE);
+            var hasPlatform = (sp.get('naver') === '1') ||
+                (sp.get('cafe24') === '1') ||
+                (platform === 'naver' || platform === 'cafe24');
+            return hasOrderMode && hasPlatform;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function hasMaskedKParam() {
+        try {
+            var url = new URL(window.location.href);
+            return !!url.searchParams.get('k');
+        } catch (e) {
+            return false;
+        }
+    }
+
     // 외부 모드 진입 판단:
-    // - 원본 URL: orderMode=external
-    // - 마스킹 URL(1A): k=naver_xxx 또는 k=cafe24_xxx 이면 외부모드로 간주
-    if (getUrlOrderModeIsExternal() || !!getMaskedPlatformFromK()) {
+    // - ✅ "명시적 진입"만 허용: orderMode=external 또는 naver=1/cafe24=1 또는 platform=naver|cafe24
+    // - ✅ 마스킹 URL(k=...)은 단독 진입 불가(복사 링크 차단). 단, 동일 탭 새로고침은 history.state로 허용.
+    var __explicitEntry = isExplicitExternalEntry();
+    var __hasK = hasMaskedKParam();
+    if (__explicitEntry) {
         editor.orderMode = 'external';
+    } else if (__hasK) {
+        var hs = loadExternalHistoryState(__goodsNoForExternal);
+        if (hs && hs.platform) {
+            editor.orderMode = 'external';
+            editor.externalPlatform = hs.platform; // placeholder/prefix 등을 위해 복원
+        } else {
+            // 마스킹 URL 직접 진입 → 404
+            redirectTo404();
+            return;
+        }
     }
 
     // ✅ URL 노출 최소화(프론트 단): 외부몰 모드라면 주소창에서 orderMode/naver/cafe24 파라미터를 제거하고
@@ -93,7 +164,16 @@ document.addEventListener('DOMContentLoaded', function () {
             var masked = url.origin + url.pathname
                 + '?goodsNo=' + encodeURIComponent(goodsNo)
                 + '&k=' + encodeURIComponent(k);
-            window.history.replaceState({}, document.title, masked);
+            // ✅ 현재 탭에서만 새로고침 허용: history.state 에 "허용 토큰" 기록
+            var prevState = (window.history && window.history.state && typeof window.history.state === 'object')
+                ? window.history.state
+                : {};
+            prevState[EXTERNAL_HISTORY_STATE_KEY] = {
+                goodsNo: String(goodsNo || ''),
+                platform: String(editor.externalPlatform || ''),
+                ts: Date.now()
+            };
+            window.history.replaceState(prevState, document.title, masked);
         } catch (e) {
             // ignore
         }

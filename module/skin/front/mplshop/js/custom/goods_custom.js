@@ -109,6 +109,103 @@ class CustomGoodsEditor {
         this.init();
         this.preloadCustomFonts();
     }
+
+    /**
+     * ✅ Text 색상 UI(버튼/라벨/hidden 값) 동기화
+     */
+    syncTextColorUi(hex) {
+        const safe = (typeof hex === 'string' && hex.trim()) ? hex.trim() : '#000000';
+        const color = safe.startsWith('#') ? safe : ('#' + safe);
+
+        const input = document.getElementById('textColor');
+        const swatch = document.getElementById('textColorSwatch');
+        const label = document.getElementById('textColorLabel');
+        if (input) input.value = color;
+        if (swatch) swatch.style.backgroundColor = color;
+        if (label) label.textContent = color;
+    }
+
+    /**
+     * ✅ Pickr(색상 선택기) 초기화: 취소/확인 버튼 포함
+     */
+    initTextColorPickr() {
+        const input = document.getElementById('textColor');
+        const btn = document.getElementById('textColorBtn');
+        const modalBody = document.querySelector('#textModal .modal-body');
+        if (!input || !btn || !modalBody) return;
+
+        // Pickr 로드 전이면 스킵
+        const PickrCtor = (typeof window !== 'undefined' && window.Pickr) ? window.Pickr : null;
+        if (!PickrCtor) return;
+
+        // 중복 초기화 방지
+        if (this._textPickr) return;
+
+        // 초기 UI 동기화
+        this.syncTextColorUi(input.value || '#000000');
+
+        this._textPickr = PickrCtor.create({
+            el: btn,
+            theme: 'classic',
+            default: input.value || '#000000',
+            useAsButton: true,
+            // ✅ Pickr 패널을 textModal 내부에 렌더링 (폭을 모달과 동일하게 맞추기 위함)
+            container: modalBody,
+            position: 'bottom-start',
+            components: {
+                preview: true,
+                opacity: false,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    input: true,
+                    save: true,
+                    cancel: true
+                }
+            },
+            i18n: {
+                'btn:save': '확인',
+                'btn:cancel': '취소'
+            }
+        });
+
+        // ✅ 패널 오픈 시: 텍스트 모달(body) 폭에 맞추어 Pickr 패널 폭 강제 동기화
+        this._textPickr.on('show', (instance) => {
+            try {
+                const root = instance && typeof instance.getRoot === 'function' ? instance.getRoot() : null;
+                if (root && root.app && modalBody) {
+                    root.app.style.width = modalBody.clientWidth + 'px';
+                    root.app.style.maxWidth = 'none';
+                    root.app.style.boxSizing = 'border-box';
+                    // ✅ 좌/우 정렬 강제(테마 기본 오프셋/마진 제거)
+                    root.app.style.margin = '0';
+                    root.app.style.left = '0px';
+                    root.app.style.right = '0px';
+                    root.app.style.transform = 'none';
+                }
+            } catch (e) {}
+        });
+
+        // 확인(save): hidden 값에 반영 + 버튼 UI 업데이트
+        this._textPickr.on('save', (color, instance) => {
+            try {
+                const hex = color ? color.toHEXA().toString() : (input.value || '#000000');
+                this.syncTextColorUi(hex);
+            } catch (e) {}
+            try { instance && instance.hide && instance.hide(); } catch (e) {}
+        });
+
+        // 취소(cancel): hidden 값으로 되돌리고 닫기
+        this._textPickr.on('cancel', (instance) => {
+            try {
+                const current = (input.value || '#000000');
+                if (instance && typeof instance.setColor === 'function') {
+                    instance.setColor(current, true);
+                }
+            } catch (e) {}
+            try { instance && instance.hide && instance.hide(); } catch (e) {}
+        });
+    }
     
     createFontImageEntry(fileBase = '') {
         if (!fileBase) {
@@ -651,6 +748,40 @@ class CustomGoodsEditor {
                 activeElement.tagName === 'TEXTAREA' || 
                 activeElement.isContentEditable
             );
+
+            // 撤销/重做快捷键
+            // - Windows/Linux: Ctrl+Z / Ctrl+Shift+Z
+            // - macOS: Cmd+Z / Cmd+Shift+Z
+            if (!isInputElement) {
+                const isMac = (typeof navigator !== 'undefined')
+                    && typeof navigator.platform === 'string'
+                    && navigator.platform.toUpperCase().includes('MAC');
+                const modKeyPressed = isMac ? e.metaKey : e.ctrlKey;
+                const key = (e.key || '').toLowerCase();
+
+                if (modKeyPressed && !e.shiftKey && key === 'z') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.undo();
+                    return;
+                }
+
+                // 需求：Ctrl+Shift+Z（或 Cmd+Shift+Z）
+                if (modKeyPressed && e.shiftKey && key === 'z') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.redo();
+                    return;
+                }
+
+                // 兼容：部分用户习惯 Ctrl+Y 重做
+                if (!isMac && e.ctrlKey && !e.shiftKey && key === 'y') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.redo();
+                    return;
+                }
+            }
             
             if (!isInputElement && (e.key === 'Delete' || e.key === 'Backspace')) {
                 e.preventDefault();
@@ -826,6 +957,9 @@ class CustomGoodsEditor {
                 document.getElementById('textContent').value = '';
             });
         }
+        
+        // ✅ Pickr(색상 선택기) 초기화
+        this.initTextColorPickr();
         
         // 关闭弹窗
         document.querySelectorAll('.modal-close').forEach(btn => {
@@ -1165,6 +1299,75 @@ class CustomGoodsEditor {
     }
 
     /**
+     * 패키지 영역 안내 팝업 열기 (design-id="4")
+     * - 요구사항: 반드시 "이해했습니다" 버튼을 눌러야 닫힘(바깥 클릭으로 닫지 않음)
+     */
+    showPackageGuideModal() {
+        const modal = document.getElementById('packageGuideModal');
+        if (!modal) {
+            console.warn('packageGuideModal not found');
+            return;
+        }
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+
+        const confirmBtn = document.getElementById('btnConfirmPackageGuide');
+        if (confirmBtn && !confirmBtn._packageGuideBound) {
+            confirmBtn.addEventListener('click', () => this.hidePackageGuideModal());
+            confirmBtn._packageGuideBound = true;
+        }
+    }
+
+    /**
+     * 패키지 영역 안내 팝업 닫기
+     */
+    hidePackageGuideModal() {
+        const modal = document.getElementById('packageGuideModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    /**
+     * 공통 오류 안내 팝업 열기
+     * - 요구사항: 반드시 "확인" 버튼을 눌러야 닫힘(바깥 클릭으로 닫지 않음)
+     */
+    showGlobalErrorModal(message = '') {
+        const modal = document.getElementById('globalErrorModal');
+        if (!modal) {
+            return false;
+        }
+
+        const textEl = document.getElementById('globalErrorText');
+        if (textEl) {
+            textEl.textContent = String(message || '').trim();
+        }
+
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+
+        const confirmBtn = document.getElementById('btnConfirmGlobalError');
+        if (confirmBtn && !confirmBtn._globalErrorBound) {
+            confirmBtn.addEventListener('click', () => this.hideGlobalErrorModal());
+            confirmBtn._globalErrorBound = true;
+        }
+
+        return true;
+    }
+
+    /**
+     * 공통 오류 안내 팝업 닫기
+     */
+    hideGlobalErrorModal() {
+        const modal = document.getElementById('globalErrorModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    /**
      * 디자인 검수 안내 팝업 닫기
      */
     hideDesignCheckModal() {
@@ -1379,6 +1582,11 @@ class CustomGoodsEditor {
 
         const modal = document.getElementById('textModal');
         if (modal) {
+            // ✅ 기본 색상으로 초기화 + UI 동기화
+            this.syncTextColorUi('#000000');
+            if (this._textPickr) {
+                try { this._textPickr.setColor && this._textPickr.setColor('#000000', true); } catch (e) {}
+            }
             modal.style.display = 'block';
         } else {
             console.error('文本编辑弹窗未找到: textModal');
@@ -1407,6 +1615,14 @@ class CustomGoodsEditor {
         if (textInput) textInput.value = textObject.text || '';
         if (sizeInput) sizeInput.value = parseInt(textObject.fontSize || 20, 10);
         if (colorInput) colorInput.value = textObject.fill || '#000000';
+        // ✅ Pickr/버튼 UI 동기화
+        this.syncTextColorUi((textObject && textObject.fill) ? textObject.fill : '#000000');
+        if (this._textPickr) {
+            try {
+                const c = (textObject && textObject.fill) ? textObject.fill : '#000000';
+                this._textPickr.setColor && this._textPickr.setColor(c, true);
+            } catch (e) {}
+        }
         if (fontSelect && textObject.fontFamily) {
             fontSelect.value = textObject.fontFamily;
             if (typeof this.applyFontSelection === 'function') {
@@ -1439,6 +1655,24 @@ class CustomGoodsEditor {
     closeModal(modal) {
         if (modal) {
             modal.style.display = 'none';
+        }
+
+        // ✅ textModal 닫을 때 색상 확인/취소 상태도 초기화
+        try {
+            if (modal && modal.id === 'textModal') {
+                // Pickr 열려있으면 닫기 + 현재값으로 동기화
+                const input = document.getElementById('textColor');
+                if (this._textPickr) {
+                    try { this._textPickr.hide && this._textPickr.hide(); } catch (e) {}
+                    try {
+                        const current = (input && input.value) ? input.value : '#000000';
+                        this._textPickr.setColor && this._textPickr.setColor(current, true);
+                    } catch (e) {}
+                }
+                if (input) this.syncTextColorUi(input.value || '#000000');
+            }
+        } catch (e) {
+            // ignore
         }
     }
 
@@ -1920,7 +2154,10 @@ class CustomGoodsEditor {
      * 添加历史记录
      */
     addToHistory() {
-        const state = this.canvas.toJSON();
+        // 为了避免历史快照过大/clipPath 反序列化不稳定：
+        // - 不在历史里保存 clipOverlay（蓝色裁剪框）
+        // - 不在历史里保存 clipPath（撤销/重做后统一重新应用）
+        const state = this.cleanCanvasJSON(this.canvas.toJSON());
         this.history = this.history.slice(0, this.historyIndex + 1);
         this.history.push(state);
         
@@ -1938,14 +2175,48 @@ class CustomGoodsEditor {
      * 恢复画布状态
      */
     restoreCanvasState(state) {
+        // 先保存当前的裁剪框引用（loadFromJSON 会清空并重建 objects）
+        const previousBorderShapes = Array.isArray(this.clipBorderShapes) ? this.clipBorderShapes : [];
+
         this.isRestoringHistory = true;
         this.canvas.loadFromJSON(state, () => {
-            this.isRestoringHistory = false;
-            this.canvas.renderAll();
+            // 1) 重新绑定/恢复蓝色裁剪框（clipOverlay）
+            const overlaysFromJson = (this.canvas.getObjects() || []).filter(
+                (o) => o && o.customType === 'clipOverlay'
+            );
+
+            if (overlaysFromJson.length > 0) {
+                this.clipBorderShapes = overlaysFromJson;
+                overlaysFromJson.forEach((shape) => {
+                    // 蓝色框永远不参与裁剪
+                    shape.clipPath = null;
+                    this.canvas.bringToFront(shape);
+                });
+            } else if (previousBorderShapes.length > 0) {
+                // 历史快照中不包含裁剪框时，使用旧引用重新加回去
+                previousBorderShapes.forEach((shape) => {
+                    if (shape && shape.canvas !== this.canvas) {
+                        this.canvas.add(shape);
+                    }
+                    if (shape) {
+                        shape.clipPath = null;
+                        this.canvas.bringToFront(shape);
+                    }
+                });
+                this.clipBorderShapes = previousBorderShapes;
+            }
+
+            // 2) 统一重新应用裁剪（保证撤销到“应被裁剪”的状态时不会整张显示）
+            this.applyClipPathForAllObjects();
+            this.updateClipOverlayVisibility();
+
+            // 3) 常规 UI 刷新
             this.canvas.discardActiveObject();
             this.refreshLayersPanel();
             this.updateLayerSelection();
             this.updateToolbarState();
+
+            this.isRestoringHistory = false;
         });
     }
 
@@ -2142,6 +2413,9 @@ class CustomGoodsEditor {
      * ✅ 更新：生成合成图并传递给后端
      */
     async addToCart() {
+        // 成功后即将跳转到购物车时，保持 Loading 不消失（直到页面跳转）
+        let willRedirectToCart = false;
+
         this.showLoadingOverlay('장바구니에 추가 중입니다...');
         this.setEditorProcessingState(true);
         try {
@@ -2183,6 +2457,8 @@ class CustomGoodsEditor {
                 designImages.push(singleImage);
             } else {
                 let hasEmptyDesign = false;
+                let emptyDesignId = null;
+                let emptyDesignLabel = null;
 
                 for (const item of items) {
                     const designId = item.getAttribute('data-design-id') || 'base';
@@ -2214,6 +2490,8 @@ class CustomGoodsEditor {
 
                     if (!hasContent) {
                         hasEmptyDesign = true;
+                        emptyDesignId = designId;
+                        emptyDesignLabel = (item.textContent || '').trim();
                         console.warn('设计未完成，designId =', designId);
                         break;
                     }
@@ -2237,7 +2515,13 @@ class CustomGoodsEditor {
 
                 if (hasEmptyDesign) {
                     // 至少有一套设计为空，不允许加入购物车
-                    this.showErrorMessage('모든 디자인을 완료한 후 장바구니에 담아 주세요.');
+                    if (emptyDesignId === '4') {
+                        // 요구사항: 패키지(design-id="4")만 미완성일 때 문구를 2줄로 표시
+                        const label = emptyDesignLabel || '패키지';
+                        this.showErrorMessage(`패키지 커스텀을 진행해 주세요.\n디자인 영역 - ${label}`);
+                    } else {
+                        this.showErrorMessage('모든 디자인을 완료한 후 장바구니에 담아 주세요.');
+                    }
                     return;
                 }
             }
@@ -2483,6 +2767,8 @@ class CustomGoodsEditor {
                 console.log('장바구니 추가 성공:', result);
                 
                 // 延迟跳转到购物车
+                willRedirectToCart = true;
+                this.showLoadingOverlay('장바구니로 이동 중입니다...');
                 setTimeout(() => {
                     window.location.href = '../order/cart.php';
                 }, 2000);
@@ -2494,8 +2780,12 @@ class CustomGoodsEditor {
             console.error('장바구니 추가 오류:', error);
             this.showErrorMessage('네트워크 오류가 발생했습니다. 다시 시도해 주세요.');
         } finally {
-            this.hideLoadingOverlay();
-            this.setEditorProcessingState(false);
+            // 실패/예외인 경우에만 Loading을 닫는다.
+            // 성공 후에는 곧바로 cart.php로 이동하므로, 이동 전까지 Loading을 유지한다.
+            if (!willRedirectToCart) {
+                this.hideLoadingOverlay();
+                this.setEditorProcessingState(false);
+            }
         }
     }
 
@@ -2769,6 +3059,11 @@ class CustomGoodsEditor {
      * 显示错误消息
      */
     showErrorMessage(message) {
+        // 优先使用弹窗式错误提示（更显眼，且不会 3 秒自动消失）
+        if (this.showGlobalErrorModal && this.showGlobalErrorModal(message)) {
+            return;
+        }
+
         const errorDiv = document.getElementById('errorMessage');
         const successDiv = document.getElementById('successMessage');
         
@@ -4585,6 +4880,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (typeof editor.switchDesign === 'function') {
                         editor.switchDesign(designId, src);
+                    }
+
+                    // 每次点击 패키지(design-id="4") 都弹出提示，并且必须点击确认按钮关闭
+                    if (designId === '4' && typeof editor.showPackageGuideModal === 'function') {
+                        editor.showPackageGuideModal();
                     }
 
                     // 更新激活状态

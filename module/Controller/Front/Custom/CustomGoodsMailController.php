@@ -394,7 +394,7 @@ class CustomGoodsMailController extends \Controller\Front\Controller
                 return;
             }
 
-            $toEmail = 'zhuwenhui1997@gmail.com';
+            $toEmail = 'hello@hellomisterlee.com';
 
             $goodsNo = isset($data['goods_no']) ? (int)$data['goods_no'] : 0;
             $goodsName = trim((string)($data['goods_name'] ?? ''));
@@ -500,7 +500,7 @@ class CustomGoodsMailController extends \Controller\Front\Controller
             $mallNm = $basicInfo['mallNm'] ?? 'GodoMall';
 
             // ✅ 고정 From (요구사항: basic.info.email 사용 안 함)
-            $fromEmail = '531816491@qq.com';
+            $fromEmail = 'hello@hellomisterlee.com';
 
             // 메일 제목
             $platformLabel = $platform ? strtoupper($platform) : 'EXTERNAL';
@@ -908,11 +908,11 @@ class CustomGoodsMailController extends \Controller\Front\Controller
         // ✅ SMTP 우선 발송 (QQ 메일) - Net_SMTP 의존성 없이 직접 SMTP 대화로 전송
         // NOTE: 보안상 권장되진 않지만, 요구사항에 따라 인증코드를 코드에 고정한다.
         //       (trace/log 에는 절대 노출하지 않음)
-        $smtpHost = 'smtp.qq.com';
+        $smtpHost = 'smtp.worksmobile.com';
         $smtpPort = 465;
         $smtpEncryption = 'ssl'; // ssl or tls(starttls)
-        $smtpUser = '531816491@qq.com';
-        $smtpPass = 'hqdgfqlxyawtbjfj';
+        $smtpUser = 'hello@hellomisterlee.com';
+        $smtpPass = '4zMrUmd6U4zF';
 
         $smtpAttempt = $this->sendViaSmtpRaw([
             'host' => $smtpHost,

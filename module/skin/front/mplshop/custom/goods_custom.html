@@ -10,6 +10,10 @@
     
     <!-- Fabric.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js" defer></script>
+
+    <!-- Pickr (Custom Color Picker with Save/Cancel) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js" defer></script>
     
     <!-- 样式文件 -->
     <link rel="stylesheet" href="../css/custom/goods_custom.css">
@@ -492,12 +496,12 @@
                 <div class="purchase-options">
                     <button class="add-to-cart-btn" id="btnAddToCart" data-goods-id="{=customGoodsView['goodsNo']}">
                         <i class="icon-cart"></i>
-                        장바구니에 추가
+                        {=addToCartBtnText}
                     </button>
                     
                     <!-- 根据用户需求：定制商品必须走购物车流程 -->
                     <div class="purchase-notice">
-                        <small>💡 맞춤 상품은 장바구니에 추가되며, 장바구니에서 확인 및 결제하실 수 있습니다</small>
+                        <small>{=purchaseNoticeText}</small>
                     </div>
                 </div>
                 
@@ -550,7 +554,12 @@
                 </div>
                 <div class="text-input-group">
                     <label>색상</label>
-                    <input type="color" id="textColor" value="#000000">
+                    <!-- ✅ 실제 값은 hidden 으로 유지(기존 로직 호환). UI는 Pickr 버튼으로 대체 -->
+                    <input type="hidden" id="textColor" value="#000000">
+                    <button type="button" id="textColorBtn" class="text-color-btn" aria-label="색상 선택">
+                        <span class="text-color-swatch" id="textColorSwatch" aria-hidden="true" style="background:#000000;"></span>
+                        <span class="text-color-label" id="textColorLabel">#000000</span>
+                    </button>
                 </div>
                 <div class="text-input-group">
                     <label>글꼴：</label>
@@ -575,7 +584,6 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-cancel" id="btnCancelText">취소</button>
                     <button class="btn-confirm" id="btnConfirmText">확인</button>
                 </div>
             </div>
@@ -711,6 +719,41 @@
 
                 <button type="button" class="design-check-confirm" id="btnConfirmDesignCheck">확인했습니다</button>
                 </div>
+        </div>
+    </div>
+
+    <!-- 패키지 영역 안내 팝업 (design-id="4") -->
+    <div class="design-check-modal" id="packageGuideModal" role="alertdialog" aria-modal="true" aria-hidden="true">
+        <div class="design-check-backdrop" aria-hidden="true"></div>
+        <div class="design-check-content">
+            <div class="design-check-header">
+                <div class="design-check-title-main">안내</div>
+            </div>
+            <div class="design-check-body">
+                <ul class="design-check-list">
+                    <li>패키지 디자인 영역입니다.</li>
+                    <li>도안(이미지/텍스트)을 파란색 가이드 영역 안으로 배치해 주세요.</li>
+                    <li>가이드 밖의 요소는 최종 결과에 반영되지 않을 수 있습니다.</li>
+                </ul>
+                <button type="button" class="design-check-confirm" id="btnConfirmPackageGuide">이해했습니다</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 공통 오류 안내 팝업 -->
+    <div class="design-check-modal" id="globalErrorModal" role="alertdialog" aria-modal="true" aria-hidden="true">
+        <div class="design-check-backdrop" aria-hidden="true"></div>
+        <div class="design-check-content">
+            <div class="design-check-header global-error-header">
+                <img src="../_mplshop/images/icon/icon_warning.png"
+                     alt="경고"
+                     class="global-error-icon"
+                     loading="lazy">
+            </div>
+            <div class="design-check-body">
+                <div id="globalErrorText"></div>
+                <button type="button" class="design-check-confirm" id="btnConfirmGlobalError">확인</button>
+            </div>
         </div>
     </div>
     
