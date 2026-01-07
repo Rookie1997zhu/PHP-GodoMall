@@ -80,6 +80,15 @@ class CustomGoodsEditor {
         this.totalClipPath = null;      // Fabric.Group 组合裁剪区域
         this.clipBorderShapes = [];     // 可见蓝色边框对象列表
         this.clipEnabled = true;        // 当前设计是否启用裁剪（例如 패키지 画布不启用）
+        // ✅ 拖动对齐辅助线（在裁剪框内显示水平/垂直居中虚线）
+        this._centerGuidesActive = false;
+        this._centerGuideBoundsList = []; // [{ left, top, width, height }, ...]
+        this._centerGuideStyle = {
+            // 辅助线颜色：稍微灰一点（降低不透明度）
+            stroke: 'rgba(0,0,0,0.45)',
+            dash: [6, 4],
+            lineWidth: 1
+        };
         this.maxImageDimension = 3000;  // 上传图片最大边长限制
         this.allowedImageMimeTypes = ['image/png', 'image/jpeg'];
         this.allowedImageExtensions = ['png', 'jpg', 'jpeg'];
@@ -310,6 +319,23 @@ class CustomGoodsEditor {
             const target = e ? e.target : null;
 
             if (target && target !== this.canvas.backgroundImage) {
+                // ✅ 裁剪框(clipOverlay) 仅用于提示：禁止选中/拖动/缩放/旋转
+                if (target.customType === 'clipOverlay') {
+                    target.set({
+                        selectable: false,
+                        evented: false,
+                        hasControls: false,
+                        hasBorders: false,
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        lockScalingX: true,
+                        lockScalingY: true,
+                        lockRotation: true,
+                        hoverCursor: 'default',
+                        moveCursor: 'default',
+                        excludeFromExport: true
+                    });
+                } else {
                 target.set({
                     selectable: true,
                     hasControls: true,
@@ -322,6 +348,7 @@ class CustomGoodsEditor {
                     moveCursor: 'move',
                     hoverCursor: 'move'
                 });
+                }
                 console.log('对象已添加到画布:', target.type, target);
             }
 
@@ -350,6 +377,8 @@ class CustomGoodsEditor {
             this.refreshLayersPanel();
             this.updateLayerSelection();
             this.handleActiveImageTransform(e);
+            // 拖动结束后关闭辅助线
+            this.clearCenterGuides();
         });
         
         this.canvas.on('object:removed', (e) => {
@@ -393,6 +422,7 @@ class CustomGoodsEditor {
             this.updateToolbarState();
             this.updateLayerSelection();
             this.updateImageControls(null);
+            this.clearCenterGuides();
         });
         
         this.canvas.on('selection:updated', () => {
@@ -402,9 +432,30 @@ class CustomGoodsEditor {
             this.updateImageControls(activeObject);
         });
         
-        this.canvas.on('object:moving', (e) => this.handleActiveImageTransform(e));
-        this.canvas.on('object:scaling', (e) => this.handleActiveImageTransform(e));
-        this.canvas.on('object:rotating', (e) => this.handleActiveImageTransform(e));
+        this.canvas.on('object:moving', (e) => {
+            this.handleActiveImageTransform(e);
+            this.updateCenterGuidesForTarget(e ? e.target : null);
+        });
+        this.canvas.on('object:scaling', (e) => {
+            this.handleActiveImageTransform(e);
+            this.clearCenterGuides();
+        });
+        this.canvas.on('object:rotating', (e) => {
+            this.handleActiveImageTransform(e);
+            this.clearCenterGuides();
+        });
+
+        // 鼠标松开时关闭辅助线（避免拖动后残留）
+        this.canvas.on('mouse:up', () => {
+            this.clearCenterGuides();
+        });
+
+        // 在渲染后用 canvas context 直接绘制辅助线（不作为对象加入 canvas）
+        this.canvas.on('after:render', (opt) => {
+            const ctx = (opt && opt.ctx) ? opt.ctx : (this.canvas ? this.canvas.contextContainer : null);
+            if (!ctx) return;
+            this.drawCenterGuides(ctx);
+        });
         
         
         // 设置默认的控制器样式
@@ -627,6 +678,183 @@ class CustomGoodsEditor {
     }
 
     /**
+     * 是否对当前拖动对象显示“裁剪框居中辅助线”
+     */
+    shouldShowCenterGuidesForTarget(target) {
+        if (!this.canvas || !target) return false;
+        if (!this.clipEnabled) return false;
+        if (target === this.canvas.backgroundImage) return false;
+        if (target.customType === 'clipOverlay') return false;
+        if (target.customType === 'removeTag') return false;
+        const t = String(target.type || '');
+        // 图案/图片/文字/组 都允许显示；其它类型默认不显示
+        return (t === 'image' || t === 'text' || t === 'i-text' || t === 'textbox' || t === 'group' || t === 'activeSelection');
+    }
+
+    /**
+     * 在拖动过程中更新辅助线（以“面积最大的裁剪框”为基准）
+     */
+    updateCenterGuidesForTarget(target) {
+        if (!this.shouldShowCenterGuidesForTarget(target)) {
+            this.clearCenterGuides();
+            return;
+        }
+
+        const shapes = Array.isArray(this.clipBorderShapes) ? this.clipBorderShapes : [];
+        const boundsList = shapes
+            .filter(s => s && s.customType === 'clipOverlay')
+            .map((shape) => {
+                try { return shape.getBoundingRect(true, true); } catch (e) { return null; }
+            })
+            .filter((b) =>
+                b &&
+                isFinite(b.left) && isFinite(b.top) && isFinite(b.width) && isFinite(b.height) &&
+                b.width > 0 && b.height > 0
+            );
+
+        if (!boundsList.length) {
+            this.clearCenterGuides();
+            return;
+        }
+        this._centerGuidesActive = true;
+        this._centerGuideBoundsList = boundsList;
+        if (this.canvas) {
+            this.canvas.requestRenderAll();
+        }
+    }
+
+    clearCenterGuides() {
+        if (!this._centerGuidesActive && (!this._centerGuideBoundsList || this._centerGuideBoundsList.length === 0)) {
+            return;
+        }
+        this._centerGuidesActive = false;
+        this._centerGuideBoundsList = [];
+        if (this.canvas) {
+            this.canvas.requestRenderAll();
+        }
+    }
+
+    /**
+     * 绘制黑色虚线辅助线（在裁剪框内的水平/垂直居中线）
+     */
+    drawCenterGuides(ctx) {
+        if (
+            !this._centerGuidesActive ||
+            !Array.isArray(this._centerGuideBoundsList) ||
+            this._centerGuideBoundsList.length === 0
+        ) {
+            return;
+        }
+        const style = this._centerGuideStyle || {};
+
+        ctx.save();
+        ctx.strokeStyle = style.stroke || 'rgba(0,0,0,0.9)';
+        ctx.lineWidth = style.lineWidth || 1;
+        try {
+            ctx.setLineDash(Array.isArray(style.dash) ? style.dash : [6, 4]);
+        } catch (e) {
+            // ignore
+        }
+
+        this._centerGuideBoundsList.forEach((b) => {
+            if (!b || !isFinite(b.left) || !isFinite(b.top) || !isFinite(b.width) || !isFinite(b.height)) {
+                return;
+            }
+            const x = b.left + (b.width / 2);
+            const y = b.top + (b.height / 2);
+
+            // 垂直居中线
+            ctx.beginPath();
+            ctx.moveTo(x, b.top);
+            ctx.lineTo(x, b.top + b.height);
+            ctx.stroke();
+
+            // 水平居中线
+            ctx.beginPath();
+            ctx.moveTo(b.left, y);
+            ctx.lineTo(b.left + b.width, y);
+            ctx.stroke();
+        });
+
+        ctx.restore();
+    }
+
+    /**
+     * 获取面积最大的裁剪框(clipOverlay)边界，用于将新对象默认放入裁剪区域内
+     * @returns {{left:number, top:number, width:number, height:number}|null}
+     */
+    getLargestClipOverlayBounds() {
+        if (!this.canvas || !this.clipEnabled) return null;
+        const shapes = Array.isArray(this.clipBorderShapes) ? this.clipBorderShapes : [];
+        const candidates = shapes.filter(s => s && s.customType === 'clipOverlay');
+        if (candidates.length === 0) return null;
+
+        let best = null;
+        let bestArea = -1;
+
+        candidates.forEach((shape) => {
+            try {
+                const b = shape.getBoundingRect(true, true);
+                if (!b || !isFinite(b.width) || !isFinite(b.height)) return;
+                const area = b.width * b.height;
+                if (area > bestArea) {
+                    bestArea = area;
+                    best = b;
+                }
+            } catch (e) {
+                // ignore
+            }
+        });
+
+        return best;
+    }
+
+    /**
+     * 将对象默认放入“面积最大的裁剪框”内（居中 + 必要时等比缩放）
+     * - 若没有裁剪框配置/当前设计不启用裁剪，则不处理
+     */
+    placeObjectInsideLargestClipRegion(obj, padding = 16) {
+        if (!obj || !this.canvas) return false;
+
+        const bounds = this.getLargestClipOverlayBounds();
+        if (!bounds) return false;
+
+        const innerLeft = bounds.left + padding;
+        const innerTop = bounds.top + padding;
+        const innerW = Math.max(1, bounds.width - padding * 2);
+        const innerH = Math.max(1, bounds.height - padding * 2);
+
+        // 获取对象当前缩放后的尺寸
+        const scaleX = (typeof obj.scaleX === 'number') ? obj.scaleX : 1;
+        const scaleY = (typeof obj.scaleY === 'number') ? obj.scaleY : 1;
+        const objW = (typeof obj.getScaledWidth === 'function')
+            ? obj.getScaledWidth()
+            : (parseFloat(obj.width) || 0) * scaleX;
+        const objH = (typeof obj.getScaledHeight === 'function')
+            ? obj.getScaledHeight()
+            : (parseFloat(obj.height) || 0) * scaleY;
+
+        if (objW > 0 && objH > 0) {
+            const fit = Math.min((innerW * 0.9) / objW, (innerH * 0.9) / objH, 1);
+            if (fit < 1) {
+                obj.scaleX = scaleX * fit;
+                obj.scaleY = scaleY * fit;
+            }
+        }
+
+        // 居中放置到裁剪框内
+        obj.set({
+            originX: 'center',
+            originY: 'center',
+            left: innerLeft + innerW / 2,
+            top: innerTop + innerH / 2
+        });
+
+        try { obj.setCoords && obj.setCoords(); } catch (e) {}
+        return true;
+    }
+
+    /**
      * 给当前画布上的所有对象统一应用/移除裁剪
      */
     applyClipPathForAllObjects() {
@@ -738,6 +966,12 @@ class CustomGoodsEditor {
         
         // 주의사항 버튼: 디자인 검수 안내 팝업만 열기
         document.getElementById('btnCheck').addEventListener('click', () => this.showDesignCheckModal());
+
+        // ✅ 커스텀 방법 안내 버튼
+        const guideBtn = document.getElementById('btnCustomGuide');
+        if (guideBtn) {
+            guideBtn.addEventListener('click', () => this.showCustomGuideModal());
+        }
         
         // 键盘删除功能
         document.addEventListener('keydown', (e) => {
@@ -1378,6 +1612,43 @@ class CustomGoodsEditor {
     }
 
     /**
+     * ✅ 커스텀 방법 안내 팝업 열기
+     */
+    showCustomGuideModal() {
+        const modal = document.getElementById('customGuideModal');
+        if (!modal) {
+            return;
+        }
+
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+
+        const closeBtn = document.getElementById('btnCloseCustomGuide');
+        if (closeBtn && !closeBtn._customGuideBound) {
+            closeBtn.addEventListener('click', () => this.hideCustomGuideModal());
+            closeBtn._customGuideBound = true;
+        }
+
+        const backdrop = modal.querySelector('.design-check-backdrop');
+        if (backdrop && !backdrop._customGuideBound) {
+            backdrop.addEventListener('click', () => this.hideCustomGuideModal());
+            backdrop._customGuideBound = true;
+        }
+    }
+
+    /**
+     * ✅ 커스텀 방법 안내 팝업 닫기
+     */
+    hideCustomGuideModal() {
+        const modal = document.getElementById('customGuideModal');
+        if (!modal) {
+            return;
+        }
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    /**
      * 加载商品背景图片
      */
     async loadProductBackground() {
@@ -1494,6 +1765,8 @@ class CustomGoodsEditor {
 
             // 应用定制区域裁剪
             this.applyClipPathIfAvailable(img);
+            // ✅ 默认放入“面积最大的裁剪框”内
+            this.placeObjectInsideLargestClipRegion(img);
 
             this.canvas.add(img);
             this.canvas.setActiveObject(img);
@@ -1582,6 +1855,11 @@ class CustomGoodsEditor {
 
         const modal = document.getElementById('textModal');
         if (modal) {
+            // ✅ 기본 글꼴 크기 초기화
+            const sizeInput = document.getElementById('textSize');
+            if (sizeInput) {
+                sizeInput.value = 50;
+            }
             // ✅ 기본 색상으로 초기화 + UI 동기화
             this.syncTextColorUi('#000000');
             if (this._textPickr) {
@@ -1613,7 +1891,7 @@ class CustomGoodsEditor {
         const fontSelect = document.getElementById('textFont');
 
         if (textInput) textInput.value = textObject.text || '';
-        if (sizeInput) sizeInput.value = parseInt(textObject.fontSize || 20, 10);
+        if (sizeInput) sizeInput.value = parseInt(textObject.fontSize || 50, 10);
         if (colorInput) colorInput.value = textObject.fill || '#000000';
         // ✅ Pickr/버튼 UI 동기화
         this.syncTextColorUi((textObject && textObject.fill) ? textObject.fill : '#000000');
@@ -1679,7 +1957,7 @@ class CustomGoodsEditor {
     /**
      * 添加文字到画布
      */
-    addTextToCanvas(text, fontFamily = 'Ongleaff Park Dahyeon', fontSize = 20, color = '#000000') {
+    addTextToCanvas(text, fontFamily = 'Ongleaff Park Dahyeon', fontSize = 50, color = '#000000') {
         const textObject = new fabric.Text(text, {
             left: 100,
             top: 100,
@@ -1694,6 +1972,8 @@ class CustomGoodsEditor {
 
         // 应用定制区域裁剪
         this.applyClipPathIfAvailable(textObject);
+        // ✅ 默认放入“面积最大的裁剪框”内
+        this.placeObjectInsideLargestClipRegion(textObject);
 
         this.canvas.add(textObject);
         this.canvas.setActiveObject(textObject);
@@ -1955,6 +2235,10 @@ class CustomGoodsEditor {
                     height: actualHeight
                 });
 
+                // 应用定制区域裁剪 + 默认放入最大裁剪框
+                this.applyClipPathIfAvailable(fabricImg);
+                this.placeObjectInsideLargestClipRegion(fabricImg);
+
                 // 添加到画布
                 this.canvas.add(fabricImg);
                 this.canvas.setActiveObject(fabricImg);
@@ -2006,6 +2290,10 @@ class CustomGoodsEditor {
                         hasBorders: true,
                         hasRotatingPoint: true
                     });
+
+                    // 应用定制区域裁剪 + 默认放入最大裁剪框
+                    this.applyClipPathIfAvailable(group);
+                    this.placeObjectInsideLargestClipRegion(group);
                     
                     this.canvas.add(group);
                     this.canvas.setActiveObject(group);
@@ -2079,6 +2367,10 @@ class CustomGoodsEditor {
                     // 标记为SVG转换的图片
                     svgSource: svgDataURL
                 });
+
+                // 应用定制区域裁剪 + 默认放入最大裁剪框
+                this.applyClipPathIfAvailable(fabricImg);
+                this.placeObjectInsideLargestClipRegion(fabricImg);
                 
                 this.canvas.add(fabricImg);
                 this.canvas.setActiveObject(fabricImg);
@@ -2118,6 +2410,8 @@ class CustomGoodsEditor {
 
             // 应用定制区域裁剪
             this.applyClipPathIfAvailable(img);
+            // ✅ 默认放入“面积最大的裁剪框”内
+            this.placeObjectInsideLargestClipRegion(img);
 
                 this.canvas.add(img);
                 this.canvas.setActiveObject(img);

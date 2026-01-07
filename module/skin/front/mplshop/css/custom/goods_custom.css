@@ -216,6 +216,7 @@ body {
 .check-button-container {
     padding: 10px 20px;
     text-align: center;
+    position: relative; /* ✅ 우측 버튼 absolute 배치용 */
 }
 
 .check-btn {
@@ -276,6 +277,193 @@ body {
 #btnCheck.check-btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* ✅ 우측: 커스텀 방법 안내 버튼 */
+.custom-guide-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid #C9DAFF;
+    background: #EAF2FF;
+    color: #2F6BFF;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.custom-guide-btn:hover,
+.custom-guide-btn:focus-visible {
+    background: #DDEAFF;
+    border-color: #B7CCFF;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.18);
+}
+
+.custom-guide-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2F6BFF;
+    color: #fff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* ✅ 커스텀 방법 안내 버튼: 원형 ? 스타일 (요청 UI) */
+.custom-guide-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: #2F6BFF;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+
+    box-shadow: 0 2px 8px rgba(47, 107, 255, 0.35);
+}
+
+.custom-guide-btn:hover,
+.custom-guide-btn:focus-visible {
+    background: #2563EB;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.18), 0 2px 10px rgba(47, 107, 255, 0.45);
+}
+
+.custom-guide-btn .custom-guide-text {
+    display: none;
+}
+
+.custom-guide-btn .custom-guide-icon {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* ✅ 커스텀 방법 안내 모달 콘텐츠 */
+.custom-guide {
+    padding-top: 6px;
+}
+
+.custom-guide-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 26px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #E6E8EB;
+}
+
+.custom-guide-divider {
+    grid-column: 1 / -1;
+    border-top: 1px dashed #C5C8CB;
+    margin: 6px 0;
+}
+
+.custom-guide-card-title {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 16px; /* Bold 16pt */
+    color: #111;
+    margin-bottom: 10px;
+}
+
+.custom-guide-card-media {
+    background: #fff;
+    border: 1px solid #E6E8EB;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.custom-guide-card-media img {
+    width: 50%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.custom-guide-card-desc {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px; /* Medium 12pt */
+    color: #444;
+    line-height: 1.55;
+    margin-top: 10px;
+}
+
+.custom-guide-footer {
+    margin-top: 14px;
+    background: #F1F3F5;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.custom-guide-footer-text {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.custom-guide-footer-link {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #2F6BFF;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.custom-guide-footer-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .custom-guide-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ✅ 커스텀 방법 안내: 모달 가로폭 확장 + 문구 단일 라인 */
+#customGuideModal .design-check-content {
+    width: 1200px;
+    max-width: calc(100vw - 40px);
+}
+
+#customGuideModal .custom-guide-card-desc,
+#customGuideModal .custom-guide-footer-text {
+    white-space: nowrap;        /* 줄바꿈 금지 */
+    overflow: hidden;           /* 작은 화면에서 넘치면 숨김 */
+    text-overflow: ellipsis;    /* ... 처리 */
 }
 
 .icon-check {
