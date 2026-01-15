@@ -1205,9 +1205,16 @@ class CustomGoodsEditor {
         // 点击弹窗外部关闭
         document.querySelectorAll('.text-modal, .pattern-modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.closeModal(modal);
+                if (e.target !== modal) {
+                    return;
                 }
+
+                // ✅ 防止误触：textModal / externalOrderModal 不允许点击遮罩关闭
+                if (modal && (modal.id === 'textModal' || modal.id === 'externalOrderModal')) {
+                    return;
+                }
+
+                this.closeModal(modal);
             });
         });
 
@@ -2782,7 +2789,8 @@ class CustomGoodsEditor {
                         o.customType !== 'removeTag'      // 排除删除标记等辅助对象
                     );
 
-                    if (!hasContent) {
+                    // ✅ design-id="4"(패키지/包装) 允许为空：不作为“未完成”拦截条件
+                    if (designId !== '4' && !hasContent) {
                         hasEmptyDesign = true;
                         emptyDesignId = designId;
                         emptyDesignLabel = (item.textContent || '').trim();
@@ -2808,14 +2816,8 @@ class CustomGoodsEditor {
                 }
 
                 if (hasEmptyDesign) {
-                    // 至少有一套设计为空，不允许加入购物车
-                    if (emptyDesignId === '4') {
-                        // 요구사항: 패키지(design-id="4")만 미완성일 때 문구를 2줄로 표시
-                        const label = emptyDesignLabel || '패키지';
-                        this.showErrorMessage(`패키지 커스텀을 진행해 주세요.\n디자인 영역 - ${label}`);
-                    } else {
-                        this.showErrorMessage('모든 디자인을 완료한 후 장바구니에 담아 주세요.');
-                    }
+                    // 至少有一套(非 패키지)设计为空，不允许加入购物车
+                    this.showErrorMessage('모든 디자인을 완료한 후 장바구니에 담아 주세요.');
                     return;
                 }
             }
@@ -4809,6 +4811,40 @@ class CustomGoodsEditor {
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
     const editor = new CustomGoodsEditor();
+
+    // ✅ 预加载“커스텀 방법 안내”弹框内的引导图片，避免打开弹框时先空白一段时间
+    try {
+        const guideModal = document.getElementById('customGuideModal');
+        if (guideModal) {
+            const urls = Array.from(guideModal.querySelectorAll('img'))
+                .map((img) => img && (img.getAttribute('src') || img.src))
+                .filter(Boolean);
+            urls.forEach((url) => {
+                try {
+                    const pre = new Image();
+                    pre.decoding = 'async';
+                    pre.src = url;
+                } catch (e) {
+                    // ignore
+                }
+            });
+        }
+    } catch (e) {
+        // ignore
+    }
+
+    // ✅ 进入 goods_custom 页面后自动弹出 “커스텀 방법 안내” (供用户观看)
+    try {
+        setTimeout(() => {
+            try {
+                editor.showCustomGuideModal && editor.showCustomGuideModal();
+            } catch (e) {
+                // ignore
+            }
+        }, 200);
+    } catch (e) {
+        // ignore
+    }
     
     // 初始化默认尺寸（来自模板配置）
     let pageConfig = {};

@@ -48,11 +48,12 @@
 - 通过外键约束保证数据一致性
 - 可随时回滚,不影响官方系统
 
-#### ✅ **继承扩展原则**
-- Component层继承官方组件: `CustomPattern extends Goods`
-- Storage层继承官方存储: `CustomStorage extends Storage`
-- Controller层继承官方控制器: `extends \Controller\Admin\Controller`
-- 获得官方功能的同时扩展定制功能
+#### ✅ **继承扩展原则（以当前项目为准）**
+- **并非所有 Component 都采用继承扩展**：
+  - `CustomGoods` 当前实现为“独立组件”，不 `extends` 官方 Goods，但会内部调用 `\App::load('\\Component\\Goods\\Goods')` 读取商品基础信息。
+  - 控制器仍复用官方基类：`extends \Controller\Admin\Controller` / `extends \Controller\Front\Controller`
+  - Storage 仍复用官方能力：`CustomStorage` 负责上传/删除/验证等（以当前实现为准）
+- 设计动机：降低对官方父类/上下文的强依赖，减少 500 风险，便于独立排查与迭代。
 
 #### ✅ **独立数据库连接**
 - 使用独立的 `CustomPDO` 类管理数据库连接
@@ -61,9 +62,10 @@
 - 支持事务、参数绑定、预处理语句
 
 #### ✅ **模块化隔离原则**
-- 所有自定义代码放在 `module/Custom/` 目录
-- 表名统一前缀: `custom_*`
-- 命名空间隔离: `Custom\Component`, `Custom\Controller`
+- 主要自定义业务代码放在 `module/Custom/`
+- 但本项目还依赖 **Godomall Controller 覆盖机制**：`module/Controller/` 下的类会优先加载，用于在不改官方文件的前提下扩展行为
+- 前端模板/静态资源以 `module/skin/front/mplshop/` 为准（当前项目已删除 `data/` 目录）
+- 表名统一前缀：`custom_*`
 - 便于迁移、测试、版本管理
 
 ---
@@ -74,51 +76,74 @@
 
 ```
 module/Custom/
-├── Bootstrap/               # 启动引导（预留）
-├── Component/              # 业务组件层 ⭐核心⭐
-│   ├── CustomColor.php                 # 商品颜色管理
-│   ├── CustomPattern.php               # 定制图案管理
-│   ├── CustomGoods.php                 # 商品定制逻辑
-│   ├── CustomCartExtension.php         # 购物车扩展
-│   ├── CustomOrderExtension.php        # 订单扩展
+├── Bootstrap/                          # 启动引导（预留）
+├── Component/                          # 业务组件层 ⭐核心⭐
+│   ├── CustomGoods.php                 # 定制页视图数据组装（独立组件，内部调用官方Goods）
+│   ├── CustomColor.php                 # 商品颜色 + 定制开关/尺寸/作业指南等扩展
+│   ├── CustomSize.php                  # 自定义尺寸（custom_goods_sizes）
+│   ├── CustomExtraOption.php           # 附加选项（custom_goods_extra_options + colors）
+│   ├── CustomExtraImage.php            # 附加图片（custom_goods_extra_images）
+│   ├── CustomPattern.php               # 图案库
 │   ├── CustomPatternCategory.php       # 图案分类
-│   ├── Database/                       # 数据库工具
-│   │   ├── CustomPDO.php              # PDO封装
-│   │   └── CustomDBTableField.php     # 表字段定义
-│   └── Storage/                        # 存储管理
-│       └── CustomStorage.php          # 文件上传/删除
-├── Controller/             # 控制器层
-│   ├── Admin/                          # 后台控制器
-│   │   └── Custom/
-│   │       ├── CustomColorController.php
-│   │       ├── CustomPatternController.php
-│   │       ├── CustomGoodsController.php
-│   │       └── PatternManageController.php
-│   └── Front/                          # 前台控制器
+│   ├── CustomCartExtension.php         # 购物车扩展（custom_cart_extension）
+│   ├── CustomOrderExtension.php        # 订单扩展（custom_order_extension）
+│   ├── Database/
+│   │   ├── CustomPDO.php               # PDO封装
+│   │   └── CustomDBTableField.php      # 表字段定义/工具
+│   └── Storage/
+│       └── CustomStorage.php           # 文件上传/删除/验证
+├── Controller/
+│   ├── Admin/Custom/
+│   │   ├── CustomColorController.php
+│   │   ├── CustomGoodsController.php
+│   │   ├── CustomPatternController.php
+│   │   ├── CustomPatternCategoryController.php
+│   │   └── PatternManageController.php
+│   └── Front/
 │       ├── add_to_cart.php
 │       └── CustomErrorLogController.php
-├── Widget/                 # 前端组件
+├── Database/
+│   └── migrations/                     # 预留（当前为空）
+├── Widget/
 │   └── Front/Goods/
 │       └── CustomizationWidget.php
-├── Database/               # 数据库SQL
-│   └── install_custom_tables_fixed.sql
-└── config/                 # 配置文件
+└── config/
     └── database.php
+
+module/Controller/                      # ✅ 覆盖/替换官方控制器（Godomall优先加载）
+├── Front/Custom/
+│   ├── GoodsCustomController.php       # /custom/goods_custom.php（定制页 + addToCart等AJAX）
+│   └── CustomGoodsMailController.php   # /custom/custom_goods_mail.php（外部订单邮件发送）
+├── Front/Order/
+│   └── CustomCartController.php        # 购物车页注入定制字段（customization_image等）
+└── Admin/Custom/
+    └── CustomOrderImageController.php  # 后台下载定制图（Base64解码后下载）
+
+module/Admin/                           # ✅ 后台入口文件（通过 mode 分发到 Controller）
+├── custom_color.php
+├── custom_pattern.php
+├── custom_pattern_category.php
+└── custom_color_simple.php
+
+module/skin/front/mplshop/              # ✅ 定制页模板/资源（当前以 module/skin 为准）
+├── custom/goods_custom.html
+├── js/custom/goods_custom.js
+├── js/custom/goods_custom_for_naver.js
+└── css/custom/goods_custom.css
 ```
 
 ### 2.2 核心文件说明
 
 | 文件路径 | 职责 | 依赖 |
 |---------|------|------|
-| `Component/CustomColor.php` | 商品颜色CRUD、定制状态管理 | CustomPDO |
-| `Component/CustomPattern.php` | 图案CRUD、缓存、批量操作 | Goods, SimpleCache |
-| `Component/CustomGoods.php` | 商品定制视图数据组装 | CustomPDO, Goods官方组件 |
-| `Component/CustomCartExtension.php` | 购物车定制数据读取 | CustomPDO |
-| `Component/CustomOrderExtension.php` | 订单定制数据读取 | CustomPDO |
-| `Component/Database/CustomPDO.php` | PDO数据库封装 | config/database.php |
-| `Component/Storage/CustomStorage.php` | 文件上传/删除/验证 | Storage官方类 |
-| `Controller/Admin/Custom/CustomColorController.php` | 颜色管理API接口 | CustomColor |
-| `Controller/Admin/Custom/CustomPatternController.php` | 图案管理API接口 | CustomPattern |
+| `module/Controller/Front/Custom/GoodsCustomController.php` | 前台定制页入口 + addToCart/orderImage/cartExtraPrice/getCanvasData/deleteCustomData | CustomGoods / Cart |
+| `module/Custom/Component/CustomGoods.php` | 组装定制页 customGoodsView（颜色/尺寸/附加选项/官方选项/模板区域） | CustomPDO + 官方Goods组件 |
+| `module/Controller/Front/Order/CustomCartController.php` | 购物车页合并 custom_cart_extension 字段到 cartInfo | CustomCartExtension |
+| `module/Controller/Admin/Custom/CustomOrderImageController.php` | 后台下载订单定制图（custom/customer） | CustomOrderExtension |
+| `module/Admin/custom_color.php` | 后台颜色/尺寸/附加选项/模板区域等 API 入口（mode 分发） | CustomColorController |
+| `module/Admin/custom_pattern.php` | 后台图案 API 入口（mode 分发） | CustomPatternController |
+| `module/Admin/custom_pattern_category.php` | 后台图案分类 API 入口（mode 分发） | CustomPatternCategoryController |
+| `module/skin/front/mplshop/custom/goods_custom.html` | 定制页面模板（SSR） | goods_custom.js/css |
 
 ---
 
@@ -126,76 +151,49 @@ module/Custom/
 
 ### 3.1 扩展表设计策略
 
-本模块的核心创新是**使用独立扩展表代替修改系统表**:
+本模块遵循 **增量开发**：不直接修改官方业务逻辑文件，通过 `custom_*` 相关表与扩展表实现定制能力。
 
-#### 传统方案（❌不推荐）
-```sql
--- 直接修改官方表（危险！）
-ALTER TABLE es_goods ADD COLUMN is_customizable TINYINT(1);
-ALTER TABLE es_cart ADD COLUMN custom_data JSON;
-```
+> 说明：线上数据库字段/表结构已根据业务需要手工补齐；本文档不再包含 SQL 脚本与 DDL，仅描述“当前项目实际使用”的表与字段约定。
 
-#### 本模块方案（✅推荐）
-```sql
--- 创建独立扩展表，通过外键关联
-CREATE TABLE custom_goods_extension (
-    goods_id INT UNIQUE,
-    is_customizable TINYINT(1),
-    FOREIGN KEY (goods_id) REFERENCES es_goods(goodsNo) ON DELETE CASCADE
-);
-```
+### 3.2 核心数据表结构（以当前项目代码为准）
 
-### 3.2 核心数据表结构（15张表）
+> 下表为“代码中直接读写”的核心表。字段以当前组件/控制器实际使用为准（线上已补齐）。
 
-#### **A. 定制功能核心表（5张）**
+#### **A. 定制页面展示与商品配置**
 
-| 表名 | 用途 | 关键字段 |
-|------|------|---------|
-| `custom_pattern` | 图案库主表 | pattern_id, pattern_url, category, status |
-| `goods_custom_pattern` | 商品图案关联 | goods_id, pattern_id（多对多） |
-| `custom_goods_customization` | 用户定制记录 | customization_data (JSON) |
-| `custom_uploaded_images` | 用户上传图片 | file_path, thumbnail_path |
-| `custom_pattern_category` | 图案分类树 | parent_id（支持多级分类） |
+| 表名 | 用途 | 代码关键字段（示例） |
+|------|------|----------------------|
+| `custom_goods_extension` | 商品定制开关/默认值/作业指南等 | is_customizable, default_color, default_size, custom_width, custom_height, work_guide_path |
+| `custom_goods_colors` | 商品颜色（含 SVG） | color_name, color_code, color_hex, svg_image_path, stock_status, sort_order, status |
+| `custom_goods_sizes` | 自定义尺寸（多尺寸） | size_name, size_width, size_height, size_unit, status |
+| `custom_goods_extra_options` | 定制附加选项（可加价） | option_group, option_label, input_type, extra_price, price_type, is_required, sort_order, status |
+| `custom_goods_extra_option_colors` | 附加选项颜色盘 | option_id, color_name, color_hex, sort_order, status |
+| `custom_goods_extra_images` | 附加图片（包装/附属品等） | image_type, image_name, image_path, status |
+| `custom_template` | 模板信息（viewBox 等） | svg_path, viewbox_width, viewbox_height, use_yn |
+| `custom_template_clip_region` | 定制区域裁剪/限制 | template_id, type, x, y, w, h, d, sort |
 
-#### **B. 颜色尺寸管理表（6张）**
+#### **B. 图案库（若启用）**
 
-| 表名 | 用途 | 设计亮点 |
-|------|------|---------|
-| `custom_goods_colors` | 商品专属颜色 | 每个商品独立颜色表，含SVG路径 |
-| `es_goods_colors` | 全局颜色库 | 可复用的颜色配置 |
-| `es_goods_color_relation` | 商品颜色关联 | 多对多关系表 |
-| `custom_goods_sizes` | 自定义尺寸 | 支持宽高定义（宽x高 cm） |
-| `es_goods_sizes` | 全局尺寸库 | 标准尺寸（S/M/L/XL） |
-| `es_goods_size_relation` | 商品尺寸关联 | 多对多关系表 |
+| 表名 | 用途 | 代码关键字段（示例） |
+|------|------|----------------------|
+| `custom_pattern` | 图案库 | pattern_name, pattern_url, pattern_thumbnail, category_id/category, pattern_group, tags, status |
+| `custom_pattern_category` | 图案分类 | category_name, parent_id, sort_order, status |
+| `goods_custom_pattern` | 商品与图案关联 | goods_id, pattern_id, sort_order |
 
-#### **C. 系统表扩展表（4张）⭐核心创新⭐**
+#### **C. 购物车与订单扩展（定制数据落库）**
 
-| 扩展表 | 关联的系统表 | 扩展字段 | 外键约束 |
-|--------|------------|---------|---------|
-| `custom_goods_extension` | `es_goods` | is_customizable, custom_width, custom_height | goods_id → es_goods.goodsNo |
-| `custom_cart_extension` | `es_cart` | customization_image (Base64), customer_pattern_image | sno → es_cart.sno |
-| `custom_order_extension` | `es_order` | has_customized_goods, customization_image | order_no → es_order.orderNo |
-| `custom_order_goods_extension` | `es_orderGoods` | is_customized, customization_data (JSON) | order_goods_sn → es_orderGoods.sno |
+| 表名 | 用途 | 代码关键字段（示例） |
+|------|------|----------------------|
+| `custom_cart_extension` | 购物车扩展（每行） | sno, customization_data, selected_color, selected_size, customer_pattern_image, customization_image, extra_price_total |
+| `custom_order_extension` | 订单扩展（整单） | order_no, customization_image, customer_pattern_image, customization_data, has_customized_goods |
+| `custom_order_goods_extension` | 订单商品扩展（逐商品） | order_goods_sn, order_no, goods_id, customization_data, selected_color, selected_size, is_customized |
 
-### 3.3 外键关系图
+### 3.3 关系说明（简化版）
 
-```
-es_goods (goodsNo) ←─────────────┐
-    ↑                             │
-    │ FK                          │ FK
-    │                             │
-custom_goods_extension        goods_custom_pattern
-    goods_id                      goods_id, pattern_id
-                                      │
-                                      │ FK
-                                      ↓
-                                 custom_pattern
-                                  (pattern_id)
-
-es_cart (sno) ←─── custom_cart_extension (sno)
-es_order (orderNo) ←─── custom_order_extension (order_no)
-es_orderGoods (sno) ←─── custom_order_goods_extension (order_goods_sn)
-```
+- `custom_goods_extension.goods_id` ↔ `es_goods.goodsNo`
+- `custom_cart_extension.sno` ↔ `es_cart.sno`
+- `custom_order_extension.order_no` ↔ `es_order.orderNo`
+- `custom_order_goods_extension.order_goods_sn` ↔ `es_orderGoods.sno`
 
 ### 3.4 数据库操作规范
 
@@ -691,7 +689,7 @@ class XxxController extends \Controller\Admin\Controller
 #### **路由规则**
 
 ```
-请求URL: /admin/custom/color?action=xxxAPI
+请求URL: `/admin/custom_color.php?mode=xxxAPI`
 请求方法: GET/POST
 ```
 
@@ -2293,7 +2291,7 @@ public function addPattern($data) {
 
 #### **9.1.1 获取商品颜色列表**
 
-**接口地址**: `/admin/custom/color?action=getColorsAPI`  
+**接口地址**: `/admin/custom_color.php?mode=getColorsAPI`  
 **请求方法**: `GET`  
 **权限要求**: 管理员登录
 
@@ -2305,7 +2303,7 @@ public function addPattern($data) {
 
 **请求示例**:
 ```
-GET /admin/custom/color?action=getColorsAPI&goods_id=123
+GET /admin/custom_color.php?mode=getColorsAPI&goods_id=123
 ```
 
 **响应示例**:
@@ -2333,7 +2331,7 @@ GET /admin/custom/color?action=getColorsAPI&goods_id=123
 
 #### **9.1.2 添加商品颜色**
 
-**接口地址**: `/admin/custom/color?action=addColorAPI`  
+**接口地址**: `/admin/custom_color.php?mode=addColorAPI`  
 **请求方法**: `POST`  
 **权限要求**: 管理员登录
 
@@ -2350,7 +2348,7 @@ GET /admin/custom/color?action=getColorsAPI&goods_id=123
 
 **请求示例**:
 ```json
-POST /admin/custom/color?action=addColorAPI
+POST /admin/custom_color.php?mode=addColorAPI
 Content-Type: application/x-www-form-urlencoded
 
 goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
@@ -2380,7 +2378,7 @@ goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
 
 #### **9.1.3 更新商品颜色**
 
-**接口地址**: `/admin/custom/color?action=updateColorAPI`  
+**接口地址**: `/admin/custom_color.php?mode=updateColorAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2407,7 +2405,7 @@ goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
 
 #### **9.1.4 删除商品颜色**
 
-**接口地址**: `/admin/custom/color?action=deleteColorAPI`  
+**接口地址**: `/admin/custom_color.php?mode=deleteColorAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2429,7 +2427,7 @@ goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
 
 #### **9.1.5 上传颜色SVG图片**
 
-**接口地址**: `/admin/custom/color?action=uploadSvgAPI`  
+**接口地址**: `/admin/custom_color.php?mode=uploadSvgAPI`  
 **请求方法**: `POST`  
 **Content-Type**: `multipart/form-data`
 
@@ -2457,7 +2455,7 @@ goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
 
 #### **9.2.1 获取图案列表**
 
-**接口地址**: `/admin/custom/pattern?action=getPatternListAPI`  
+**接口地址**: `/admin/custom_pattern.php?mode=getPatternListAPI`  
 **请求方法**: `GET`
 
 **请求参数**:
@@ -2474,7 +2472,7 @@ goods_id=123&color_name=红色&color_code=RED&color_hex=%23FF0000&sort_order=0
 
 **请求示例**:
 ```
-GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=测试&category=动物&status=active&sort_by=created_at&sort_order=DESC
+GET /admin/custom_pattern.php?mode=getPatternListAPI&page=1&page_size=20&keyword=测试&category=动物&status=active&sort_by=created_at&sort_order=DESC
 ```
 
 **响应示例**:
@@ -2515,7 +2513,7 @@ GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=�
 
 #### **9.2.2 上传图案**
 
-**接口地址**: `/admin/custom/pattern?action=uploadPatternAPI`  
+**接口地址**: `/admin/custom_pattern.php?mode=uploadPatternAPI`  
 **请求方法**: `POST`  
 **Content-Type**: `multipart/form-data`
 
@@ -2563,7 +2561,7 @@ GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=�
 
 #### **9.2.3 更新图案信息**
 
-**接口地址**: `/admin/custom/pattern?action=updatePatternAPI`  
+**接口地址**: `/admin/custom_pattern.php?mode=updatePatternAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2598,7 +2596,7 @@ GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=�
 
 #### **9.2.4 删除图案**
 
-**接口地址**: `/admin/custom/pattern?action=deletePatternAPI`  
+**接口地址**: `/admin/custom_pattern.php?mode=deletePatternAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2639,7 +2637,7 @@ GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=�
 
 #### **9.2.5 批量删除图案**
 
-**接口地址**: `/admin/custom/pattern?action=batchDeletePatternsAPI`  
+**接口地址**: `/admin/custom_pattern.php?mode=batchDeletePatternsAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2651,7 +2649,7 @@ GET /admin/custom/pattern?action=getPatternListAPI&page=1&page_size=20&keyword=�
 
 **请求示例**:
 ```json
-POST /admin/custom/pattern?action=batchDeletePatternsAPI
+POST /admin/custom_pattern.php?mode=batchDeletePatternsAPI
 Content-Type: application/json
 
 {
@@ -2684,7 +2682,7 @@ Content-Type: application/json
 
 #### **9.3.1 获取商品定制化状态**
 
-**接口地址**: `/admin/custom/color?action=getCustomizationStatusAPI`  
+**接口地址**: `/admin/custom_color.php?mode=getCustomizationStatusAPI`  
 **请求方法**: `GET`
 
 **请求参数**:
@@ -2709,7 +2707,7 @@ Content-Type: application/json
 
 #### **9.3.2 更新商品定制化状态**
 
-**接口地址**: `/admin/custom/color?action=updateCustomizationStatusAPI`  
+**接口地址**: `/admin/custom_color.php?mode=updateCustomizationStatusAPI`  
 **请求方法**: `POST`
 
 **请求参数**:
@@ -2737,7 +2735,7 @@ Content-Type: application/json
 
 #### **9.4.1 获取商品自定义尺寸**
 
-**接口地址**: `/admin/custom/color?action=getCustomSizeAPI`  
+**接口地址**: `/admin/custom_color.php?mode=getCustomSizeAPI`  
 **请求方法**: `GET`
 
 **请求参数**:
@@ -2762,7 +2760,7 @@ Content-Type: application/json
 
 #### **9.4.2 更新商品自定义尺寸**
 
-**接口地址**: `/admin/custom/color?action=updateCustomSizeAPI`  
+**接口地址**: `/admin/custom_color.php?mode=updateCustomSizeAPI`
 **请求方法**: `POST`
 
 **请求参数**:

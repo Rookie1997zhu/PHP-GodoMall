@@ -811,6 +811,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         name = designId;
                     }
 
+                    // ✅ design-id="4"(패키지/包装) 设为可选：外部몰 주문 모드에서도 검사에서 제외
+                    if (designId === '4') {
+                        return;
+                    }
+
                     if (typeof editor.restoreDesignState === 'function') {
                         editor.currentDesignId = designId;
                         return editor.restoreDesignState(designId).then(function () {
@@ -1307,6 +1312,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 var data = editor.collectExternalOrderData();
                 if (!data) return;
 
+                // ✅ 개인정보 처리방침 동의(필수)
+                if (typeof assertPrivacyConsentOrAlert === 'function' && !assertPrivacyConsentOrAlert()) {
+                    return;
+                }
+
                 // 서버로 전송
                 try {
                     if (typeof editor.showLoadingOverlay === 'function') {
@@ -1432,6 +1442,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // ✅ 개인정보 처리방침 동의(필수)
+            if (typeof assertPrivacyConsentOrAlert === 'function' && !assertPrivacyConsentOrAlert()) {
+                return;
+            }
+
             setExternalOrderStep(2);
         });
         btnExternalOrderNext.__bound = true;
@@ -1459,9 +1474,69 @@ document.addEventListener('DOMContentLoaded', function () {
     if (externalModal) {
         externalModal.addEventListener('click', function (e) {
             if (e.target === externalModal) {
-                externalModal.style.display = 'none';
+                // ✅ 방침: 외부 클릭으로 닫지 않음(오작동 방지)
+                return;
             }
         });
+    }
+
+    // ✅ 개인정보 처리방침 보기/검증/팝업
+    function assertPrivacyConsentOrAlert() {
+        var checkbox = document.getElementById('externalOrderPrivacyConsent');
+        if (checkbox && checkbox.checked) {
+            return true;
+        }
+        alert('개인정보 취급 방침 수신동의가 필요합니다.');
+        if (checkbox) {
+            try { checkbox.focus(); } catch (e) {}
+        }
+        return false;
+    }
+
+    function hidePrivacyPolicyModal() {
+        var modal = document.getElementById('privacyPolicyModal');
+        if (!modal) return;
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function showPrivacyPolicyModal() {
+        var modal = document.getElementById('privacyPolicyModal');
+        if (!modal) return;
+
+        // 미리보기 내용을 전문 팝업에 복사
+        var src = document.getElementById('externalPrivacyPreviewText');
+        var dst = document.getElementById('privacyPolicyModalText');
+        if (src && dst) {
+            dst.textContent = src.textContent || '';
+        }
+
+        modal.style.display = 'block';
+        modal.setAttribute('aria-hidden', 'false');
+
+        var closeBtn = document.getElementById('btnClosePrivacyPolicy');
+        if (closeBtn && !closeBtn.__bound) {
+            closeBtn.addEventListener('click', hidePrivacyPolicyModal);
+            closeBtn.__bound = true;
+        }
+
+        var backdrop = modal.querySelector('.design-check-backdrop');
+        if (backdrop && !backdrop.__bound) {
+            backdrop.addEventListener('click', hidePrivacyPolicyModal);
+            backdrop.__bound = true;
+        }
+    }
+
+    var btnShowPrivacy = document.getElementById('btnShowPrivacyPolicy');
+    if (btnShowPrivacy && !btnShowPrivacy.__bound) {
+        btnShowPrivacy.addEventListener('click', function (e) {
+            try {
+                e.preventDefault();
+                e.stopPropagation();
+            } catch (err) {}
+            showPrivacyPolicyModal();
+        });
+        btnShowPrivacy.__bound = true;
     }
 });
 
