@@ -162,7 +162,8 @@
                         <button type="button"
                                 class="design-dropdown-item is-active"
                                 data-image-src="{=customGoodsView['goodsImage']}"
-                                data-design-id="base">
+                                data-design-id="base"
+                                data-image-type="base">
                             {=customGoodsView['goodsNm']}
                         </button>
                         <!-- 추가 상품图：来自 custom_goods_extra_images -->
@@ -170,7 +171,8 @@
                         <button type="button"
                                 class="design-dropdown-item"
                                 data-image-src="{=.image_path}"
-                                data-design-id="{=.image_id}">
+                                data-design-id="{=.image_id}"
+                                data-image-type="{=.image_type}">
                             {=.image_name}
                         </button>
                         <!--{ / }-->
@@ -480,10 +482,10 @@
                 <div class="quantity-container">
                     <div class="quantity-controls">
                         <button class="quantity-btn" id="btnDecrease">-</button>
-                        <input type="number" class="quantity-input" id="quantityInput" value="1" min="1">
+                        <input type="number" class="quantity-input" id="quantityInput" value="1" min="1" max="10">
                         <button class="quantity-btn" id="btnIncrease">+</button>
                     </div>
-                    <div class="min-order">최소 주문 1개</div>
+                    <div class="min-order">최대 주문 10개 / 10개 이상 주문시 '박순희와 오덕구'카카오 채널로 문의주세요.</div>
                 </div>
             </div>
             
@@ -731,10 +733,22 @@
                                     <label style="font-weight:700;">*주문서 전송 이후 결제 방법 안내</label>
                                     <div class="paymentGuideRow" style="border:1px solid #C5C8CB; border-radius:8px; padding:12px; background:#fff;">
                                         <div class="paymentGuideText">
-                                            <div style="font-family:Pretendard, sans-serif; font-size:13px; color:#25282B; line-height:1.5;">
-                                                1. 주문서 전송 후 해당 제품 페이지로 이동합니다.<br>
-                                                2. 장바구니에서 확인한 최종 결제 수량을 입력합니다.<br>
-                                                3. 구매하기까지 완료하시면 담당자가 최종 확인 후 제작을 시작합니다.
+                                            <div class="paymentGuideList">
+                                                <div class="paymentGuideItem">
+                                                    <div class="paymentGuideNum">1.</div>
+                                                    <div class="paymentGuideTxt">주문서 전송 후 네이버 스토어에서 해당<br>제품 페이지로 이동합니다.</div>
+                                                </div>
+                                                <div class="paymentGuideItem">
+                                                    <div class="paymentGuideNum">2.</div>
+                                                    <div class="paymentGuideTxt">
+                                                        장바구니에서 확인한 최종 결제 수량을<br>입력합니다.
+                                                        <div class="paymentGuideNote">(입력한 이메일로 주문서가 전송되오니<br>확인바랍니다.)</div>
+                                                    </div>
+                                                </div>
+                                                <div class="paymentGuideItem">
+                                                    <div class="paymentGuideNum">3.</div>
+                                                    <div class="paymentGuideTxt">구매하기까지 완료하시면 담당자가<br>최종 확인 후 제작을 시작합니다.</div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="paymentGuideImg">
@@ -995,14 +1009,31 @@
 
         // ✅ 绑定基础事件（已简化）
         function bindEvents() {
+            const MAX_QTY = 10;
+
+            const syncQuantityButtons = () => {
+                const input = document.getElementById('quantityInput');
+                const btnIncrease = document.getElementById('btnIncrease');
+                const btnDecrease = document.getElementById('btnDecrease');
+                const currentValue = input ? (parseInt(input.value) || 1) : 1;
+
+                if (btnDecrease) {
+                    btnDecrease.disabled = currentValue <= 1;
+                }
+                if (btnIncrease) {
+                    btnIncrease.disabled = currentValue >= MAX_QTY;
+                }
+            };
+
             // 数量增加
             const btnIncrease = document.getElementById('btnIncrease');
             if (btnIncrease) {
                 btnIncrease.addEventListener('click', function() {
                     const input = document.getElementById('quantityInput');
                     const currentValue = parseInt(input.value) || 1;
-                    input.value = currentValue + 1;
+                    input.value = Math.min(MAX_QTY, currentValue + 1);
                     updateOrderSummary();
+                    syncQuantityButtons();
                 });
             }
             
@@ -1012,10 +1043,9 @@
                 btnDecrease.addEventListener('click', function() {
                     const input = document.getElementById('quantityInput');
                     const currentValue = parseInt(input.value) || 1;
-                    if (currentValue > 1) {
-                        input.value = currentValue - 1;
+                    input.value = Math.max(1, currentValue - 1);
                         updateOrderSummary();
-                    }
+                    syncQuantityButtons();
                 });
             }
             
@@ -1024,10 +1054,14 @@
             if (quantityInput) {
                 quantityInput.addEventListener('change', function() {
                     const value = parseInt(this.value) || 1;
-                    this.value = value < 1 ? 1 : value;
+                    this.value = Math.min(MAX_QTY, Math.max(1, value));
                     updateOrderSummary();
+                    syncQuantityButtons();
                 });
             }
+
+            // 初始化时同步一次按钮状态
+            syncQuantityButtons();
         }
 
         // ✅ 初始化追加选项事件与状态（直接从 DOM 读取 data-* 属性）

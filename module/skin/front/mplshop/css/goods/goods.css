@@ -186,6 +186,20 @@
 /* 상품상세보기 */
 .item_goods_sec .detail_explain_box{min-height:100px;}
 
+/* 상품상세(에디터) 이미지 중앙 정렬 - js-smart-img */
+.item_goods_sec .detail_explain_box .txt-manual img.js-smart-img{
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
+    max-width:100%;
+    height:auto;
+}
+
+/* 상품상세(에디터) 문단(p) 내용 중앙 정렬 */
+.detail_explain_box .txt-manual p{
+    text-align:center;
+}
+
 /* 상품필수 정보 */
 .datail_table{}
 .left_table_type{width:100%; border:0; border-spacing:0; border-collapse:collapse;}

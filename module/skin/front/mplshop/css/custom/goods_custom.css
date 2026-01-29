@@ -132,8 +132,8 @@ body {
 }
 
 .tool-btn {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     border: 1px solid #d9d9d9;
     background-color: #ffffff;
     border-radius: 8px;
@@ -164,53 +164,53 @@ body {
 }
 
 .tool-icon {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     display: block;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
 }
 
-.tool-btn:disabled .icon-undo { background-image: url("../../_mplshop/images/ToolBox(PNG)/1.실행 취소_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-undo { background-image: url("../../_mplshop/images/ToolBox(PNG)/1.실행 취소.png"); }
+.tool-btn:disabled .icon-undo { background-image: url("../../_mplshop/images/ToolBoxNew/1.실행 취소_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-undo { background-image: url("../../_mplshop/images/ToolBoxNew/1.실행취소.png"); }
 
-.tool-btn:disabled .icon-redo { background-image: url("../../_mplshop/images/ToolBox(PNG)/2.다시 실행_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-redo { background-image: url("../../_mplshop/images/ToolBox(PNG)/2.다시 실행.png"); }
+.tool-btn:disabled .icon-redo { background-image: url("../../_mplshop/images/ToolBoxNew/2.다시 실행_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-redo { background-image: url("../../_mplshop/images/ToolBoxNew/2.다시 실행.png"); }
 
 .tool-btn:disabled .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기_1.jpg'); }
 .tool-btn:not(:disabled) .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기.jpg'); }
 
-.tool-btn:disabled .icon-delete { background-image: url("../../_mplshop/images/ToolBox(PNG)/3.삭제_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-delete { background-image: url("../../_mplshop/images/ToolBox(PNG)/3.삭제.png"); }
+.tool-btn:disabled .icon-delete { background-image: url("../../_mplshop/images/ToolBoxNew/3.삭제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-delete { background-image: url("../../_mplshop/images/ToolBoxNew/3.삭제.png"); }
 
-.tool-btn:disabled .icon-flip-h { background-image: url("../../_mplshop/images/ToolBox(PNG)/4.좌우 반전_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-flip-h { background-image: url("../../_mplshop/images/ToolBox(PNG)/4.좌우 반전.png"); }
+.tool-btn:disabled .icon-flip-h { background-image: url("../../_mplshop/images/ToolBoxNew/4.좌우 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-h { background-image: url("../../_mplshop/images/ToolBoxNew/4.좌우 반전.png"); }
 
-.tool-btn:disabled .icon-flip-v { background-image: url("../../_mplshop/images/ToolBox(PNG)/5.상하 반전_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-flip-v { background-image: url("../../_mplshop/images/ToolBox(PNG)/5.상하 반전.png"); }
+.tool-btn:disabled .icon-flip-v { background-image: url("../../_mplshop/images/ToolBoxNew/5.상하 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-v { background-image: url("../../_mplshop/images/ToolBoxNew/5.상하 반전.png"); }
 
 /* ✅ 90° 회전 */
-.tool-btn:disabled .icon-rotate-90 { background-image: url('../../_mplshop/images/Toolbox/회전 icon(Disabled).png'); }
-.tool-btn:not(:disabled) .icon-rotate-90 { background-image: url('../../_mplshop/images/Toolbox/회전 icon.png'); }
+.tool-btn:disabled .icon-rotate-90 { background-image: url("../../_mplshop/images/ToolBoxNew/6.회전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-rotate-90 { background-image: url("../../_mplshop/images/ToolBoxNew/6.회전.png"); }
 
-.tool-btn:disabled .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBox(PNG)/6.앞으로 이동_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBox(PNG)/6.앞으로 이동.png"); }
+.tool-btn:disabled .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBoxNew/7.앞으로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBoxNew/7.앞으로 이동.png"); }
 
-.tool-btn:disabled .icon-send-backward { background-image: url("../../_mplshop/images/ToolBox(PNG)/7.뒤로 이동_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-send-backward { background-image: url("../../_mplshop/images/ToolBox(PNG)/7.뒤로 이동.png"); }
+.tool-btn:disabled .icon-send-backward { background-image: url("../../_mplshop/images/ToolBoxNew/8.뒤로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-backward { background-image: url("../../_mplshop/images/ToolBoxNew/8.뒤로 이동.png"); }
 
-.tool-btn:disabled .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBox(PNG)/8.맨 앞으로_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBox(PNG)/8.맨 앞으로.png"); }
+.tool-btn:disabled .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBoxNew/9.맨 앞으로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBoxNew/9.맨 앞으로.png"); }
 
-.tool-btn:disabled .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBox(PNG)/9.맨 뒤로_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBox(PNG)/9.맨 뒤로.png"); }
+.tool-btn:disabled .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBoxNew/10.맨 뒤로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBoxNew/10.맨 뒤로.png"); }
 
-.tool-btn:disabled .icon-group { background-image: url("../../_mplshop/images/ToolBox(PNG)/10.그룹화_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-group { background-image: url("../../_mplshop/images/ToolBox(PNG)/10.그룹화.png"); }
+.tool-btn:disabled .icon-group { background-image: url("../../_mplshop/images/ToolBoxNew/11.그룹화_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-group { background-image: url("../../_mplshop/images/ToolBoxNew/11.그룹화.png"); }
 
-.tool-btn:disabled .icon-ungroup { background-image: url("../../_mplshop/images/ToolBox(PNG)/11.그룹 해제_Disabled.png"); }
-.tool-btn:not(:disabled) .icon-ungroup { background-image: url("../../_mplshop/images/ToolBox(PNG)/11.그룹 해제.png"); }
+.tool-btn:disabled .icon-ungroup { background-image: url("../../_mplshop/images/ToolBoxNew/12.그룹 해제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-ungroup { background-image: url("../../_mplshop/images/ToolBoxNew/12.그룹 해제.png"); }
 
 /* 检查按钮 */
 .check-button-container {
@@ -1304,6 +1304,18 @@ body {
     border-color: #adb5bd;
 }
 
+.quantity-btn:disabled {
+    cursor: not-allowed;
+    background-color: #f1f3f5;
+    border-color: #e9ecef;
+    color: #adb5bd;
+}
+
+.quantity-btn:disabled:hover {
+    background-color: #f1f3f5;
+    border-color: #e9ecef;
+}
+
 .quantity-input {
     width: 60px;
     height: 36px;
@@ -1755,9 +1767,61 @@ body {
     min-width: 0;
 }
 
+#externalOrderModal #externalOrderPage2 .paymentGuideList {
+    font-family: Pretendard, sans-serif;
+    font-size: 11px; /* 13px -> 11px (缩小2px) */
+    color: #25282B;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideItem {
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideNum {
+    flex: 0 0 12px; /* 固定编号列宽度：自动换行对齐到文字下（更贴近文字） */
+    font-weight: 700;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideTxt {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideNote {
+    margin-top: 2px; /* 括号句子单独一行 */
+    font-weight: 700;
+}
+
 #externalOrderModal #externalOrderPage2 .paymentGuideImg {
-    flex: 0 0 320px;
+    /* ✅ 右侧示例图固定较小宽度，避免挤压左侧说明文字 */
+    flex: 0 0 274px; /* 方案A：等比放大，让高度自然 +20px 左右 */
     max-width: 45%;
+    align-self: flex-start;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideImg > img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* ✅ 窄屏时改为上下排列，避免文字被过度挤压 */
+@media (max-width: 640px) {
+    #externalOrderModal #externalOrderPage2 .paymentGuideRow {
+        flex-direction: column;
+    }
+
+    #externalOrderModal #externalOrderPage2 .paymentGuideImg {
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
 }
 
 #externalOrderModal #externalOrderPage1 .externalOrderImagePreviewEmpty {

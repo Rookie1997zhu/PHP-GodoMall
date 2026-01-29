@@ -488,10 +488,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return s || 'design';
         }
 
-        function setDesignVisualState(designId, imageSrc) {
+        function setDesignVisualState(designId, imageSrc, isPackage) {
             try {
-                // clip 규칙: goods_custom.js addToCart 로직과 동일하게 유지
-                editor.clipEnabled = (designId !== '4');
+                // ✅ clip 규칙: goods_custom.js 와 동일하게 유지 (package=패키지/스티커는 clip 비활성)
+                editor.clipEnabled = !isPackage;
                 if (typeof editor.applyClipPathForAllObjects === 'function') {
                     editor.applyClipPathForAllObjects();
                 }
@@ -517,10 +517,14 @@ document.addEventListener('DOMContentLoaded', function () {
             var designId = 'base';
             var imageSrc = '';
             var displayName = '';
+            var imageType = '';
+            var isPackage = false;
             try {
                 designId = item.getAttribute('data-design-id') || 'base';
                 imageSrc = item.getAttribute('data-image-src') || '';
                 displayName = (item.textContent || '').trim();
+                imageType = String(item.getAttribute('data-image-type') || '').trim();
+                isPackage = (imageType === 'package') || (String(designId).trim() === '4'); // legacy fallback
             } catch (e) {}
 
             return Promise.resolve()
@@ -532,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 })
                 .then(function () {
-                    setDesignVisualState(designId, imageSrc);
+                    setDesignVisualState(designId, imageSrc, isPackage);
                     return editor.generateCustomizedSVG();
                 })
                 .then(function (svgText) {
@@ -804,15 +808,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (emptyName) return; // 이미 빈 항목을 찾았으면 중단
                     var designId = 'base';
                     var name = '';
+                    var imageType = '';
+                    var isPackage = false;
                     try {
                         designId = item.getAttribute('data-design-id') || 'base';
                         name = (item.textContent || '').trim() || designId;
+                        imageType = String(item.getAttribute('data-image-type') || '').trim();
+                        isPackage = (imageType === 'package') || (String(designId).trim() === '4'); // legacy fallback
                     } catch (e) {
                         name = designId;
                     }
 
-                    // ✅ design-id="4"(패키지/包装) 设为可选：外部몰 주문 모드에서도 검사에서 제외
-                    if (designId === '4') {
+                    // ✅ package(패키지/스티커) 设为可选：外部몰 주문 모드에서도 검사에서 제외
+                    if (isPackage) {
                         return;
                     }
 
@@ -1052,40 +1060,35 @@ document.addEventListener('DOMContentLoaded', function () {
             price: basePrice * qty2
         });
 
-        // 공식 옵션(일체형 우선)
+        // 공식 옵션(일체형/분리형): ✅ 선택된 항목은 모두 표시(가격 0이어도 표시)
         var officialPerUnit = 0;
-        var officialLabel2 = '';
-        var officialValue2 = '';
         try {
-            var officialSelect2 = document.getElementById('officialOptionSelect');
-            if (officialSelect2 && officialSelect2.value) {
-                officialLabel2 = getLabelFromDl(officialSelect2) || '옵션';
-                officialValue2 = getSelectedText(officialSelect2);
-                var opt2 = officialSelect2.options[officialSelect2.selectedIndex];
-                officialPerUnit = opt2 ? (parseInt(opt2.getAttribute('data-option-price'), 10) || 0) : 0;
-            } else {
-                var selects2 = document.querySelectorAll('select[name^="optionNo_"]');
-                var lastSel = null;
-                Array.from(selects2).forEach(function (s) {
-                    if (s && s.value) lastSel = s;
-                });
-                if (lastSel) {
-                    officialLabel2 = getLabelFromDl(lastSel) || '옵션';
-                    officialValue2 = getSelectedText(lastSel);
-                }
                 if (typeof window.getSelectedOfficialOptionPrice === 'function') {
                     officialPerUnit = parseInt(window.getSelectedOfficialOptionPrice(), 10) || 0;
-                }
             }
         } catch (e) {}
 
-        if ((officialValue2 && officialValue2 !== '') || officialPerUnit > 0) {
+        try {
+            var officialSelect2 = document.getElementById('officialOptionSelect');
+            if (officialSelect2 && officialSelect2.value) {
             rows.push({
-                title: officialLabel2 || '옵션',
-                sub: officialValue2 || '',
+                    title: getLabelFromDl(officialSelect2) || '옵션',
+                    sub: getSelectedText(officialSelect2) || '',
                 price: officialPerUnit * qty2
             });
-        }
+            } else {
+                var selects2 = document.querySelectorAll('select[name^="optionNo_"]');
+                Array.from(selects2).forEach(function (sel) {
+                    if (!sel || !sel.value) return;
+                    rows.push({
+                        title: getLabelFromDl(sel) || '옵션',
+                        sub: getSelectedText(sel) || '',
+                        price: 0
+                    });
+                });
+                // 분리형은 "옵션 비용 합계"로 가격을 안내하는 것이 UX가 더 명확하므로 개별 항목에는 0원 표시
+            }
+        } catch (e) {}
 
         // 텍스트 옵션(입력형) + addPrice (per_order)
         var textAddTotal = 0;
@@ -1125,7 +1128,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 var inputType = (node.getAttribute('data-input-type') || '').toLowerCase();
                 var priceType = (node.getAttribute('data-price-type') || '').toLowerCase();
                 var extraPrice = parseInt(node.getAttribute('data-extra-price') || '0', 10) || 0;
-                if (extraPrice <= 0) return;
 
                 var selected = false;
                 var sub = '';
@@ -1149,8 +1151,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 var labelEl = node.querySelector('.extra-option-label');
                 var label2 = labelEl ? (labelEl.textContent || '').replace(/\s+/g, ' ').trim() : '추가 옵션';
 
-                var linePrice = (priceType === 'per_order') ? extraPrice : (extraPrice * qty2);
+                // ✅ "옵션 비용 합계"는 안내용/합계용 항목으로 중복 표시되는 경우가 있어 목록에서 제외
+                // (우리는 아래에서 별도의 합계 행을 생성한다)
+                if (label2 === '옵션 비용 합계') {
+                    return;
+                }
+
+                var linePrice = 0;
+                if (extraPrice > 0) {
+                    linePrice = (priceType === 'per_order') ? extraPrice : (extraPrice * qty2);
                 extraTotal += linePrice;
+                }
                 rows.push({
                     title: label2,
                     sub: sub,
@@ -1159,7 +1170,46 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         } catch (e) {}
 
-        var total = (basePrice + officialPerUnit) * qty2 + textAddTotal + extraTotal;
+        // ✅ 옵션 비용 합계(공식 옵션 + 텍스트 옵션 + 추가 옵션)
+        var optionTotal = (officialPerUnit * qty2) + textAddTotal + extraTotal;
+        rows.push({
+            title: '옵션 비용 합계',
+            sub: '최종 옵션 비용',
+            price: optionTotal
+        });
+
+        var total = (basePrice * qty2) + optionTotal;
+
+        // ✅ 최종 출력 전 중복 제거(방어)
+        // - 동일한 항목이 여러 경로로 rows에 들어오는 케이스 방지
+        // - "옵션 비용 합계"는 반드시 1개만 남기기
+        try {
+            (function dedupeRows() {
+                var seen = new Set();
+                rows = (rows || []).filter(function (r) {
+                    var title = String(r && r.title ? r.title : '').replace(/\s+/g, ' ').trim();
+                    var sub = String(r && r.sub ? r.sub : '').replace(/\s+/g, ' ').trim();
+                    var price = parseInt(r && r.price, 10) || 0;
+                    var key = title + '||' + sub + '||' + price;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+
+                // "옵션 비용 합계"는 뒤에서부터 1개만 유지
+                var keepOne = false;
+                for (var i = rows.length - 1; i >= 0; i--) {
+                    var t = String(rows[i] && rows[i].title ? rows[i].title : '').replace(/\s+/g, ' ').trim();
+                    if (t === '옵션 비용 합계') {
+                        if (!keepOne) {
+                            keepOne = true;
+                        } else {
+                            rows.splice(i, 1);
+                        }
+                    }
+                }
+            })();
+        } catch (e) {}
 
         var html = '';
         html += '<div style="font-size:13px;">';
@@ -1173,8 +1223,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 html += '    <div style="margin-top:4px;font-family:Pretendard, sans-serif;font-weight:500;font-size:13px;color:#9DA0A3;line-height:1.3;">' + esc(r.sub) + '</div>';
             }
             html += '  </div>';
-            // ✅ Pretendard Medium, 12pt(≈16px), #4D5053
-            html += '  <div style="flex:0 0 auto;font-family:Pretendard, sans-serif;font-weight:500;font-size:16px;color:#4D5053;">' + formatWon(r.price) + '</div>';
+            // ✅ 금액이 0인 경우 "0원" 표시는 숨김
+            var priceNumber = parseInt(r.price, 10) || 0;
+            var priceText = priceNumber > 0 ? formatWon(priceNumber) : '';
+            html += '  <div style="flex:0 0 auto;font-family:Pretendard, sans-serif;font-weight:500;font-size:16px;color:#4D5053;">' + esc(priceText) + '</div>';
             html += '</div>';
         });
         html += '<div style="border-top:1px dashed #C5C8CB;margin:8px 0;"></div>';
@@ -1188,6 +1240,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var container = document.getElementById('externalOrderCustomizationInfo');
         if (container) {
             container.innerHTML = html;
+            // ✅ (方案1) 항목이 많을 때 잘리지 않도록 스크롤 적용
+            container.style.maxHeight = '240px';
+            container.style.overflowY = 'auto';
+            container.style.overflowX = 'hidden';
+            container.style.boxSizing = 'border-box';
         }
 
         // 이미지 업로드 바인딩 + 초기화(매번 새로 시작)

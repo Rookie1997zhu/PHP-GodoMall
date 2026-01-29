@@ -36,6 +36,7 @@ class CustomGoodsEditor {
         this.selectedColor = 'navy';
         this.selectedSize = '4.7x2.8';
         this.quantity = 1;
+        this.maxQuantity = 10; // ✅ 수량 상한
         this.selectedColorImage = null;
         this.currentBackgroundSrc = null;
         this.customizationData = {
@@ -114,9 +115,63 @@ class CustomGoodsEditor {
         // 각 전체 디자인(기본/부가 이미지) 별로 독립된 캔버스 상태를 저장
         this.designStates = {};        // { designId: canvasJSON }
         this.currentDesignId = 'base'; // 현재 선택된 디자인 ID
+        // ✅ design 메타(이미지 타입/패키지 여부) 캐시: { [designId]: { id, imageType, isPackage } }
+        this.designMeta = {};
         
         this.init();
         this.preloadCustomFonts();
+    }
+
+    /**
+     * ✅ 현재 designId 의 메타(이미지 타입/패키지 여부) 조회
+     * - 우선순위: (1) 전달된 fallbackItem의 data-image-type (2) DOM에서 data-image-type 조회 (3) legacy: designId === '4'
+     */
+    getDesignMeta(designId, fallbackItem) {
+        const id = String(designId || '').trim() || 'base';
+        if (this.designMeta && this.designMeta[id]) {
+            return this.designMeta[id];
+        }
+
+        let imageType = '';
+        try {
+            if (fallbackItem && typeof fallbackItem.getAttribute === 'function') {
+                imageType = String(fallbackItem.getAttribute('data-image-type') || '').trim();
+            }
+        } catch (e) {}
+
+        try {
+            if (!imageType && typeof document !== 'undefined') {
+                const safeId = id.replace(/"/g, '\\"');
+                const dropdown = document.querySelector('.design-dropdown');
+                const el = dropdown
+                    ? dropdown.querySelector('.design-dropdown-item[data-design-id="' + safeId + '"]')
+                    : null;
+                if (el) {
+                    imageType = String(el.getAttribute('data-image-type') || '').trim();
+                }
+            }
+        } catch (e) {}
+
+        // ✅ 패키지 판단: imageType=package 우선, 없으면 legacy id=4
+        const isPackage = (imageType === 'package') || (id === '4');
+        const meta = {
+            id,
+            imageType: imageType || (id === 'base' ? 'base' : ''),
+            isPackage: !!isPackage,
+        };
+        this.designMeta[id] = meta;
+        return meta;
+    }
+
+    /**
+     * ✅ 해당 designId 가 패키지(스티커/포장)인지 여부
+     */
+    isPackageDesign(designId, fallbackItem) {
+        try {
+            return !!this.getDesignMeta(designId, fallbackItem).isPackage;
+        } catch (e) {
+            return String(designId || '').trim() === '4';
+        }
     }
 
     /**
@@ -1837,7 +1892,8 @@ class CustomGoodsEditor {
      * 改变数量
      */
     changeQuantity(delta) {
-        const newQuantity = Math.max(1, this.quantity + delta);
+        const maxQty = (typeof this.maxQuantity === 'number' && this.maxQuantity > 0) ? this.maxQuantity : 10;
+        const newQuantity = Math.min(maxQty, Math.max(1, this.quantity + delta));
         this.setQuantity(newQuantity);
     }
 
@@ -1845,7 +1901,8 @@ class CustomGoodsEditor {
      * 设置数量
      */
     setQuantity(quantity) {
-        this.quantity = Math.max(1, quantity);
+        const maxQty = (typeof this.maxQuantity === 'number' && this.maxQuantity > 0) ? this.maxQuantity : 10;
+        this.quantity = Math.min(maxQty, Math.max(1, quantity));
         const quantityInput = document.getElementById('quantityInput');
         if (quantityInput) {
             quantityInput.value = this.quantity;
@@ -2763,6 +2820,8 @@ class CustomGoodsEditor {
 
                 for (const item of items) {
                     const designId = item.getAttribute('data-design-id') || 'base';
+                    const imageType = String(item.getAttribute('data-image-type') || '').trim();
+                    const isPackage = (imageType === 'package') || (String(designId).trim() === '4'); // legacy fallback
                     let imageSrc = item.getAttribute('data-image-src') || '';
                     if (designId === 'base' && this.selectedColorImage) {
                         imageSrc = this.selectedColorImage;
@@ -2772,8 +2831,13 @@ class CustomGoodsEditor {
                     this.currentDesignId = designId;
                     await this.restoreDesignState(designId);
 
-                    // 根据 designId 决定是否启用裁剪（与前台切换逻辑保持一致）
-                    this.clipEnabled = (designId !== '4');
+                    // ✅ 根据 image_type 决定是否启用裁剪（与前台切换逻辑保持一致）
+                    this.designMeta[String(designId).trim()] = {
+                        id: String(designId).trim() || 'base',
+                        imageType: imageType || (String(designId).trim() === 'base' ? 'base' : ''),
+                        isPackage: !!isPackage,
+                    };
+                    this.clipEnabled = !isPackage;
                     this.applyClipPathForAllObjects();
                     this.updateClipOverlayVisibility();
 
@@ -2789,8 +2853,8 @@ class CustomGoodsEditor {
                         o.customType !== 'removeTag'      // 排除删除标记等辅助对象
                     );
 
-                    // ✅ design-id="4"(패키지/包装) 允许为空：不作为“未完成”拦截条件
-                    if (designId !== '4' && !hasContent) {
+                    // ✅ package(패키지/스티커) 允许为空：不作为“未完成”拦截条件
+                    if (!isPackage && !hasContent) {
                         hasEmptyDesign = true;
                         emptyDesignId = designId;
                         emptyDesignLabel = (item.textContent || '').trim();
@@ -3224,7 +3288,7 @@ class CustomGoodsEditor {
     /**
      * 切换 전체 디자인（商品图）并还原对应画布
      */
-    async switchDesign(designId, imageSrc) {
+    async switchDesign(designId, imageSrc, options = {}) {
         if (!designId || !imageSrc) return;
 
         const bg = document.getElementById('backgroundImage');
@@ -3246,8 +3310,19 @@ class CustomGoodsEditor {
         this.currentDesignId = designId;
         await this.restoreDesignState(designId);
 
-        // 根据 designId 决定是否启用裁剪：패키지(data-design-id="4") 不启用
-        this.clipEnabled = (designId !== '4');
+        // ✅ 根据 image_type 判断是否启用裁剪：package(패키지/스티커) 不启用
+        const optImageType = (options && options.imageType != null) ? String(options.imageType).trim() : '';
+        const optClipDisabled = (options && typeof options.clipDisabled === 'boolean')
+            ? options.clipDisabled
+            : (optImageType === 'package');
+        const meta = this.getDesignMeta(designId);
+        const mergedMeta = {
+            id: meta.id,
+            imageType: optImageType || meta.imageType,
+            isPackage: (typeof optClipDisabled === 'boolean') ? !!optClipDisabled : meta.isPackage,
+        };
+        this.designMeta[mergedMeta.id] = mergedMeta;
+        this.clipEnabled = !mergedMeta.isPackage;
 
         // 统一为当前画布对象应用/移除裁剪
         this.applyClipPathForAllObjects();
@@ -3753,12 +3828,20 @@ class CustomGoodsEditor {
             console.warn('背景SVG加载失败，回退为位图:', error);
         }
 
-        const fallback = this.imageToDataURL(backgroundImg);
-        return `<image x="0" y="0" width="${width}" height="${height}" xlink:href="${fallback}" preserveAspectRatio="xMidYMid meet" />`;
+        // ✅ 回退为位图时：跨域图片会导致 canvas.toDataURL 触发 tainted canvas
+        // 为了稳定生成合成 SVG，这里直接引用原始图片 URL（避免导出时报 SecurityError）
+        const fallbackSrc = backgroundImg.getAttribute('src') || backgroundImg.src || '';
+        return `<image x="0" y="0" width="${width}" height="${height}" xlink:href="${fallbackSrc}" preserveAspectRatio="xMidYMid meet" />`;
     }
 
     async fetchSvgText(url) {
-        const response = await fetch(url, { credentials: 'include' });
+        // ✅ 跨域时如果携带 credentials，会触发 “ACAO=* 但 credentials=include” 的浏览器拦截
+        // 这里不带 cookie，优先保证可读取 SVG 文本（同源场景也不受影响）
+        const response = await fetch(url, {
+            mode: 'cors',
+            credentials: 'omit',
+            cache: 'no-cache'
+        });
         if (!response.ok) {
             throw new Error(`无法加载SVG: ${response.status} ${response.statusText}`);
         }
@@ -4052,6 +4135,17 @@ class CustomGoodsEditor {
             if (img.src && img.src.startsWith('file://')) {
                 console.log('使用file://协议，直接返回原始src:', img.src);
                 return img.src;
+            }
+
+            // ✅ 跨域图片：canvas.drawImage 后 toDataURL 会抛 SecurityError (tainted canvas)
+            // 这里做一次同源判断，跨域直接回退为原始 URL
+            try {
+                const u = new URL(img.src, window.location.href);
+                if (u.origin !== window.location.origin) {
+                    return img.src || '';
+                }
+            } catch (e) {
+                // URL 解析失败则继续走原逻辑
             }
             
             // 创建canvas来转换图片
@@ -5005,7 +5099,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     syncDesignDropdownState(currentDesignId);
 
                     // 按当前设计决定是否启用裁剪（与 switchDesign 逻辑一致）
-                    editor.clipEnabled = (currentDesignId !== '4');
+                    editor.clipEnabled = !editor.isPackageDesign(currentDesignId);
 
                     editor.restoreDesignState(currentDesignId).then(function () {
                         editor.isRestoringHistory = false;
@@ -5121,7 +5215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     syncDesignDropdownState(currentDesignIdPer);
 
                     // 按当前设计决定是否启用裁剪（与 switchDesign 逻辑一致）
-                    editor.clipEnabled = (currentDesignIdPer !== '4');
+                    editor.clipEnabled = !editor.isPackageDesign(currentDesignIdPer);
 
                     editor.restoreDesignState(currentDesignIdPer).then(function () {
                         editor.isRestoringHistory = false;
@@ -5206,14 +5300,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.addEventListener('click', () => {
                     const src = item.getAttribute('data-image-src') || '';
                     const designId = item.getAttribute('data-design-id') || 'base';
+                    const imageType = String(item.getAttribute('data-image-type') || '').trim();
+                    const isPackage = (imageType === 'package') || (String(designId).trim() === '4'); // legacy fallback
                     if (!src) return;
 
                     if (typeof editor.switchDesign === 'function') {
-                        editor.switchDesign(designId, src);
+                        editor.switchDesign(designId, src, { imageType: imageType, clipDisabled: isPackage });
                     }
 
-                    // 每次点击 패키지(design-id="4") 都弹出提示，并且必须点击确认按钮关闭
-                    if (designId === '4' && typeof editor.showPackageGuideModal === 'function') {
+                    // ✅ 每次点击 package(패키지/스티커) 都弹出提示，并且必须点击确认按钮关闭
+                    if (isPackage && typeof editor.showPackageGuideModal === 'function') {
                         editor.showPackageGuideModal();
                     }
 
