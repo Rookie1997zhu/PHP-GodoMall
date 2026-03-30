@@ -554,7 +554,7 @@
 .portfolio-list-gallery ul li{margin-bottom:28px;}
 .portfolio-card .gallery_info_cont{padding-top:12px;}
 .portfolio-sub-title{margin:6px 0 0; color:#60646d; font-size:12px; min-height:18px;}
-.portfolio-tags{margin-top:8px;}
+.portfolio-tags{margin-top:8px; display:flex; flex-wrap:wrap; align-items:flex-start; row-gap:3px; column-gap:3px;}
 .lookbook-view-tags{margin-top:10px;}
 .portfolio-tag{display:inline-block; padding:2px 8px; border-radius:6px; background:#f2f3f7; color:#444; font-size:11px;}
 

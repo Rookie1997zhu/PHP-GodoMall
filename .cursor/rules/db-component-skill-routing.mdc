@@ -14,3 +14,4 @@ alwaysApply: false
 - 若涉及扩展字段、扩展表、关联官方表、字符集或 collation，必须优先按项目既有写法处理。
 - 与核心业务表的新增字段需求，默认走 `custom_*` 扩展表，而不是改官方原表。
 - 若为 SQL 安装脚本，需同时考虑建表语义、回滚语义和与现有扩展表命名的一致性。
+- 若涉及**多步写库、事务、跨表原子性**（含 `CustomPDO` 事务与「同一连接」约束），除本 skill 外须遵循 `.cursor/skills/godomall-db-extension-patterns/SKILL.md` 中的 **「数据库事务」** 小节；在 `module/Custom/Component/**` 内改多表写入时同样适用。

@@ -37,6 +37,7 @@ alwaysApply: true
 
 - 定制表读写、复杂查询：**`Custom\Component\*`**（如 `CustomGoods`、`CustomCartExtension`），Controller 保持薄层。
 - 数据库：**`Custom\Component\Database\CustomPDO`** 或组件内封装；官方商品等数据用 **`App::load('\\Component\\Goods\\Goods')`** 等，避免复制核心 SQL。
+- 多步写库、跨表需原子性时：使用 **`CustomPDO` 的 `beginTransaction` / `commit` / `rollback`**；**同一事务必须同一 PDO 连接**（多处 `new CustomPDO()` 不能共享一条事务），细则与范例见 `.cursor/skills/godomall-db-extension-patterns/SKILL.md` 中「数据库事务」。
 - 定制表命名与现网一致（如 `custom_*`）；改表须迁移与注释同步。
 
 ## 新增字段与建表规范（强制）

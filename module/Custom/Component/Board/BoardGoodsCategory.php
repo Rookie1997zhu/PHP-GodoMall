@@ -122,10 +122,19 @@ class BoardGoodsCategory
      */
     public function saveArticleCategory($bdId, $articleSno, $goodsCateCd, $subTitle = null)
     {
-        $result = $this->saveArticleCategories($bdId, $articleSno, [$goodsCateCd]);
-        $this->saveArticleMeta($bdId, $articleSno, $subTitle);
-
-        return $result;
+        $this->pdo->beginTransaction();
+        try {
+            $this->saveArticleCategories($bdId, $articleSno, [$goodsCateCd], true);
+            $metaOk = $this->saveArticleMeta($bdId, $articleSno, $subTitle);
+            if ($metaOk === false) {
+                throw new Exception('保存文章扩展信息失败');
+            }
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollback();
+            throw $e;
+        }
     }
 
     /**
@@ -134,10 +143,11 @@ class BoardGoodsCategory
      * @param string $bdId
      * @param int $articleSno
      * @param array<int, string> $goodsCateCds
+     * @param bool $inTransaction 为 true 时由外层事务管理（不再 begin/commit）
      * @return bool
      * @throws Exception
      */
-    public function saveArticleCategories($bdId, $articleSno, array $goodsCateCds)
+    public function saveArticleCategories($bdId, $articleSno, array $goodsCateCds, $inTransaction = false)
     {
         if (!$this->isBoardIdSafe($bdId)) {
             throw new Exception('无效的게시판 ID');
@@ -155,17 +165,33 @@ class BoardGoodsCategory
             throw new Exception('选择的商品分类不存在或不可用');
         }
 
-        $this->deleteArticleCategoryMappings($bdId, [$articleSno]);
-        foreach ($goodsCateCds as $goodsCateCd) {
-            $this->pdo->execute(
-                "INSERT INTO custom_board_goods_category (bd_id, article_sno, goods_cate_cd, created_at, updated_at)
-                 VALUES (?, ?, ?, NOW(), NOW())
-                 ON DUPLICATE KEY UPDATE updated_at = NOW()",
-                [$bdId, $articleSno, $goodsCateCd]
-            );
+        $startedHere = !$inTransaction;
+        if ($startedHere) {
+            $this->pdo->beginTransaction();
         }
-
-        return true;
+        try {
+            $this->deleteArticleCategoryMappings($bdId, [$articleSno]);
+            foreach ($goodsCateCds as $goodsCateCd) {
+                $ok = $this->pdo->execute(
+                    "INSERT INTO custom_board_goods_category (bd_id, article_sno, goods_cate_cd, created_at, updated_at)
+                     VALUES (?, ?, ?, NOW(), NOW())
+                     ON DUPLICATE KEY UPDATE updated_at = NOW()",
+                    [$bdId, $articleSno, $goodsCateCd]
+                );
+                if (!$ok) {
+                    throw new Exception('保存商品分类映射失败');
+                }
+            }
+            if ($startedHere) {
+                $this->pdo->commit();
+            }
+            return true;
+        } catch (Exception $e) {
+            if ($startedHere) {
+                $this->pdo->rollback();
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -214,9 +240,22 @@ class BoardGoodsCategory
             return false;
         }
 
-        $this->deleteArticleMeta($bdId, [(int)$articleSno]);
-
-        return $this->deleteArticleCategoryMappings($bdId, [(int)$articleSno]);
+        $this->pdo->beginTransaction();
+        try {
+            $metaOk = $this->deleteArticleMeta($bdId, [(int)$articleSno]);
+            if (!$metaOk) {
+                throw new Exception('删除文章扩展信息失败');
+            }
+            $ok = $this->deleteArticleCategoryMappings($bdId, [(int)$articleSno]);
+            if (!$ok) {
+                throw new Exception('删除分类映射失败');
+            }
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollback();
+            return false;
+        }
     }
 
     /**
@@ -240,9 +279,22 @@ class BoardGoodsCategory
             return true;
         }
 
-        $this->deleteArticleMeta($bdId, $articleSnos);
-
-        return $this->deleteArticleCategoryMappings($bdId, $articleSnos);
+        $this->pdo->beginTransaction();
+        try {
+            $metaOk = $this->deleteArticleMeta($bdId, $articleSnos);
+            if (!$metaOk) {
+                throw new Exception('批量删除文章扩展信息失败');
+            }
+            $ok = $this->deleteArticleCategoryMappings($bdId, $articleSnos);
+            if (!$ok) {
+                throw new Exception('批量删除分类映射失败');
+            }
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollback();
+            return false;
+        }
     }
 
     /**

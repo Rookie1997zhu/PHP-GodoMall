@@ -411,19 +411,14 @@ class GoodsCustomController extends \Controller\Front\Controller
                     'extra_price_total'      => $extraPriceTotal,
                 ];
                 
-                $saveResult = $customCartExt->saveCustomizationData($existingCartSno, $customData);
+                $saveResult = $customCartExt->saveCustomizationDataWithCartQuantity(
+                    $existingCartSno,
+                    $customData,
+                    (int)$quantity
+                );
                 
                 if (!$saveResult) {
                     throw new Exception('更新定制数据失败');
-                }
-                
-                // ✅ 同时更新 es_cart 表中的数量（如果需要）
-                if ($quantity > 0) {
-                    $pdo = new CustomPDO();
-                    $pdo->execute(
-                        "UPDATE es_cart SET goodsCnt = :cnt WHERE sno = :sno",
-                        ['cnt' => $quantity, 'sno' => $existingCartSno]
-                    );
                 }
                 
                 error_log('[GoodsCustomController] 编辑模式：定制数据更新成功');

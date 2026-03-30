@@ -251,6 +251,55 @@ class CustomCartExtension
     }
 
     /**
+     * 将定制数据写入扩展表（内部用，失败抛异常以便事务回滚）
+     *
+     * @param int $cartSno 购物车序列号（es_cart.sno）
+     * @param array $data 定制数据
+     * @throws Exception
+     */
+    private function persistCustomizationData($cartSno, array $data)
+    {
+        if (empty($cartSno)) {
+            throw new Exception('购物车序列号不能为空');
+        }
+        if (empty($data['customer_pattern_image']) && empty($data['customization_image'])) {
+            throw new Exception('客户图案或定制图片不能为空');
+        }
+
+        $sql = "INSERT INTO {$this->tableName} 
+                (sno, customization_data, selected_color, selected_size, 
+                 is_customized, customer_pattern_image, customization_image,
+                 extra_price_total, created_at, updated_at)
+                VALUES 
+                (:sno, :customization_data, :selected_color, :selected_size, 
+                 1, :customer_pattern_image, :customization_image,
+                 :extra_price_total, NOW(), NOW())
+                ON DUPLICATE KEY UPDATE
+                    customization_data = VALUES(customization_data),
+                    selected_color = VALUES(selected_color),
+                    selected_size = VALUES(selected_size),
+                    customer_pattern_image = VALUES(customer_pattern_image),
+                    customization_image = VALUES(customization_image),
+                    extra_price_total = VALUES(extra_price_total),
+                    is_customized = 1,
+                    updated_at = NOW()";
+
+        $params = [
+            'sno'                   => $cartSno,
+            'customization_data'    => $data['customization_data'] ?? null,
+            'selected_color'        => $data['selected_color'] ?? null,
+            'selected_size'         => $data['selected_size'] ?? null,
+            'customer_pattern_image'=> $data['customer_pattern_image'],
+            'customization_image'   => $data['customization_image'] ?? null,
+            'extra_price_total'     => isset($data['extra_price_total']) ? (int)$data['extra_price_total'] : 0,
+        ];
+
+        if (!$this->db->execute($sql, $params)) {
+            throw new Exception('扩展表保存失败');
+        }
+    }
+
+    /**
      * 保存定制数据到购物车扩展表
      * 
      * 用于定制商品加入购物车时，保存定制图片等扩展数据
@@ -272,55 +321,43 @@ class CustomCartExtension
     public function saveCustomizationData($cartSno, $data)
     {
         try {
-            if (empty($cartSno)) {
-                throw new Exception('购物车序列号不能为空');
-            }
-
-            // 验证必需字段：客户图案 或 合成图 至少有一个
-            if (empty($data['customer_pattern_image']) && empty($data['customization_image'])) {
-                throw new Exception('客户图案或定制图片不能为空');
-            }
-
-            // 构建SQL - 使用 INSERT ... ON DUPLICATE KEY UPDATE
-            $sql = "INSERT INTO {$this->tableName} 
-                    (sno, customization_data, selected_color, selected_size, 
-                     is_customized, customer_pattern_image, customization_image,
-                     extra_price_total, created_at, updated_at)
-                    VALUES 
-                    (:sno, :customization_data, :selected_color, :selected_size, 
-                     1, :customer_pattern_image, :customization_image,
-                     :extra_price_total, NOW(), NOW())
-                    ON DUPLICATE KEY UPDATE
-                        customization_data = VALUES(customization_data),
-                        selected_color = VALUES(selected_color),
-                        selected_size = VALUES(selected_size),
-                        customer_pattern_image = VALUES(customer_pattern_image),
-                        customization_image = VALUES(customization_image),
-                        extra_price_total = VALUES(extra_price_total),
-                        is_customized = 1,
-                        updated_at = NOW()";
-
-            $params = [
-                'sno'                   => $cartSno,
-                'customization_data'    => $data['customization_data'] ?? null,
-                'selected_color'        => $data['selected_color'] ?? null,
-                'selected_size'         => $data['selected_size'] ?? null,
-                'customer_pattern_image'=> $data['customer_pattern_image'],
-                'customization_image'   => $data['customization_image'] ?? null,
-                'extra_price_total'     => isset($data['extra_price_total']) ? (int)$data['extra_price_total'] : 0,
-            ];
-
-            $result = $this->db->execute($sql, $params);
-
-            if ($result) {
-                error_log('CustomCartExtension::saveCustomizationData 成功: cartSno=' . $cartSno);
-                return true;
-            }
-
-            return false;
-
+            $this->persistCustomizationData($cartSno, $data);
+            error_log('CustomCartExtension::saveCustomizationData 成功: cartSno=' . $cartSno);
+            return true;
         } catch (Exception $e) {
             error_log('CustomCartExtension::saveCustomizationData 失败: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 同一连接事务内保存扩展表并更新 es_cart 数量（编辑购物车项用）
+     *
+     * @param int $cartSno 购物车序列号
+     * @param array $data 定制数据（同 saveCustomizationData）
+     * @param int $quantity 数量；≤0 时仅写扩展表不写 es_cart
+     * @return bool
+     */
+    public function saveCustomizationDataWithCartQuantity($cartSno, array $data, $quantity)
+    {
+        try {
+            $this->db->beginTransaction();
+            $this->persistCustomizationData($cartSno, $data);
+            if ($quantity > 0) {
+                $ok = $this->db->execute(
+                    'UPDATE es_cart SET goodsCnt = :cnt WHERE sno = :sno',
+                    ['cnt' => (int)$quantity, 'sno' => (int)$cartSno]
+                );
+                if (!$ok) {
+                    throw new Exception('购物车数量更新失败');
+                }
+            }
+            $this->db->commit();
+            error_log('CustomCartExtension::saveCustomizationDataWithCartQuantity 成功: cartSno=' . $cartSno);
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollback();
+            error_log('CustomCartExtension::saveCustomizationDataWithCartQuantity 失败: ' . $e->getMessage());
             return false;
         }
     }
