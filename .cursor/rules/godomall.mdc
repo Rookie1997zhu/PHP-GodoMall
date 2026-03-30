@@ -1,14 +1,38 @@
 ---
-alwaysApply: false
+alwaysApply: true
 ---
   ## 📋 适用范围
-  - 本规则适用于整个 Godomall 项目（包括 backend、Asset、Custom、Vendor 等所有目录）。
+  - 本规则适用于整个 Godomall 项目（包括 `module`、`.cursor`、Vendor 等相关目录）。
+  - **二次开发后端细则**（目录职责、Controller/Component 约定、API 形态等）见同目录 **`.cursor/rules/custom-backend.mdc`**；与本规则冲突时以本文件中的 **P0（增量不改核心、数据以库表为准等）** 为准。
+  - **技能路由入口**见同目录：
+    - `.cursor/rules/skill-routing.mdc`
+    - `.cursor/rules/controller-skill-routing.mdc`
+    - `.cursor/rules/custom-controller-skill-routing.mdc`
+    - `.cursor/rules/component-skill-routing.mdc`
+    - `.cursor/rules/entry-script-skill-routing.mdc`
+    - `.cursor/rules/db-component-skill-routing.mdc`
+  - 当任务命中上述路由规则时，必须先读取对应 `.cursor/skills/**/SKILL.md`，再继续分析或改动。
+  
+  ---
+  
+  ## 🗂️ 本仓库后端路径约定（检索优先）
+  - **官方后端（核心）**：`module/Bundle/**`（对应 GodoMall 官方 Bundle 代码）。
+  - **二次开发后端**：`module/Custom/**`（`Custom\...` 命名空间、Component、扩展 Controller 等）、`module/Controller/**`（与官方同命名空间的覆盖/扩展控制器）。
+  - **后台 / 独立入口脚本（常通过 `mode` 转发到上述 Controller）**：`module/Admin/custom_*.php`、`module/Admin/custom/**/*.php`、`module/Custom/Controller/Front/add_to_cart.php`（如 `custom_color.php`、`custom/custom_order_image.php`）。
+  - AI 做 **Find（定位）** 时，须优先在上述本仓库真实路径中检索；不要先按其它技术栈习惯去搜 `contracts/**`、`api/**` 等占位目录。
+  - 若任务分别命中：
+    - `module/Controller/**` → 先读 `godomall-controller-patterns`
+    - `module/Custom/Controller/**` → 先读 `godomall-controller-patterns`
+    - `module/Custom/Component/**` → 先读 `godomall-component-patterns`
+    - `module/Admin/custom_*.php` / `module/Admin/custom/**/*.php` / `module/Custom/Controller/Front/add_to_cart.php` → 先读 `godomall-entry-script-patterns`
+    - `module/Custom/Component/Database/**` / `module/Custom/Database/**/*.sql` / 扩展表任务 → 先读 `godomall-db-extension-patterns`
   
   ---
   
   ## 🔄 增量开发原则
   - 所有自定义开发、优化、修复，**必须基于"增量开发"原则**，不得直接修改官方核心代码。
   - 新功能、业务逻辑、数据库字段等，均应以"继承、扩展、独立文件"方式实现。
+  - 二次开发涉及后端逻辑新增/修改时，优先在 **`module/Custom/**`、`module/Controller/**`** 下新增或扩展文件实现，不得在官方核心目录直接堆叠业务逻辑。
   - 升级官方补丁前，务必备份所有自定义代码和数据库。
   
   ---
@@ -32,7 +56,7 @@ alwaysApply: false
   ---
   
   ## 🚫 文件/目录忽略规则
-  - 忽略所有第三方依赖目录（如 `backend/Vendor/`、`node_modules/`、`.git/`、`.idea/` 等）。
+  - 忽略所有第三方依赖目录（如 `Vendor/`、`node_modules/`、`.git/`、`.idea/` 等）。
   - 忽略所有 IDE 配置文件（如 `.vscode/`、`.DS_Store`、`Thumbs.db` 等）。
   - 忽略所有临时、缓存、日志文件（如 `*.log`、`*.tmp`、`cache/`、`runtime/` 等）。
   - 忽略所有测试/演示用的临时页面和脚本。
@@ -55,15 +79,15 @@ alwaysApply: false
      - 禁止在前端自定义字段名或擅自更改大小写。
   
   ### 2. 前后端数据格式一致性
-  - **所有 API 的输入输出数据结构**，必须与后端定义的 DTO、Swagger/OpenAPI 契约一致。
+  - **所有 API 的输入输出数据结构**，必须与当前后端真实定义、数据库字段和现有返回结构保持一致。
   - 前端、后端、数据库字段命名规范必须统一：
     - 建议统一使用 **camelCase**（如：`userName`）。
     - 如果数据库为 `snake_case`（如 `user_name`），后端必须做转换，前端只看 camelCase。
   - 如果某个字段类型或命名发生变化，必须：
     1. **更新数据库 Schema**（如涉及 DB）
-    2. 同步修改后端 DTO/实体
+    2. 同步修改后端实体 / 数据组装 / 返回结构
     3. 同步修改前端类型定义
-    4. 在接口文档（Swagger/OpenAPI）中更新说明
+    4. 在项目文档或对应说明文件中更新字段变化
   
   ---
   
@@ -85,7 +109,7 @@ alwaysApply: false
   
   ### Cursor AI 行为约束
   - **禁止 AI 在前端直接修改字段命名**，除非用户确认。
-  - 当 AI 在后端修改 DTO 或实体字段时：
+  - 当 AI 在后端修改实体、数据组装或返回字段时：
     - 必须先验证与数据库 Schema 的一致性。
     - 如果不一致，先提示用户并提供同步修复方案。
   - AI 不得在前后端数据结构不统一的情况下自动生成代码。
@@ -139,8 +163,9 @@ alwaysApply: false
   ### 后端定位与创建策略 (P0 - 强制)
   
   #### 0. 适用范围
-  - 场景：1.当 AI 修改了前端（Web/APP）并判断"需要后端支持/改动/新增接口"时。
-         2.
+  - 场景：
+    1. 当 AI 修改了前端（Web/APP）并判断“需要后端支持 / 改动 / 新增接口”时
+    2. 当用户直接要求定位、修改或新增 GodoMall 二次开发后端逻辑时
   
   #### 1. 绝对禁止
   - **禁止**在未获得用户明确同意前，创建任何新的后端文件/控制器/Service/路由/DAO。
@@ -149,11 +174,8 @@ alwaysApply: false
   #### 2. 必须先做的事（Find → Ask → Plan）
   1) **Find（定位）**  
      - 在下列目录中**检索并列出候选文件**（最多 8 个），优先级从高到低：  
-       - `contracts/**`（DTO / OpenAPI / 接口约定）  
-       - `api/**`, `controllers/**`, `routes/**`  
-       - `services/**`, `usecases/**`  
-       - `repositories/**`, `models/**`, `dao/**`  
-       - `infra/**`, `modules/**`, `plugins/**`  
+       - **本仓库（GodoMall）**：`module/Bundle/**`（官方）、`module/Custom/**` 与 `module/Controller/**`（二次开发）、`module/Admin/custom_*.php`（后台入口）  
+       - 仅当当前仓库确实存在其它约定目录时，才补充检索 `api/**`、`controllers/**`、`services/**` 等；不要把这些占位目录当成本仓库默认路径  
      - 输出：文件清单（路径+一句话理由），并标注"最可能的 1–2 个"。
   2) **Ask（征询）**  
      - 若未 100% 确定后端位置：**必须先提问**，示例话术：  
@@ -164,8 +186,8 @@ alwaysApply: false
   #### 3. 若确实需要"新增后端文件"
   - 仅在用户明确同意"创建新文件"后才允许；并满足：  
     - 提供**创建理由**（现有模块无法承载/耦合过高/契约需要分版）。  
-    - 指定**准确路径与命名**（遵循项目约定，例如 `api/v2/xxxController.php`）。  
-    - 同步更新：`contracts/**`（DTO/OpenAPI）、路由表、权限/中间件、单测（若用户要求）。  
+    - 指定**准确路径与命名**（遵循本仓库现有约定，例如 `module/Custom/**`、`module/Controller/**`、`module/Admin/custom_*.php`）。  
+    - 同步更新：相关控制器 / 组件 / 入口脚本 / 扩展表 / 权限校验（若该需求确实涉及）。  
     - 生成 **迁移说明** 与 **回滚步骤**（如何恢复到创建前状态）。
   
   #### 4. 找不到 or 用户未及时回复时
@@ -175,8 +197,9 @@ alwaysApply: false
     - **不得**创建任何文件；**不得**修改现有代码。
   
   #### 5. Godomall / NHN Commerce 特例
-  - **禁止**改核心系统表/核心后端文件；优先在 `modules/**`、`plugins/**` 或扩展层实现。  
-  - 需要持久化新字段：优先使用**扩展表**或 **`*_meta`**，并在后端做 snake_case ↔ camelCase 映射。  
+  - **禁止**改核心系统表/核心后端文件；本仓库中 **勿直接改** `module/Bundle/**`；优先在 **`module/Custom/**`、`module/Controller/**`** 或扩展表上实现（与 `custom-backend.mdc` 一致）。  
+  - 二次开发若需新增字段：**禁止在官方原表新增字段**，必须通过 **新建扩展表** 承载（如 `custom_*` 或 `*_meta`），并通过业务键关联官方表。  
+  - 涉及新增字段的需求，必须同时提供 **建表 SQL 与回滚 SQL**；推荐模板见 `.cursor/rules/custom-backend.mdc`。  
   - 所有字段以 **DB → 后端 → 前端** 的优先级链路统一（见"数据结构一致性规则"）。
   
   #### 6. 产出格式约束
@@ -194,18 +217,14 @@ alwaysApply: false
     - 无论是 Controller、Service、Route、DAO、Repository、Model，全部适用。
 
   2. **必须先列候选路径并提问**
-    - 如果找不到文件，先在以下目录中列出可能的候选路径（最多 8 个）：
-      - `contracts/**`（DTO / OpenAPI / API 契约）
-      - `api/**`, `controllers/**`, `routes/**`
-      - `services/**`, `usecases/**`
-      - `repositories/**`, `models/**`, `dao/**`
-      - `infra/**`, `modules/**`, `plugins/**`
+    - 如果找不到文件，先在以下目录中列出可能的候选路径（最多 8 个）；**本仓库优先**：`module/Bundle/**`、`module/Custom/**`、`module/Controller/**`、`module/Admin/custom_*.php`。  
+    - 其余通用目录（若存在且已在仓库中实际出现）：`api/**`、`controllers/**`、`services/**`、`repositories/**`、`models/**` 等。
     - 输出格式：
       ```
       可能相关的文件：
-      1. api/orderController.php  - 存在订单接口
-      2. services/orderService.php - 存在订单逻辑
-      3. controllers/legacyOrder.php - 旧版订单接口
+      1. module/Controller/Front/Board/ListController.php - 官方页面覆写控制器
+      2. module/Custom/Controller/Admin/Custom/CustomGoodsController.php - 后台定制控制器
+      3. module/Admin/custom_color.php - 后台独立入口脚本
 
       没找到完全匹配的文件。请确认：
       [A] 在以上文件中选择  
@@ -232,7 +251,4 @@ alwaysApply: false
   ## 📚 其他说明
   - 所有开发须遵循 Godomall 官方开发规范。
   - 代码合并、发布前需自查是否符合本规则。
-  - 如有疑问，优先参考项目根目录下的《README.md》《源代码中文注释说明.md》《功能流程与代码文件对应关系.md》等文档。
-
-alwaysApply: true
----
+  - 如有疑问，优先参考项目根目录与 `.cursor/skills/` 下的现有文档；**二次开发后端**另见 `.cursor/rules/custom-backend.mdc` 与各类 `skill-routing` 规则。

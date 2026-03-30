@@ -1,0 +1,22 @@
+@charset "utf-8"; 
+
+/*========================================================================
+사이드 플로팅
+========================================================================*/
+.side-floating { position:fixed; bottom:25px; right:25px; width:auto; transition:bottom 0.3s; z-index:61; }
+.side-floating ul li { margin:10px 0 0; }
+.side-floating ul li a { display:flex; align-items:center; justify-content:center; width:60px; height:60px; background-color:var(--point-color); border:solid 1px var(--point-color); border-radius:5px; overflow:hidden; box-sizing:border-box; }
+.side-floating ul li .top-btn { background-color:#fff; border:solid 1px #D1D1D1; }
+.side-floating ul li a img { max-width:60px; }
+/* .side-floating.end-stop { position:absolute; bottom:25px; } */
+
+body.body-login .side-floating { display:none !important; }
+
+
+@media all and (max-width:768px) { 
+	.side-floating { bottom:25px; right:10px; }
+	.side-floating.on { bottom:70px; }
+	.side-floating ul li a { width:55px; height:55px; }
+	.side-floating ul li a img { width:28px; }
+	.side-floating ul li a.top-btn img { width:15px; }
+}

@@ -1,0 +1,312 @@
+/* =========================================================
+ * goods_custom_mobile_app.css
+ * 목적: goods_custom.css를 수정하지 않고, 모바일/태블릿에서 "앱 같은 UX"를 제공한다.
+ * - 상단: 캔버스(작업영역) / 하단: 정보(바텀시트)
+ * - 툴바: sticky + 가로 스크롤
+ * - 하단: 고정 결제바 + 바텀시트 열기/닫기
+ * ========================================================= */
+
+@media (max-width: 1024px) {
+  :root{
+    --safe-b: env(safe-area-inset-bottom, 0px);
+    --safe-t: env(safe-area-inset-top, 0px);
+    --sheet-peek: 120px; /* 바텀시트 접힘 상태에서 노출되는 높이 */
+    --canvas-size: min(92vw, 720px); /* 캔버스 표시 크기(스크린에 따라 자동) */
+  }
+
+  html, body { width: 100%; overflow-x: hidden; }
+  body{
+    background: #fff;
+    overscroll-behavior: none;
+  }
+
+  /* 레이아웃: 세로 스택 */
+  .custom-container{
+    width: 100%;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .custom-workspace{
+    width: 100%;
+    order: 1;
+    border-right: 0;
+    padding-bottom: calc(76px + var(--safe-b)); /* 하단 결제바 공간 확보 */
+  }
+
+  /* 툴바: sticky + 가로 스크롤 */
+  .custom-toolbar{
+    position: sticky;
+    top: 0;
+    z-index: 2000;
+    padding-top: calc(12px + var(--safe-t));
+    background: rgba(248, 249, 250, 0.92);
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .toolbar-group{
+    flex: 0 0 auto;
+  }
+
+  /* 캔버스 영역: 고정 px 제거 -> 화면에 맞는 정사각형 */
+  .preview-container{
+    min-height: unset;
+    padding: 12px;
+  }
+
+  .canvas-container{
+    width: var(--canvas-size) !important;
+    height: var(--canvas-size) !important;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* background/canvas는 container를 꽉 채움 */
+  .product-background{ width: 100%; height: 100%; }
+  #customCanvas{ width: 100%; height: 100%; }
+  .canvas-container .lower-canvas,
+  .canvas-container .upper-canvas{
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* 터치 UX */
+  #customCanvas,
+  .canvas-container .upper-canvas{
+    touch-action: none;
+  }
+
+  /* 우측 버튼(이미지/텍스트/라이브러리): 모바일에서 캔버스 하단 한 줄 */
+  .custom-options{
+    position: static;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    z-index: 20;
+  }
+
+  /* ========== Bottom Sheet + Backdrop ========== */
+  body.sheet-open { overflow: hidden; }
+
+  .mobile-sheet-backdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    z-index: 2900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+  }
+  body.sheet-open .mobile-sheet-backdrop{
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .product-info{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    width: 100%;
+    max-height: min(78vh, 720px);
+    background: #fff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -12px 30px rgba(0,0,0,.12);
+    transform: translateY(calc(100% - var(--sheet-peek) - var(--safe-b)));
+    transition: transform 0.22s ease;
+    z-index: 3000;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 16px calc(16px + var(--safe-b));
+    border-left: 0;
+  }
+
+  /* 바텀시트 핸들(시각적) */
+  .product-info::before{
+    content:"";
+    display:block;
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: #d0d0d0;
+    margin: 4px auto 10px;
+  }
+
+  body.sheet-open .product-info{
+    transform: translateY(0);
+  }
+
+  /* ========== Bottom Bar ========== */
+  .mobile-bottom-bar{
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 4000;
+    padding: 10px 12px calc(10px + var(--safe-b));
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #eee;
+  }
+
+  .mobile-bottom-bar__btn{
+    width: 100%;
+    height: 52px;
+    border: 0;
+    border-radius: 14px;
+    background: #111;
+    color: #fff;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 0 14px;
+    cursor:pointer;
+  }
+  .mobile-bottom-bar__left{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap: 2px;
+    min-width: 0;
+  }
+  .mobile-bottom-bar__price{
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 1.1;
+  }
+  .mobile-bottom-bar__hint{
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+  }
+  .mobile-bottom-bar__cta{
+    font-weight: 800;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  /* 작은 폰: 버튼/툴 크기 조금 줄임 */
+  @media (max-width: 480px){
+    .tool-btn{ width: 44px; height: 44px; }
+    .tool-icon{ width: 44px; height: 44px; }
+    :root{ --canvas-size: min(92vw, 640px); }
+  }
+
+  /* ===== 折叠/展开：툴바 ===== */
+  .mobile-toolbar-toggle{
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid #d0d0d0;
+    background: #fff;
+    color: #111;
+    font-weight: 800;
+    font-size: 13px;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+
+  body.toolbar-collapsed .custom-toolbar{
+    padding-bottom: 10px;
+  }
+
+  /* ✅ 收起时：让 toggle 明显并居中（避免“工具栏不见了”的错觉） */
+  body.toolbar-collapsed .custom-toolbar{
+    justify-content: center;
+    gap: 0;
+  }
+
+  body.toolbar-collapsed .mobile-toolbar-toggle{
+    background: #007BFF;
+    border-color: #007BFF;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0,123,255,.25);
+  }
+
+  /* ✅ 保留 toggle 按钮，隐藏原工具组 */
+  body.toolbar-collapsed .custom-toolbar .toolbar-group{
+    display: none !important;
+  }
+
+  /* ===== 折叠/展开：下方 도구(이미지/텍스트/라이브러리/레이어) ===== */
+  body.options-collapsed .custom-options{
+    display: none !important;
+  }
+
+  .mobile-options-fab{
+    position: fixed;
+    right: 12px;
+    bottom: calc(76px + var(--safe-b)); /* ✅ 位于底部黑条上方 */
+    z-index: 4500;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 0;
+    background: #2F6BFF;
+    color: #fff;
+    font-weight: 900;
+    font-size: 13px;
+    box-shadow: 0 10px 22px rgba(47,107,255,.35);
+    cursor: pointer;
+  }
+
+  .mobile-options-fab:active{
+    transform: translateY(1px);
+  }
+
+  /* ===== BottomSheet 拖拽过程中也显示遮罩（不抢事件） ===== */
+  body.sheet-dragging { overflow: hidden; }
+
+  body.sheet-dragging .mobile-sheet-backdrop{
+    opacity: 1;
+    pointer-events: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mobile-bottom-bar,
+  .mobile-sheet-backdrop{
+    display: none !important;
+  }
+}
+
+/* ✅ Mobile fix: 커스텀 방법 안내(#customGuideModal) 在手机端过大导致无法关闭 */
+@media (max-width: 640px){
+  #customGuideModal .design-check-content{
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+
+    /* 不使用 translateY(-50%)，避免确认按钮跑到屏幕外 */
+    top: 10px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    max-height: calc(100vh - 20px) !important;
+    overflow: hidden !important;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  #customGuideModal .design-check-body{
+    flex: 1 1 auto;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ✅ 关闭按钮固定在底部，可见可点 */
+  #customGuideModal #btnCloseCustomGuide{
+    position: sticky;
+    bottom: 0;
+    margin-top: 12px;
+  }
+
+  /* 手机端允许文本换行（原 goods_custom.css 强制 nowrap 会挤出屏幕） */
+  #customGuideModal .custom-guide-card-desc,
+  #customGuideModal .custom-guide-footer-text{
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+  }
+}

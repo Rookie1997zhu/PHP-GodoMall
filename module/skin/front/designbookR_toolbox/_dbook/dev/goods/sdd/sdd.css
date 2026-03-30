@@ -1,0 +1,21 @@
+@charset "utf-8";
+
+.sdd { margin:14px 0; }
+.sdd .sdd-inner { display:flex; gap:15px; padding:23px 25px; background:#f9f9f9; }
+.sdd .sdd-inner .icon { display:flex; align-items:center; justify-content:center; width:44px; height:44px; background:#616161; border-radius:50%; }
+.sdd .sdd-inner .icon.active { background:var(--point-color); }
+.sdd .sdd-inner .desc { flex:1; }
+.sdd .sdd-inner .time-box { margin:12px 0 0; }
+.sdd .sdd-inner .sdd-front { color:#121212; font-size:16px; font-weight:600; line-height:1; }
+.sdd .sdd-inner .sdd-back { color:#121212; font-size:14px; line-height:1; }
+.sdd .sdd-inner #sddTime { color:var(--point-color); font-size:14px; font-weight:400; }
+
+@media all and (max-width:768px) { 
+	.sdd { margin:14px 10px; }
+	.sdd .sdd-inner { align-items:center; gap:12px; padding:16px 16px; background:#F3F3F3; border:1px solid #F3F3F3; border-radius:5px; overflow:hidden; }
+	.sdd .sdd-inner .icon img { max-width:100%; }
+	.sdd .sdd-inner .time-box { margin:5px 0 0; }
+	.sdd .sdd-inner .sdd-front { color:#000; font-size:14px; }
+	.sdd .sdd-inner .sdd-back { color:#000; font-size:12px; }
+	.sdd .sdd-inner #sddTime { font-size:12px; }
+}

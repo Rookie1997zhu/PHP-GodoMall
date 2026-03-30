@@ -1,0 +1,18 @@
+@charset "utf-8"; 
+
+/* 무료배송 */
+#freeShipping { padding:25px 30px 25px 30px; margin:14px 0; border:1px solid #e5e5e5; border-radius:10px; }
+#freeShipping .progress { position:relative; height:6px; background:#eaeaea; border-radius:10px; }
+#freeShipping .price-range { display:flex; justify-content:space-between; margin:0 0 14px; color:#424242; font-size:16px; line-height:1; }
+#freeShipping .progress .bar { position:absolute; top:0; left:0; width:var(--bar-width, 0); height:100%; background:var(--point-color); transition:.3s; border-radius:10px; }
+#freeShipping .desc { margin:14px 0 0; color:#121212; font-size:16px; text-align:center; line-height:1; }
+#freeShipping .desc #priceNeeded,
+#freeShipping .desc #deliveryFee { color:var(--point-color); }
+#freeShipping .desc b { font-weight:700; }
+
+@media all and (max-width:768px) { 
+	#freeShipping { padding:18px 18px; margin:14px 10px; background:#fff; border:1px solid #D1D1D1; border-radius:5px; }
+	#freeShipping .progress { height:8px; }
+	#freeShipping .price-range { font-size:14px; }
+	#freeShipping .desc { font-size:14px; }
+}

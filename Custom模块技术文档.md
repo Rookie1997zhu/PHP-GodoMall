@@ -104,9 +104,6 @@ module/Custom/
 │       └── CustomErrorLogController.php
 ├── Database/
 │   └── migrations/                     # 预留（当前为空）
-├── Widget/
-│   └── Front/Goods/
-│       └── CustomizationWidget.php
 └── config/
     └── database.php
 
@@ -492,8 +489,9 @@ public function batchDeletePatterns($patternIds, $useTransaction = false)
 ### 4.4 CustomGoods.php - 商品定制视图
 
 #### **设计特点**
-- **完全独立，不继承任何父类**
-- 避免父类依赖导致的500错误
+- **当前实现为独立组件，不继承官方 Goods 父类**
+- 这是 `CustomGoods` 组件的实现选择，不代表所有 Component / Controller 都采用“不继承”策略
+- 通过内部调用官方 Goods 组件，避免直接绑定到官方父类继承链
 - 使用CustomPDO直接查询数据库
 - 结合官方Goods组件获取基础信息
 
@@ -643,46 +641,78 @@ public function saveOrderImages($orderNo, array $data)
 
 ### 5.1 控制器设计原则
 
-所有Controller遵循统一模式：
+当前项目的 Controller **不应简单理解为“全部同一种写法”**，而是按控制器类型区分：
+
+- **后台定制控制器**：优先 `extends \Controller\Admin\Controller`
+- **前台独立页面控制器**：优先 `extends \Controller\Front\Controller`
+- **前台覆写官方页面控制器**：优先 `extends \Bundle\Controller\Front\...`
+- **构造函数策略**：默认先尝试 `parent::__construct()`；若独立入口场景下父类初始化异常，再考虑 `try/catch` 包裹，只有实测仍不稳定时才评估非继承方案
+- **响应策略**：是否使用 `$this->json()` 或 `sendJsonResponse()`，以当前文件已验证模式为准，不做全局一刀切
+
+典型模式示例如下：
 
 ```php
-class XxxController extends \Controller\Admin\Controller
+// 1) 后台定制控制器
+class XxxAdminController extends \Controller\Admin\Controller
 {
     private $component;  // 业务组件实例
     
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->component = new Component();
     }
-    
-    // 统一入口
-    public function index() {
+
+    public function index()
+    {
         $action = Request::request()->get('action');
         switch ($action) {
             case 'xxxAPI': $this->xxxAPI(); break;
         }
     }
-    
-    // JSON响应
-    private function sendJsonResponse($data) {
+
+    private function sendJsonResponse($data)
+    {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         exit;
     }
-    
-    // API方法
-    public function xxxAPI() {
+}
+
+// 2) 前台独立页面控制器
+class XxxFrontController extends \Controller\Front\Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+}
+
+// 3) 前台覆写官方页面控制器
+class XxxOverrideController extends \Bundle\Controller\Front\Board\ListController
+{
+    public function index()
+    {
+        parent::index();
+        $this->appendCustomData();
+    }
+}
+
+// 4) 独立入口兼容场景
+class XxxSafeAdminController extends \Controller\Admin\Controller
+{
+    public function __construct()
+    {
         try {
-            // 1. 获取参数
-            // 2. 验证参数
-            // 3. 调用组件
-            // 4. 返回结果
+            parent::__construct();
         } catch (Exception $e) {
-            $this->sendJsonResponse(['success' => false, 'message' => $e->getMessage()]);
+            error_log('Godomall init failed: ' . $e->getMessage());
         }
     }
 }
 ```
+
+> 决策顺序：先参考当前仓库同类型旧文件，再决定是否继承、是否保留 `parent::index()`、是否使用自定义 JSON 输出；不要把某个文件里的临时兼容写法扩展成全局规则。
 
 ### 5.2 CustomColorController.php - 颜色管理控制器
 

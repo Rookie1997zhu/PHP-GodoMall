@@ -1,0 +1,59 @@
+@charset "utf-8"; 
+
+/* 쿠폰받기 버튼 */
+.body-goods-view .coupon-box { float:right; }
+.body-goods-view .coupon-down-btn { display:inline-block; line-height:34px; padding:0 12px; color:#ffffff; font-size:16px; background:var(--point-color); border-radius:5px; }
+.body-goods-view .coupon-down-btn span { display:inline-block; position:relative; padding-right:20px; background:url('./img/coupon_down_icon.png') no-repeat 100% 50%; }
+/* Dim */
+#couponDim { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:210; }
+.body-goods-view:has(#lyCouponDown *) #layerDim { display:none; }
+/* 쿠폰 다운로드 박스 */
+.body-goods-view #lyCouponDown.coupon_down_layer { position:static; width:auto; height:auto; }
+.body-goods-view #lyCouponDown.coupon_down_layer .layer_wrap_cont { position:fixed !important; top:50% !important; left:50% !important; transform:translate(-50%, -50%); width:372px; max-width:100%; border-radius:10px; background:#fff; box-sizing:border-box; z-index:210; }
+.body-goods-view #lyCouponDown.coupon_down_layer.dn .layer_wrap_cont { opacity:0; }
+.body-goods-view #lyCouponDown.coupon_down_layer:has(:not(.dn)) .layer_wrap_cont { animation:FadeIn 1s forwards; }
+.body-goods-view #lyCouponDown.layer_wrap .ly_tit { padding:0 26px; }
+.body-goods-view #lyCouponDown.layer_wrap .ly_tit h4 { padding:22px 0 19px; color:#121212; font-size:18px; font-weight:700; line-height:1; border-bottom:1px solid #e5e5e5; }
+.body-goods-view #lyCouponDown.layer_wrap .ly_tit h4 span { display:none; }
+.body-goods-view #lyCouponDown.layer_wrap .ly_cont { margin:0; padding:20px 26px 48px; }
+.body-goods-view #lyCouponDown.coupon_down_layer .scroll_box { height:290px; overflow-y:auto; border-bottom:0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .scroll_box::-webkit-scrollbar { width:10px; }
+.body-goods-view #lyCouponDown.coupon_down_layer .scroll_box::-webkit-scrollbar-thumb { height:15%; background:var(--point-color,#121212); background-clip:padding-box; border:3px solid transparent; border-radius:10px; }
+.body-goods-view #lyCouponDown.coupon_down_layer .scroll_box::-webkit-scrollbar-track { background:none; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type { margin:0;}
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type table,
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tbody { display:block; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type colgroup,
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type thead { display:none; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr { display:flex; flex-direction:column; position:relative; padding:20px 0; border:1px solid #424242; border-radius:10px; box-sizing:border-box; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr + tr { margin-top:15px; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td { width:calc(100% - 82px); padding:0 0 0 23px; color:#121212; font-size:15px; font-weight:600; border:0; box-sizing:border-box; text-align:left; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td:last-child { display:flex; justify-content:center; align-items:center; position:absolute; top:20px; bottom:20px; right:0; width:82px; padding:0; border-left:1px solid #e0e0e0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td strong { padding:0 10px 0 0; font-weight:600; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td .coupon_price,
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td .coupon_price b { font-size:22px; font-weight:700; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type tr > td .coupon_price { display:block; margin:0 0 7px; text-overflow:ellipsis; white-space:nowrap; overflow:hidden; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .text_info { padding:0; color:#787878; font-size:14px; font-weight:400; line-height:1; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .text_info + .text_info { padding:5px 0 0; }
+/* 쿠폰받기 */
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .btn_down_box { display:flex; justify-content:center; align-items:center; width:82px; margin:0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .btn_down_box .btn_coupon_down { display:block; width:100%; padding-top:36px; background:url("./img/coupon_down_btn.png") no-repeat 50% 0; text-align:center; cursor:pointer; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .btn_down_box .btn_coupon_down a { padding:0; font-size:0; background:none; border:0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .btn_down_box .btn_coupon_down a::before { content:'쿠폰받기'; display:block; color:#000; font-size:14px; font-weight:500; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .btn_down_box .btn_coupon_down a em.icon_download { display:none; }
+.body-goods-view #lyCouponDown.coupon_down_layer .top_table_type .coupon_completed { display:block; width:100%; padding:0; color:#000; font-size:16px; font-weight:600; text-align:center; background:none; }
+/* 닫기 */
+.body-goods-view #lyCouponDown.layer_wrap .ly_close { width:15px; height:14px; padding:22px 26px 20px; background:url("./img/coupon_close_btn.png") no-repeat 50%; background-size:15px auto; }
+.body-goods-view #lyCouponDown.layer_wrap .ly_close img { display:none; }
+/* 전체 쿠폰 다운받기 */
+.body-goods-view #lyCouponDown.coupon_down_layer .btn_center_box { margin:30px 0 0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .btn_center_box button { padding:0; margin:0; }
+.body-goods-view #lyCouponDown.coupon_down_layer .btn_center_box button.btn_ly_cancel { display:none; }
+.body-goods-view #lyCouponDown.coupon_down_layer .btn_center_box #btnAllCouponDown { display:block; width:100%; height:58px; line-height:58px; padding:0; color:#ffffff; font-size:0; font-weight:700; text-align:center; border:0; background:var(--point-color, #ff5452); border-radius:30px; }
+.body-goods-view #lyCouponDown.coupon_down_layer .btn_center_box #btnAllCouponDown::before { content:'쿠폰 한번에 받기'; font-size:18px; }
+
+
+@media all and (max-width:768px) { 
+	.body-goods-view .coupon-down-btn { line-height:40px; margin:0 0 10px; padding:0 18px; font-size:14px; }
+	.body-goods-view .coupon-down-btn span { background-size:11px auto; }
+}

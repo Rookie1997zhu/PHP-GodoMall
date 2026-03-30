@@ -383,6 +383,9 @@
                        class="input_text width80p">
             </td>
         </tr>
+        <?php if ($bdWrite['cfg']['bdId'] === 'lookbook') {
+            include dirname(__DIR__) . '/custom_lookbook_goods_category_field.php';
+        } ?>
         <?php if(gd_is_provider() === false) {?>
         <tr>
             <th>게시글 양식</th>

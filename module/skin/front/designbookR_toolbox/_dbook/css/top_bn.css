@@ -1,0 +1,19 @@
+@charset "utf-8";
+
+/*========================================================================
+탑 배너
+========================================================================*/
+.top-line { position:relative; width:100%; overflow:hidden; }
+.top-line .top-bn { position:relative; left:50%; }
+.top-line .top-bn img { transform:translateX(-50%); }
+/* 닫기 버튼 */
+.top-line .top-btn-close { position:absolute; top:50%; left:50%; transform:translate(740px,-50%); }
+.top-line .top-btn-close span { display:block; line-height:1; cursor:pointer; }
+
+
+@media all and (max-width:768px) {
+	.top-line .top-bn img { width:100%; transform:translateX(-50%); }
+	/* 닫기 버튼 */
+	.top-line .top-btn-close { position:absolute; top:50%; left:auto; right:10px; transform:translate(0,-50%); width:10px; height:10px;}
+	.top-line .top-btn-close img { width:100%; }
+}

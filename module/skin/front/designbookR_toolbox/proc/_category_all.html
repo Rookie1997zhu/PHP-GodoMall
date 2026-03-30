@@ -1,0 +1,37 @@
+{*** [위젯] 레이어형 전체 카테고리 | proc/_category_all.html ***}
+
+<div class="gnb_all">
+    <a href="#;" class="btn_all_menu_open"><span>전체카테고리</span></a>
+</div>
+<div class="gnb_allmenu_wrap">
+	<div class="side-top mo-view">
+		<ul>
+			<!--{ ? gd_is_login() === false }-->
+			<li><a href="../member/login.php">{=__('로그인')}</a></li>
+			<li><a href="../member/join_method.php">{=__('회원가입')}</a></li>
+			<!--{ : }-->
+			<li><a href="../member/logout.php">{=__('로그아웃')}</a></li>
+			<li><a href="../mypage/index.php">{=__('마이페이지')}</a></li>
+			<!--{ / }-->
+			<li><a href="../order/cart.php">{=__('장바구니')}</a></li>
+		</ul>
+	</div>
+	<div class="nav-box">
+	</div>
+	<!-- 마이 메뉴 -->
+	<div class="side-myshop mo-view">
+		<ul>
+			<li><a href="../mypage/index.php">{=__('마이페이지')}</a></li>
+			<li><a href="../mypage/order_list.php">{=__('주문조회')}</a></li>
+			<li><a href="../board/list.php?bdId=goodsqa">{=__('Q&A')}</a></li>
+			<li><a href="../mypage/wish_list.php">{=__('찜리스트')}</a></li>
+			<li><a href="../service/index.php">{=__('고객센터')}</a></li>
+		</ul>
+	</div>
+	<div class="mo-view">
+		<!-- 멀티상점 선택 -->
+		{=includeWidget('proc/_global_select.html')}
+		<!-- 멀티상점 선택 -->
+	</div>
+	<a href="javascript:;" class="all-btn-close mo-view"><span>close</span></a>
+</div>

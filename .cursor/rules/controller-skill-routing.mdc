@@ -1,0 +1,22 @@
+---
+description: GodoMall 控制器任务技能路由
+globs: module/Controller/**/*.php
+alwaysApply: false
+---
+
+# Controller Skill Routing
+
+- 当前文件属于 `module/Controller/**` 控制器域。
+- 在分析或修改前，必须先读取：
+  - `.cursor/skills/godomall-existing-patterns/SKILL.md`
+  - `.cursor/skills/godomall-controller-patterns/SKILL.md`
+- 必须先判断控制器类型：
+  - 前台覆写官方控制器
+  - 前台独立控制器
+  - 后台覆写 / 扩展控制器
+- 不得因通用经验擅自改变：
+  - 控制器基类
+  - `parent::index()`
+  - `parent::__construct()`
+  - `mode` 分发
+  - 既有 JSON 返回结构

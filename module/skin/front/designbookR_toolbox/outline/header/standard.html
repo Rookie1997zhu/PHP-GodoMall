@@ -1,0 +1,70 @@
+{*** 상단 기본파일 | main/index.php ***}
+<style>
+<!--{ ? tpls.side_inc && layout.outline_sidefloat == 'left' }-->
+.content_box { width:calc(100% - 190px); padding-left:40px; box-sizing:border-box; }
+<!--{ / }-->
+</style>
+<div id="header">
+	<!-- 탑 배너 -->
+	{=includeFile('outline/outside/top_bn.html')}
+
+	<div class="header-wrap">
+		<div class="header-inner">
+			<div class="header-top">
+				<div class="header-left">
+					<!-- 로고 -->
+					<h1 class="top-logo"><!--{ @dataBanner('4238483832') }-->{.tag}<!--{ / }--></h1>
+					<span class="logo-title">커스텀 굿즈 스튜디오</span>
+					<div class="pc-view">
+						<!-- 멀티상점 선택 -->
+						{=includeWidget('proc/_global_select.html')}
+						<!-- 멀티상점 선택 -->
+					</div>
+				</div>
+				<div class="header-right">
+					<div class="search-layer">
+						<div class="top-search">
+							<!-- 검색 폼 -->
+							{=includeWidget('proc/_header_search.html')}
+							<!-- 검색 폼 -->
+						</div>
+						<div class="search-close-btn"><span>닫기</span></div>
+					</div>
+					<div class="top-account">
+						<ul>
+							<li class="service pc-view"><a href="../service/index.php">{=__('고객센터')}</a></li>
+							<!--{ ? gd_is_login() === false }-->
+							<li class="login pc-view"><a href="../member/login.php">{=__('로그인')}</a></li>
+							<!--{ : }-->
+							<li class="logout pc-view"><a href="../member/logout.php?returnUrl={=logoutReturnUrl}">{=__('로그아웃')}</a></li>
+							<!--{ / }-->
+							<li class="mypage pc-view"><a href="../mypage/index.php">{=__('마이페이지')}</a></li>
+							<li class="search"><button type="button">검색</button></li>
+							<li class="basket"><a href="../order/cart.php">{=__('장바구니')}<span class="count"><em>{=dataCartGoodsCnt()}</em></span></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="header-main">
+			<div class="header-inner">
+				<!-- category -->
+				<div id="category">
+					<div class="cate-left">
+						<!-- 전체 카테고리 레이어 팝업 -->
+						{=includeWidget("proc/category_all.html")}
+						<!--// 전체 카테고리 레이어 팝업 -->
+						<div id="cateWrap" class="cate-wrap">
+							<!-- 사이드 카테고리 출력 시작 -->
+							{=includeWidget('proc/category_side', 'type', 'layer','cateType','cate','menuType','all')}
+							<!-- 사이드 카테고리 출력 끝 -->
+						</div>
+					</div>
+					<div class="cate-menu extra-menu dn"><ul class="menu-list"></ul></div><!--// 추가메뉴 영역입니다. 변경/삭제 하면 작동하지 않을 수 있습니다. -->
+				</div><!--// #category -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- //header -->
+<div class="layerDim dn" onClick="gd_btn_all_menu_close();"></div>

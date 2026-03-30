@@ -1,0 +1,19 @@
+---
+description: GodoMall 入口脚本任务技能路由
+globs: "{module/Admin/custom_*.php,module/Admin/custom/**/*.php,module/Custom/Controller/Front/add_to_cart.php}"
+alwaysApply: false
+---
+
+# Entry Script Skill Routing
+
+- 当前文件属于 `module/Admin/custom_*.php`、`module/Admin/custom/**/*.php` 或 `module/Custom/Controller/Front/add_to_cart.php` 这类独立入口脚本。
+- 在分析或修改前，必须先读取：
+  - `.cursor/skills/godomall-existing-patterns/SKILL.md`
+  - `.cursor/skills/godomall-entry-script-patterns/SKILL.md`
+- 入口脚本应保持薄层，只负责：
+  - 初始化
+  - 取参
+  - `mode` / `action` 分发
+  - 调用控制器或组件
+- 不要在入口脚本里堆复杂业务逻辑。
+- 遇到 autoload / init / 历史兼容路径问题时，优先模仿现有 `module/Admin/custom_*.php`、`module/Admin/custom/**/*.php` 与 `module/Custom/Controller/Front/add_to_cart.php`。

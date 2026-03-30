@@ -1,0 +1,17 @@
+---
+description: GodoMall 技能总路由规则
+alwaysApply: true
+---
+
+# GodoMall Skill Routing
+
+- 涉及 `module/Custom/**`、`module/Controller/**`、`module/Admin/custom_*.php`、`module/Admin/custom/**/*.php`、`module/Custom/Controller/Front/add_to_cart.php`、`module/Custom/Database/**/*.sql`、`custom_*` 扩展表、前台覆写、后台 API 时，必须先读取 `.cursor/skills/godomall-existing-patterns/SKILL.md`。
+- 只有在读取总 skill 后，才可继续搜索、分析、写代码或给方案。
+- 若任务同时命中更具体的控制器 / 组件 / 入口脚本 / 数据库场景，必须继续读取对应的专用 skill。
+- 冲突时优先级：
+  1. 当前仓库同目录、同类型、已验证可运行的旧文件
+  2. `.cursor/rules/godomall.mdc`
+  3. `.cursor/rules/custom-backend.mdc`
+  4. 本规则指向的 skill
+  5. 通用 PHP / MVC 最佳实践
+- 不得只提到 skill 名称而不实际读取。

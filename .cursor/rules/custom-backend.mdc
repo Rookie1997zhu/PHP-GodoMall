@@ -1,0 +1,96 @@
+---
+alwaysApply: true
+---
+## 适用范围
+
+- **`module/Bundle`** 为 **官方后端代码**（GodoMall 核心）；**`module/Custom`**、**`module/Controller`** 为 **后端二次开发代码**（增量扩展与覆盖）。
+- **`module/Admin/custom_*.php`**、**`module/Admin/custom/**/*.php`** 与 **`module/Custom/Controller/Front/add_to_cart.php`** 为 **独立入口脚本**（常通过 `mode` 分发到 `module/Custom` 或 `module/Controller` 下 Controller），与二次开发同一协作域。
+- 约束 **二次开发后端**：`module/Custom/**`、`module/Controller/**`，以及上述后台入口脚本。
+- 与项目根规则 `godomall.mdc` 冲突时：**增量不改核心**、**数据以库表为准** 等全局 P0 仍优先。
+- 本规则生效时，若任务还命中以下路径/主题，必须继续读取对应 skill：
+  - `module/Custom/Controller/**`、`module/Controller/**` → `.cursor/skills/godomall-controller-patterns/SKILL.md`
+  - `module/Custom/Component/**` → `.cursor/skills/godomall-component-patterns/SKILL.md`
+  - `module/Admin/custom_*.php`、`module/Admin/custom/**/*.php`、`module/Custom/Controller/Front/add_to_cart.php` → `.cursor/skills/godomall-entry-script-patterns/SKILL.md`
+  - `module/Custom/Component/Database/**`、`module/Custom/Database/**/*.sql`、扩展表 / 建表 / 回滚 / collation → `.cursor/skills/godomall-db-extension-patterns/SKILL.md`
+- 上述专用 skill 读取前，优先先读 `.cursor/skills/godomall-existing-patterns/SKILL.md`。
+
+## 目录职责
+
+- **`module/Controller`**：与 Godomall 官方 **相同 `namespace`** 的控制器，用于 **覆盖或扩展** 官方路由；路径与官方 `Controller\Front\*`、`Controller\Admin\*` 对齐。
+- **`module/Custom`**：**独立命名空间 `Custom\...`**，承载 Component、后台定制管理 Controller、独立 API 入口脚本、`config` 等；**可复用业务放在 Component**，避免只在 Controller 里堆 SQL。
+- **`module/Admin/custom_*.php`**、**`module/Admin/custom/**/*.php`**、**`module/Custom/Controller/Front/add_to_cart.php`**：独立入口脚本，**薄层**为宜（初始化、取参、`mode` 路由、调用当前仓库实际控制器 / 组件）；避免在此堆长业务逻辑。
+
+## 后端逻辑增改策略（强制）
+
+- 二次开发若需**新增后端逻辑**或**修改后端逻辑**，应在 **`module/Controller/**`**、**`module/Custom/**`** 下以新增文件或扩展文件方式实现。
+- **禁止**在 `module/Bundle/**` 直接追加二次开发业务逻辑；优先通过覆盖 Controller、新增 Component、入口脚本分发实现增量扩展。
+- 新文件命名需体现业务语义与职责边界，保持与现有目录/命名空间一致，避免平行重复实现。
+
+## 控制器基类
+
+- 后台：继承 `\Controller\Admin\Controller`。
+- 前台：继承 `\Controller\Front\Controller`。
+- 扩展官方页面：优先 **继承官方对应 Controller** 或组合调用官方逻辑；文件头 PHPDoc 说明与官方类的关系及 ClassLoader 覆盖关系。
+- 若后台独立入口场景下 `parent::__construct()` 初始化异常，先评估“继承不变 + `try/catch parent::__construct()`”兼容方案；不要直接把非继承写法提升为默认规则。
+
+## 业务与数据访问
+
+- 定制表读写、复杂查询：**`Custom\Component\*`**（如 `CustomGoods`、`CustomCartExtension`），Controller 保持薄层。
+- 数据库：**`Custom\Component\Database\CustomPDO`** 或组件内封装；官方商品等数据用 **`App::load('\\Component\\Goods\\Goods')`** 等，避免复制核心 SQL。
+- 定制表命名与现网一致（如 `custom_*`）；改表须迁移与注释同步。
+
+## 新增字段与建表规范（强制）
+
+- 二次开发若需要新增字段，**禁止**在官方原有表（特别是 `module/Bundle` 对应核心业务表）直接 `ALTER TABLE ADD COLUMN`。
+- 必须通过 **新建扩展表** 承载新增字段，表名使用 `custom_` 前缀，并通过 `goods_id` / `order_no` 等业务键与官方表关联。
+- 建表 SQL 必须随需求一并提供（含回滚 SQL），示例模板如下：
+
+```sql
+CREATE TABLE IF NOT EXISTS `custom_goods_extra_fields` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `goods_id` INT UNSIGNED NOT NULL COMMENT '商品ID（关联 es_goods.goodsNo）',
+  `extra_field_key` VARCHAR(64) NOT NULL COMMENT '扩展字段键',
+  `extra_field_value` TEXT NULL COMMENT '扩展字段值',
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_goods_field_key` (`goods_id`, `extra_field_key`),
+  KEY `idx_goods_id` (`goods_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品扩展字段表（二次开发）';
+
+-- 回滚
+DROP TABLE IF EXISTS `custom_goods_extra_fields`;
+```
+
+## 请求分发与 API
+
+- 同 URL 多行为：可用 **`mode`** 在 `index()` 内分支；Ajax 分支须 **提前 return**，避免把 HTML 当 JSON 返回。
+- 后台 JSON：**`{ success, message, data? }`**，失败带稳定 **HTTP/code**（与现有 `CustomGoodsController` 等一致）。
+- 独立 PHP 入口：优先模仿当前仓库已验证入口脚本的初始化方式（如 autoload 兼容、多路径检测、官方 `Request`、薄层分发）；不要擅自改成另一套启动链。
+
+## 前台商品定制状态（无 Widget）
+
+- **已移除** `CustomizationWidget`；商品详情等场景的定制开关/尺寸等，以 **现有接口** 为准（如 `custom_color.php` 的 `getCustomizationStatusAPI` 等），**勿再新增 gWidget 依赖**。
+- 若需 SSR 首屏数据，在 **商品详情相关控制器扩展** 中注入模板变量，并与接口字段保持一致。
+
+## 安全
+
+- 后台 **POST**：CSRF（如 `validateCsrfToken`）与管理员权限（继承 Admin Controller）。
+- 参数：**trim、类型、白名单、范围、唯一性**，与现有校验风格一致。
+- **禁止**在仓库提交真实数据库口令；`module/Custom/config/database.php` 类配置应走环境变量或本地未跟踪配置。
+
+## 日志
+
+- 业务日志优先 `\Logger::channel('userLog')`；`error_log` 仅作排障，上线前评估是否移除或降级。
+- 日志禁止输出密钥、完整卡号等敏感信息。
+
+## 注释与命名
+
+- 文件头 **中文 PHPDoc**：URL/入口与类名对应、依赖组件、主要 API、安全要点。
+- 类 UpperCamelCase，方法 lowerCamelCase，常量 UPPER_SNAKE_CASE；路由文件 snake_case 与类名 CamelCase 对应关系写在注释中。
+
+## AI 修改约束
+
+- 默认 **只改** `module/Custom`、`module/Controller`、`module/Admin/custom_*.php`、`module/Admin/custom/**/*.php` 与 `module/Custom/Database/**/*.sql`（除非用户明确要求动 `module/Bundle` 核心或其它目录）。
+- 单文件 **最小 diff**；新能力优先 **Component 新方法 + Controller 调用**。
+- 分析或改动前，应先按 `.cursor/rules/skill-routing.mdc` 与同目录 skill-routing 规则读取对应 skill，再参考当前仓库同类型旧文件落地。

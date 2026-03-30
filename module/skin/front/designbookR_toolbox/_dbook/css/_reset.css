@@ -1,0 +1,828 @@
+@charset "utf-8";
+
+/*========================================================================
+
+RESET :수정 및 삭제 주의 :쇼핑몰 화면이 정상적으로 보이지 않을 수 있습니다.
+
+========================================================================*/
+/* Common */
+a, a:hover { text-decoration:none; }
+.info_again a:hover { text-decoration:underline; }
+a { color:inherit; }
+em { font-style:normal; }
+h1, h2, h3, h4, h5, h6 { font-weight:400; }
+input:focus, button:focus, select:focus { outline:none; }
+textarea { resize:vertical; }
+input:-webkit-autofill, 
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active { transition:background-color 5000s ease-in-out 0s; }
+input[type="text"]::-ms-clear,
+input[type="password"]::-ms-clear { display:none; }
+
+/* inner */
+.header-inner::after,
+.footer-inner::after { content:""; display:block; clear:both; }
+
+/* RESET LAYOUT */
+#container { border:0; }
+#container, .container { margin:0 auto; position:relative; }
+#contents { min-height:450px; }
+.sub_content { padding:0; }
+.side_cont .sub_menu_box h2 { padding:20px 0; border-top:1px solid #ececec; }
+#footer_wrap { border:0; }
+.foot_certify { width:100%; padding:0; }
+/* RESET TOP_SEARCH */
+#header .top_search .top_text_cont select::-ms-expand { display:none; }
+/* RESET LOCATION */
+.sub_content .location_wrap,
+.location_wrap { display:inline-block; width:100%; margin:0; border-bottom:0; }
+.location_wrap .location_cont { width:auto; }
+.location_wrap .location_cont em { padding-bottom:0;}
+.location_cont .local_home:hover { text-decoration:none; }
+.body-goods-list .location_cont em + span { margin-left:-3px; }
+.body-goods-view .location_select { margin-left:-3px; }
+/* RESET GOODS_LIST */
+.goods_list { padding-bottom:0; clear:both; }
+.goods_list_item_tit + .list_item_category { margin-top:0; border:0; }
+.goods_list .color { width:100% !important; }
+.list_item_category { border:0; }
+.location_select ul li a:hover { background:#404040; }
+.goods_pick_list .pick_list_num strong { color:#404040; }
+.goods_pick_list .pick_list_box { border-top:1px solid #dbdbdb; border-bottom:1px solid #dbdbdb; }
+.goods_pick_list .pick_list_box .pick_list label.on { background:url("../img/common/icon_sort_check.png") no-repeat left 5px; }
+/* RESET 전체카테고리 */
+#header .gnb_all .btn_all_menu_open { position:static; background-color:transparent; }
+.gnb_allmenu_box .all_depth2 { display:none; }
+.gnb_allmenu_box .all_depth3 { display:none; }
+/* RESET 사이드카테고리 */
+.sub_menu_box.layer_type ul > li > ul { padding:0; }
+.sub_menu_box.layer_type .sub_depth1 { top:100%; left:0; text-align:left; }
+.sub_menu_box.layer_type .sub_depth2 { top:-1px; left:100%; }
+.sub_menu_box.layer_type .sub_depth3 { top:-1px; }
+.sub_menu_box.layer_type .sub_depth4 { top:-1px; }
+.sub_menu_box ul > li > ul { padding:0; }
+.sub_menu_box .sub_depth1 li a:hover,
+.sub_menu_box .sub_depth1 li a.active,
+.sub_menu_box .sub_depth1 > li > a:hover,
+.sub_menu_box .sub_depth1 > li > a.active { color:inherit; background:none; }
+.sub_menu_box .sub_depth1 li a { padding:7px 10px 9px 19px; }
+.sub_menu_box .sub_depth2 { top:-1px; }
+.sub_menu_box .sub_depth3 { top:-1px; }
+.sub_menu_box .sub_depth4 { top:-1px; }
+/* RESET 상품진열 */
+.goods_list_cont ul { float:none; }
+.goods_list_cont ul li { margin-top:0; }
+/* RESET 상품 */
+.item_cont { padding:0 10px 50px; margin:0 auto; text-align:center; color:#1c1c1c; }
+.item_photo_box a { display:block; width:100%; height:auto; }
+.item_photo_box > a > img { width:100%; }
+.item_info_cont { display:block; padding:0; margin:0 auto; text-align:center; vertical-align:middle; }
+.item_tit_box .item_name { display:block; padding:5px 0 0 0; font-size:13px; font-weight:400; }
+.item_tit_box .item_name_explain { display:block; padding:3px 0 0; color:#a8a8a8; }
+.item_icon_box { margin:0; padding:0; }
+.item_money_box del { display:block; color:#888888; }
+.item_money_box .item_price { color:#404040; }
+.body-mypage.body-index .item_money_box .fixed-price { text-decoration:line-through; }
+.item_group_type .item_info_cont { display:table-cell; }
+#wrap .ly_wrap { font-size:12px; }
+/* RESET 검색페이지 */
+.sub_search_box .quick_btn input { width:100%; padding:10px 0; }
+.sub_search_box dl dd .select_box { padding-right:0; }
+.sub_search_box .benefit_box span { vertical-align:top; }
+.sub_search_box .benefit_box span label { background-position:0 0; }
+.sub_search_box .benefit_box span label:hover { background-position:0 0; }
+.sub_search_box .benefit_box span label.on { background-position:0 0; }
+.sub_search_box .benefit_box span label.on:hover { background-position:0 0; }
+/* RESET 페이지네이션 */
+.pagination li.on span { background:none; border-radius:0; }
+/* 마이페이지 회원 요약정보 */
+.mypage_top_info,
+.mypage_top_wallet ul { box-sizing:border-box; }
+/* 마이페이지 찜리스트 상품이미지 */
+.mypage_table_type .pick_add_cont .pick_add_img img { width:100%; }
+/* 갤러리 게시판 */
+.board_list_gallery ul li { vertical-align:top; }
+.board_list_gallery .board_img > a > img { width:100% !important; height:auto !important; }
+/* 이벤트 게시판 */
+.board_list_event ul li { min-height:auto; height:auto !important; }
+.board_list_event .board_img > a > img { width:100% !important; height:auto !important; }
+/* 장바구니 팝업 & 찜버튼 팝업 이미지 */
+.add_cart_layer p.success { background-image:url("../img/common/add_cart_success.png"); }
+.add_wish_layer p.success { background-image:url("../img/common/add_wish_success.png"); }
+/* 장바구니 구매 이용 조건 안내 */
+.pick_add_info .caution_msg1 { background-position:0 0; }
+/* 회원가입 */
+.addition_info_box .addition_info_sec { clear:both; }
+/* 쿠폰다운로드 레이어 팝업 */
+.coupon_down_layer .coupon_completed { display:inline-block; }
+/* 게사판 - 글쓰기 버튼 */
+.btn_write { top:0; }
+/* 게사판 - 제목글 */
+.board_list_table th { font-size:14px; font-weight:500; }
+.board_list_table td { font-size:14px; }
+.btn_date_check em { background-position:right 1px; }
+/* 주문서 - 혜택 아이콘 */
+.order_cont .order_benefit_list .order_benefit_sale em,
+.order_cont .order_benefit_list .order_benefit_mileage em { background-position:0 50%; }
+
+
+/*========================================================================
+COLOR RESET
+========================================================================*/
+/* IMG COLOR */
+.scroll_right_cont li .btn_scroll_list_del img,
+.cart_btn_box .btn_open_layer img,
+.cart_btn_box .btn_alert_login img,
+.order_table_type .pick_add_cont .pick_btn_box img,
+.price_sum_cont .price_sum_list span img[alt="합계"],
+.order_wrap .order_tit li span > img,
+.chk_none,
+th > .important,
+.join_base_wrap .important,
+.join_agreement_wrap .member_tit li span > img,
+.join_base_wrap .member_tit li span > img,
+.coupon_content .cp_list_wrap .cp_down span,
+.order_end_completion img
+{ filter:grayscale(1); }
+
+/* 취소버튼 COLOR RESET */
+.add_cart_layer .btn_cancel, 
+.add_cart_layer .btn_cancel:hover, 
+.add_wish_layer .btn_cancel,
+.add_wish_layer .btn_cancel:hover
+{ color:#3e3d3c; border-color:#cccccc; }
+
+/* FONT COLOR */
+.btn_restock_notice_v1,
+.btn_restock_notice_v1:hover,
+.btn_restock_notice_v2,
+.btn_restock_notice_v2:hover,
+.simple_join_layer .ly_tit h4 strong,
+.add_goods_layer .pick_list_num strong,
+.board_list_table .board_tit strong > span,
+.view_select_item_info > strong,
+.plus_review_info_cont .board_review_num em strong,
+.plus_review_view .review_comment_top .comment_best_num,
+#wrap .text_warning,
+#wrap .member_warning.prior_wrong .text_warning,
+#wrap .member_warning.prior_half_pass .text_warning,
+.chk_none,
+.goods_pick_list .pick_list_num strong,
+.goods_pick_list .pick_list_box .pick_list label.on,
+.top_table_type .coupon_price b,
+.layer_wrap .ly_tit h4 strong,
+.coupon_total_box dd strong,
+.add_goods_layer .pick_list_num strong,
+.plus_review_look .star_photo_num em strong,
+.plus_review_look .review_comment_top .comment_best_num,
+.plus_review_register .pr_goods_cont b,
+.time_sale_tit strong,
+.sale_clock .sale_buy_num strong,
+.coupon_content .cp_list_wrap .cp_down span,
+.coupon_content .cp_list_wrap .cp_list li .box_coupon .text_wrap .text_info .dis,
+.coupon_content .cp_list_wrap .cp_list li .cp_down_3 span,
+.time_sale .time_now_order span,
+.time_sale_price dd,
+.item_add_option_box dt strong,
+.item_tatal_box .total_amount dd,
+.item_goods_tab li a strong,
+.board_tit strong > span,
+.board_tit .js_comment_count,
+.view_comment_top .comment_num strong,
+.view_comment_top .comment_best_num strong,
+.search_text_result span,
+#goodsRestock .gs_privacy_agree .agree_choice_box a,
+.item_money_box .item_price,
+.item_money_box .item_sale,
+.item_vl_tab_type .goods_tab_tit li.on a,
+.top_member_box > li strong,
+.notice_rolling ul li a:hover,
+.side_cont .sub_menu_box .sub_menu a:hover,
+.side_cont .sub_menu_box .sub_menu .active,
+.side_cont .sub_menu_box .sub_menu_mypage a:hover,
+.side_cont .sub_menu_box .sub_menu_mypage .active,
+.side_cont .info_box .info_num,
+.content_info .cs_center strong,
+.content_info .bank_info strong,
+.scroll_right_cont .src_box strong,
+.scroll_right_cont .scr_paging strong,
+.cart_total_box .total_price_sec strong,
+.zzim_table_box .cart_chk_none,
+.cart_table_box .cart_chk_none,
+.member_cont .nonmember_order_box .order_input_sec button,
+.member_cont .nonmember_order_box .order_input_sec button:hover,
+.find_complete_box .find_id_name,
+.find_id_sec > p,
+.join_wait_box .join_wait_tit .complete strong,
+.wake_base_box .wake_date dd strong,
+.join_base_wrap .member_tit .page_on,
+.base_info_box > span,
+.join_agreement_wrap .member_tit .page_on,
+.join_agreement_cont .form_element strong,
+.join_agreement_cont .form_element strong.choice,
+.join_agreement_cont .form_element span > a,
+.join_agreement_cont .important_check_box .important_check,
+.info_again a,
+.pick_list_num strong,
+.board_list_table .board_tit strong > span,
+.mypage_table_type td > strong,
+.mypage_top_wallet li strong,
+.mypage_order_info_cont .order_case_list ul li span > strong,
+.mypage_breakdown_tab li a strong,
+.coupon_before_use,
+.my_page_password .id_pw_cont dd strong,
+.order_wrap .order_tit .page_on,
+.price_sum_cont .price_sum_list dd,
+.price_sum_cont .price_sum_list dd strong,
+.order_agree_cont strong,
+.payment_progress .order_zone_tit > p,
+.payment_final_total dd,
+.payment_final .form_element label.check_s em b,
+.poll_list_tit strong,
+.poll_result_tit strong,
+.board_list_table .board_tit strong > span,
+.board_hot_list ul li.on span,
+.board_hot_list ul li a span:hover,
+#contents .base_info_box > span,
+#contents .join_agreement_cont .form_element strong.choice,
+#contents .join_agreement_cont .form_element span > a
+{ color:#404040; }
+
+/* BORDER COLOR */
+.btn_add_order_related,
+.btn_add_order_related:hover,
+.btn_add_cart_related,
+.btn_add_cart_related:hover,
+.btn_restock_notice_v1,
+.btn_restock_notice_v1:hover,
+.btn_restock_notice_v2,
+.btn_restock_notice_v2:hover,
+.btn_reviews_write,
+.btn_reviews_write:hover,
+.btn_qna_write,
+.btn_qna_write:hover,
+.btn_comment_best,
+.btn_comment_best:hover,
+.btn_member_next,
+.btn_member_next:hover,
+.btn_member_ok,
+.btn_member_ok:hover,
+.btn_member_login,
+.btn_member_login:hover,
+.btn_member_black,
+.btn_member_black:hover,
+.btn_comfirm,
+.btn_comfirm:hover,
+.btn_buy_ok,
+.btn_buy_ok:hover,
+.btn_review_write,
+.btn_review_write:hover,
+.btn_claim_ok,
+.btn_claim_ok:hover,
+.btn_wish_cart,
+.btn_wish_cart:hover,
+.btn_pw_certify,
+.btn_pw_certify:hover,
+.mypage_cont .btn_date_check,
+.mypage_cont .btn_date_check:hover,
+.btn_order_whole_buy,
+.btn_order_whole_buy:hover,
+.btn_order_choice_buy, 
+.btn_order_choice_buy:hover,
+.btn_order_buy,
+.btn_order_buy:hover,
+.btn_order_end_ok,
+.btn_order_end_ok:hover,
+.btn_poll_finish,
+.btn_poll_finish:hover,
+.btn_main_go,
+.btn_main_go:hover,
+.btn_ly_download,
+.btn_ly_download:hover,
+.btn_ly_coupon_apply,
+.btn_ly_coupon_apply:hover,
+.btn_ly_write_ok,
+.btn_ly_write_ok:hover,
+.btn_ly_ok,
+.btn_ly_ok:hover,
+.btn_ly_save,
+.btn_ly_save:hover,
+.btn_escrow_go,
+.btn_escrow_go:hover,
+.btn_pg_go,
+.btn_pg_go:hover,
+.btn_ly_date_check,
+.btn_ly_date_check:hover,
+.btn_ly_depositor,
+.btn_ly_depositor:hover,
+.bnt_tax_invoice,
+.bnt_tax_invoice:hover,
+.bnt_cash_receipt,
+.bnt_cash_receipt:hover,
+.btn_pg_cartmove,
+.btn_pg_cartmove:hover,
+.btn_goods_restock,
+.btn_goods_restock:hover,
+.btn_board_search,
+.btn_board_search:hover,
+.btn_write_ok,
+.btn_write_ok:hover,
+.plus_review_look .btn_comment_best,
+.plus_review_look .btn_comment_best:hover,
+.btn_comment_best,
+.btn_comment_best:hover,
+.btn_date_check,
+.btn_date_check:hover,
+#wrap .member_warning.prior_wrong .chosen-single,
+#wrap .member_warning.prior_wrong .form_element,
+.adult_wrap .guest_login .login_input_sec button,
+.adult_wrap .guest_login .login_input_sec button:hover,
+.guest_btn.base3,
+.guest_btn.base3:hover,
+.intro_member_wrap .member_login_box .login_input_sec button,
+.intro_member_wrap .member_login_box .login_input_sec button:hover,
+.intro_member_wrap .member_login_box .btn_login_box .btn_join,
+.intro_member_wrap .member_login_box .btn_login_box .btn_join:hover,
+.option_layer_cont .btn_confirm,
+.option_layer_cont .btn_confirm:hover,
+.add_cart_layer .btn_confirm, 
+.add_cart_layer .btn_confirm:hover, 
+.add_wish_layer .btn_confirm,
+.add_wish_layer .btn_confirm:hover,
+.sns_copy_url button,
+.sns_copy_url button:hover,
+.plus_review_register .btn_pr_save,
+.attend_reply_box .attend_reply_comment .btn_attend_check,
+.attend_reply_box .attend_reply_comment .btn_attend_check:hover,
+.stamp_calendar_box .btn_attend_check,
+.stamp_calendar_box .btn_attend_check:hover,
+.coupon_content .cp_list_wrap .cp_down,
+.coupon_content .cp_list_wrap .cp_list li .cp_down_3,
+.quick_search_cont_box .quick_btn input,
+.quick_search_cont_box .quick_btn input:hover,
+#quick_search.q_top,
+.cart_tab_list .on,
+.member_cont .member_login_box .login_input_sec button,
+.member_cont .member_login_box .login_input_sec button:hover,
+.member_cont .nonmember_order_box .order_input_sec button,
+.member_cont .nonmember_order_box .order_input_sec button:hover,
+.join_ok_box .btn_member_sec .btn_login,
+.join_ok_box .btn_member_sec .btn_login:hover,
+.coupon_before_use,
+.coupon_gift_before_use,
+.board_hot_list ul li a span:hover
+{ border-color:#404040; }
+
+/* BACKGROUND COLOR */
+.btn_add_order_related,
+.btn_add_order_related:hover,
+.btn_add_cart_related,
+.btn_add_cart_related:hover,
+.btn_reviews_write,
+.btn_reviews_write:hover,
+.btn_qna_write,
+.btn_qna_write:hover,
+.btn_comment_best,
+.btn_comment_best:hover,
+.btn_member_next,
+.btn_member_next:hover,
+.btn_member_ok,
+.btn_member_ok:hover,
+.btn_member_login,
+.btn_member_login:hover,
+.btn_member_black,
+.btn_member_black:hover,
+.btn_comfirm,
+.btn_comfirm:hover,
+.btn_buy_ok,
+.btn_buy_ok:hover,
+.btn_review_write,
+.btn_review_write:hover,
+.btn_claim_ok,
+.btn_claim_ok:hover,
+.btn_wish_cart,
+.btn_wish_cart:hover,
+.btn_pw_certify,
+.btn_pw_certify:hover,
+.mypage_cont .btn_date_check,
+.mypage_cont .btn_date_check:hover,
+.btn_order_whole_buy,
+.btn_order_whole_buy:hover,
+.btn_order_buy,
+.btn_order_buy:hover,
+.btn_order_end_ok,
+.btn_order_end_ok:hover,
+.btn_poll_finish,
+.btn_poll_finish:hover,
+.btn_main_go,
+.btn_main_go:hover,
+.btn_ly_download,
+.btn_ly_download:hover,
+.btn_ly_coupon_apply,
+.btn_ly_coupon_apply:hover,
+.btn_ly_write_ok,
+.btn_ly_write_ok:hover,
+.btn_ly_ok,
+.btn_ly_ok:hover,
+.btn_ly_save,
+.btn_ly_save:hover,
+.btn_escrow_go,
+.btn_escrow_go:hover,
+.btn_pg_go,
+.btn_pg_go:hover,
+.btn_ly_date_check,
+.btn_ly_date_check:hover,
+.btn_ly_depositor,
+.btn_ly_depositor:hover,
+.bnt_tax_invoice,
+.bnt_tax_invoice:hover,
+.bnt_cash_receipt,
+.bnt_cash_receipt:hover,
+.btn_pg_cartmove,
+.btn_pg_cartmove:hover,
+.btn_goods_restock,
+.btn_goods_restock:hover,
+.btn_board_search,
+.btn_board_search:hover,
+.btn_write_ok,
+.btn_write_ok:hover,
+.plus_review_look .btn_comment_best,
+.plus_review_look .btn_comment_best:hover,
+.btn_comment_best,
+.btn_comment_best:hover,
+.btn_date_check,
+.btn_date_check:hover,
+.adult_wrap .guest_login .login_input_sec button,
+.adult_wrap .guest_login .login_input_sec button:hover,
+.guest_btn.base3,
+.guest_btn.base3:hover,
+.intro_member_wrap .member_login_box .login_input_sec button,
+.intro_member_wrap .member_login_box .login_input_sec button:hover,
+.intro_member_wrap .member_login_box .btn_login_box .btn_join,
+.intro_member_wrap .member_login_box .btn_login_box .btn_join:hover,
+.option_layer_cont .btn_confirm,
+.option_layer_cont .btn_confirm:hover,
+.add_cart_layer .btn_confirm, 
+.add_cart_layer .btn_confirm:hover, 
+.add_wish_layer .btn_confirm,
+.add_wish_layer .btn_confirm:hover,
+.sns_copy_url button,
+.sns_copy_url button:hover,
+.review_file_upload .btn_right_box .btn_plus_review_enroll,
+.review_file_upload .btn_right_box .btn_plus_review_enroll:hover,
+.plus_review_register .btn_pr_save,
+.coupon_content .cp_list_wrap .cp_list li .cp_down_2,
+.brand_all_list button.on,
+.plus_review_grade .grade_stick em,
+.btn_list_cart,
+.btn_list_cart:hover,
+.top_mypage_cont li a:hover,
+#header .gnb .depth1 > li > a:hover,
+#header .gnb .depth1 > li > a.active,
+#header .gnb .depth1 li a:hover,
+#header .gnb .depth1 li a.active,
+.location_select ul li a:hover,
+.quick_search_cont_box .quick_btn input,
+.quick_search_cont_box .quick_btn input:hover,
+#shop_cart_wrap .btn_shop_buy,
+#shop_cart_wrap .btn_shop_buy:hover,
+.option_total_box .btn_shop_soldout,
+.member_cont .member_login_box .login_input_sec button,
+.member_cont .member_login_box .login_input_sec button:hover,
+.join_ok_box .btn_member_sec .btn_login,
+.join_ok_box .btn_member_sec .btn_login:hover,
+.coupon_gift_before_use,
+.poll_stick em,
+.cart_btn_box button.btn_alert_login
+{ background:#404040; }
+
+
+/*========================================================================
+주요 서브 페이지 공통
+========================================================================*/
+/* input[checkbox] */
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element [type="checkbox"] + label,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check:hover,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check_s,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check_s:hover { min-width:20px; min-height:20px; line-height:20px; padding:0 0 0 26px; background:url("../img/common/input_chk_off.png") no-repeat 0 50%; background-size:20px auto; }
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element [type="checkbox"] + label.on,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check.on,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element label.check_s.on { background:url("../img/common/input_chk_on.png") no-repeat 0 50%; background-size:20px auto; }
+/* All [checkbox] */
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element input#allAgree + label,
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element input#allAgree + label:hover { background:url("../img/common/input_all_chk_off.png") no-repeat 0 50%; }
+:where(.body-login,.body-join,.body-join-agreement,.body-my-page) .form_element input#allAgree + label.on { background-image:url("../img/common/input_all_chk_on.png");}
+
+/* input[text][password], select */
+:where(.body-login,.body-join,.body-my-page) input[type="text"],
+:where(.body-login,.body-join,.body-my-page) input[type="password"],
+:where(.body-login,.body-join,.body-my-page) #wrap .chosen-single { font-size:14px; height:48px; padding:0; padding-left:10px; margin:0; border-radius:5px; box-sizing:border-box; }
+:where(.body-login,.body-join,.body-my-page) #wrap .chosen-single > span { line-height:46px; }
+:where(.body-login,.body-join,.body-my-page) .chosen-container-single .chosen-single div b { position:relative; top:50%; transform:translateY(-50%); height:28px; }
+:where(.body-login,.body-join,.body-my-page) select { background:url("../img/common/select_arr.png") no-repeat right 10px top 50%; background-size:14px auto; appearance:none; }
+
+/* button box */
+.join_base_wrap .btn_center_box { display:flex; gap:10px; max-width:360px; margin-left:auto; margin-right:auto; }
+.join_base_wrap .btn_center_box > * { flex:1; }
+.join_base_wrap .btn_center_box button + button { margin-left:0; }
+
+/* 확인 버튼(블랙) */
+.shop_mall_join,
+.btn_comfirm.js_btn_join,
+.btn_comfirm.js_btn_join:hover,
+#btnNextStep.btn_member_next,
+#btnNextStep.btn_member_next:hover,
+#login .member_cont .member_login_box .login_input_sec button,
+#login .member_cont .member_login_box .login_input_sec button:hover,
+#login .nonmember_order_box .order_input_sec button,
+.body-join-ok .join_ok_box .btn_member_sec li button.btn_login { height:48px; line-height:48px; padding:0 15px; margin:0; color:#fff; font-size:16px; font-weight:500; text-align:center; background:var(--basic-color, #121212); border-radius:5px; border:1px solid var(--basic-color, #121212); box-sizing:border-box; }
+
+.shop_mall_join,
+.btn_comfirm.js_btn_join,
+.btn_comfirm.js_btn_join:hover,
+#btnNextStep.btn_member_next,
+#btnNextStep.btn_member_next:hover,
+#login .member_cont .member_login_box .login_input_sec button,
+#login .member_cont .member_login_box .login_input_sec button:hover,
+#login .nonmember_order_box .order_input_sec button,
+.body-join-ok .join_ok_box .btn_member_sec li button.btn_login { width:100%; height:50px; line-height:50px; }
+
+/* 기본 스타일 버튼(화이트) */
+.btn_member_cancel,
+.btn_member_cancel:hover,
+.body-join-ok .join_ok_box .btn_member_sec li button { width:100%; height:50px; line-height:48px; padding:0 15px; margin:0; color:var(--basic-color, #121212); font-size:16px; font-weight:500; background-color:#fff; border:1px solid #9E9E9E; text-align:center; border-radius:5px; box-sizing:border-box; }
+
+
+/*========================================================================
+로그인
+========================================================================*/
+.body-login #header_warp,
+.body-login #footer_wrap,
+.body-login .scroll_wrap,
+.body-login .location_wrap,
+.body-login .sub_top { display:none; }
+.body-login #container,
+.body-login #contents .sub_content { padding:0; }
+#formOrderLogin { display:none; }
+#login .member_wrap { max-width:360px; width:100%; margin:0 auto; }
+#login .member_cont { padding:0 18px 60px; border:0; }
+#login .member_login_box h3,
+#login .nonmember_order_box h3,
+#login .nonmember_join_box h3 { display:none; }
+#login .login-head { display:flex; justify-content:space-between; align-items:center; padding:21px 18px; }
+#login .login-head a span { font-size:0; text-indent:-9999px; }
+#login .login-head a.login-back-btn { width:15px; height:14px; background:url("../img/common/login_back_btn.png") no-repeat; background-size:100%; }
+#login .login-head a.login-home-btn { width:17px; height:18px; background:url("../img/common/login_home_btn.png") no-repeat; background-size:100%; }
+#login .member_tit { text-align:center; margin:23px 0 40px; }
+#login .member_tit h2 { margin:0; color:var(--basic-color,#121212); font-size:24px; font-weight:600; line-height:1; }
+#login .member_tit p { margin:10px 0 0; color:#757575; font-size:14px; font-weight:400; line-height:1.3; }
+#login .member_login_box,
+#login .nonmember_order_box { position:relative; padding:0 0 50px; margin:0; }
+#login .member_login_box .login_input_sec > div,
+#login .nonmember_order_box .order_input_sec > div { float:none; width:100%; }
+#login .member_login_box .login_input_sec input,
+#login .nonmember_order_box .order_input_sec input { width:100%; height:50px; line-height:50px; padding:0; margin:0 0 12px; color:#121212; font-size:14px; font-weight:400; border:0; border-bottom:1px solid #D9D9D9; border-radius:0; text-indent:0; box-sizing:border-box; }
+#login .member_login_box .login_input_sec input::placeholder,
+#login .nonmember_order_box .order_input_sec input::placeholder { color:#616161; }
+#login .member_login_box .login_input_sec button,
+#login .member_login_box .login_input_sec button:hover,
+#login .nonmember_order_box .order_input_sec button { position:absolute; bottom:0; left:0; }
+#login .nonmember_order_box p { margin:5px 0 20px; color:var(--basic-color,#121212); font-size:14px; font-weight:300; }
+#login .member_login_box .id_chk { display:inline-block; width:100%; margin:5px 0 20px; padding:0; color:var(--basic-color,#121212); font-size:14px; font-weight:300; }
+#login .member_login_box .id_chk span { vertical-align:top; }
+#login .btn_login_box { margin:0; padding:0; border-top:0; }
+#login .btn_login_box ul { display:flex; justify-content:center; align-items:center; padding:0; margin:30px auto 30px; text-align:center; }
+#login .btn_login_box ul li { position:relative; margin:0; line-height:1; }
+#login .btn_login_box ul li:not(:last-child)::after { content:""; position:absolute; top:1px; height:13px; border-right:1px solid #E0E0E0; }
+#login .btn_login_box ul li button { display:inline-block; float:none; width:auto; height:auto; padding:0 9px; color:#757575; font-size:14px; font-weight:400; line-height:1; border:0; background:none; }
+/* 로그인 탭 버튼 */
+.member-login-tab { display:flex; height:46px; padding:2px; margin-bottom:15px; background:#EEE; overflow:hidden; clear:both; border-radius:30px; box-sizing:border-box; }
+.member-login-tab li { flex:1; width:50%; height:42px; line-height:42px; color:#9E9E9E; font-size:16px; font-weight:500; text-align:center; background:transparent; border-bottom:0; border-radius:30px; box-sizing:border-box; }
+.member-login-tab li.on { color:var(--basic-color,#121212); font-weight:500; background:#fff; border:0; border-bottom:0; }
+.member-login-tab li a { display:block; width:100%; }
+/* SNS 로그인 */
+#login a.btn_kakao_login { display:block; width:100%; height:50px; line-height:50px; margin:0 0 40px; color:#000; font-size:16px; text-align:center; font-weight:500; background:#FDE500 url("../img/common/ico_sns_kakao.png") no-repeat 18px 50%; border-radius:5px; }
+#login a.btn_kakao_login img { display:none; }
+#login a.btn_kakao_login::after { content:"카카오 로그인/회원가입"; }
+.member_sns_login { padding:0; border:0; }
+.member_sns_login:has(a) { margin:0 0 32px; }
+.member_sns_login a { display:block; width:100%; height:50px; line-height:48px; margin:0 0 12px; color:#000; font-size:16px; text-align:center; font-weight:500; background-repeat:no-repeat; background-position:18px 50%; border-radius:5px; border:1px solid #cdcdcd; box-sizing:border-box; }
+.member_sns_login a img { display:none; }
+.member_sns_login a.btn_kakao_login { color:#fff; background-image:url("../img/common/ico_sns_kakao.png"); background-color:#FDE500; border-color:#FDE500; }
+.member_sns_login a.btn_naver_login { color:#fff; background-image:url("../img/common/ico_sns_naver.png"); background-color:#1DC800; border-color:#1DC800; }
+.member_sns_login a.btn_facebook_login { color:#fff; background-image:url("../img/common/ico_sns_facebook.png"); background-color:#177CF2; border-color:#177CF2; }
+.member_sns_login a.btn_google_login { background-image:url("../img/common/ico_sns_google.png"); background-color:#FFFFFF; border-color:#BDBDBD; }
+#login .member_sns_login a.btn_payco_login::after { content:"페이코 로그인"; }
+#login .member_sns_login a.btn_naver_login::after { content:"네이버 로그인"; }
+#login .member_sns_login a.btn_facebook_login::after { content:"Facebook 로그인"; }
+#login .member_sns_login a.btn_wonder_login::after { content:"위메프 로그인"; }
+#login .member_sns_login a.btn_apple_login::after { content:"Apple 로그인"; }
+#login .member_sns_login a.btn_google_login::after { content:"Google 로그인"; }
+/* join_method */
+.body-join-method .member_sns_login a.btn_kakao_login::after { content:"카카오 회원가입"; }
+.body-join-method .member_sns_login a.btn_payco_login::after { content:"페이코 회원가입"; }
+.body-join-method .member_sns_login a.btn_naver_login::after { content:"네이버 회원가입"; }
+.body-join-method .member_sns_login a.btn_facebook_login::after { content:"Facebook 회원가입"; }
+.body-join-method .member_sns_login a.btn_wonder_login::after { content:"위메프 회원가입"; }
+.body-join-method .member_sns_login a.btn_apple_login::after { content:"Apple 회원가입"; }
+.body-join-method .member_sns_login a.btn_google_login::after { content:"Google 회원가입"; }
+/* 비회원 주문하기 */
+#login .nonmember_join_box { margin:0; padding:20px 0 0; border-top:1px solid #e9e9e9; }
+#login .nonmember_join_box p { color:#757575; font-size:16px; font-weight:300; line-height:1.3; }
+#login .nonmember_join_box .btn_member_black { position:static; width:100%; height:50px; line-height:48px; padding:0 0; margin:15px 0 0; color:#121212; font-size:16px; font-weight:500; background-color:#fff; border:1px solid #121212; text-align:center; border-radius:5px; box-sizing:border-box; }
+
+
+/*========================================================================
+회원가입
+========================================================================*/
+#contents :where(.join_agreement_wrap,.join_base_wrap) { max-width:360px; width:100%; padding:0 18px; margin:0 auto; box-sizing:border-box; }
+#contents :where(.join_agreement_wrap,.join_base_wrap) .member_tit,
+.body-my-page #contents .my_page .mypage_zone_tit,
+.body-join-ok #contents .member_tit { margin:0 0 40px; border-bottom:0; text-align:center; }
+#contents :where(.join_agreement_wrap,.join_base_wrap) .member_tit h2,
+.body-my-page #contents .my_page .mypage_zone_tit h2,
+.body-join-ok #contents .member_tit h2 { float:none; margin:0; color:var(--basic-color,#121212); font-size:24px; font-weight:600; line-height:1; }
+#contents :where(.join_agreement_wrap,.join_base_wrap) .member_tit ol { display:none; }
+#contents :where(.join_agreement_wrap,.join_base_wrap) .member_cont { width:100%; padding:0; }
+#contents :where(.join_agreement_wrap,.join_base_wrap) h3 { padding:0 0 11px; margin:0; color:#121212; font-size:16px; font-weight:500; line-height:1; }
+/* 약관동의 */
+.join_agreement_wrap .join_agreement_cont { border-top:1px solid #121212; border-bottom:1px solid #E9E9E9; }
+.join_agreement_cont .join_agreement_box { margin:0; border-top:1px solid #E9E9E9; }
+.my_page .join_agreement_cont { border-bottom:1px solid #E9E9E9; }
+.my_page .join_agreement_cont .join_agreement_box { margin:0; }
+.join_agreement_cont .join_agreement_box .form_element { display:flex; justify-content:space-between; align-items:center; gap:10px; margin:0 2px 0 12px; padding:15px 0 15px 0; color:#121212; font-size:14px; font-weight:400; line-height:20px; }
+.join_agreement_cont .join_agreement_box .form_element strong { font-weight:400; }
+.join_agreement_cont .join_agreement_box .form_element span { font-size:0; line-height:1; }
+.join_agreement_cont .join_agreement_box .form_element span a { display:flex; width:14px; height:7px; padding:10px; font-size:0; background:url("../img/common/join_agree_arr.png") no-repeat 50%; background-size:14px auto; }
+.join_agreement_cont .join_agreement_box .form_element span a.on { transform:rotate(180deg); }
+.join_agreement_cont .join_agreement_box .agreement_box,
+.join_agreement_cont .join_agreement_box .agreement_choice_box { display:none; height:110px; padding:20px; margin:0; background:#F8F8F8; border:0; overflow:auto; }
+.join_agreement_cont .join_agreement_box .agreement_choice_box { padding:0; }
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) { border:0; }
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) .form_element { vertical-align:top; padding:13px 12px; margin:0 0 24px; background:#121212; border-radius:5px; }
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) .form_element label { color:#fff; font-size:14px; font-weight:600; } 
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) .form_element label strong,
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) .form_element label em { color:#fff; font-weight:inherit; }
+.body-join-agreement .join_agreement_cont .join_agreement_box:not(.js_terms_view) .form_element label + span { display:none; }
+/* 정보입력 */
+.join_type_box .type_select_sec,
+.join_base_wrap [class$="_info_sec"] { border-top:1px solid var(--basic-color,#121212); }
+.join_base_wrap .base_info_box > span.important { display:none; }
+.join_base_wrap [class*="_info_box"] .important { padding:0; margin:0; background:none; filter:none; }
+.join_base_wrap [class*="_info_box"] .important::after { content:'*'; display:inline-block; padding:0 0 0 5px; color:#FF504E; font-size:14px; font-weight:400; }
+.join_base_wrap [class*="_info_box"] table { display:flex; flex-direction:column; }
+.join_base_wrap [class*="_info_box"] table colgroup { display:none; }
+.join_base_wrap [class*="_info_box"] table tr { display:flex; flex-direction:column; margin-top:26px; }
+.join_base_wrap [class*="_info_box"] table :where(th,td) { padding:0; border:0; background:none; }
+.join_base_wrap [class*="_info_box"] table th { width:100%; padding:0 0 10px; color:var(--basic-color, #121212); font-size:14px; font-weight:400; background:#fff; line-height:1; border:0; box-sizing:border-box; }
+.join_base_wrap [class*="_info_box"] table td { font-size:13px; }
+.join_base_wrap [class*="_info_box"] table input[type="password"],
+.join_base_wrap [class*="_info_box"] table input[type="text"],
+#contents .join_base_wrap .member_address .address_postcode input,
+#contents .join_base_wrap .member_address .address_input,
+#contents .join_base_wrap .select_jop { width:100%; }
+#wrap .join_base_wrap .base_info_sec .member_email .member_warning,
+#contents .join_base_wrap .member_address .address_postcode,
+#contents .join_base_wrap .member_address .address_postcode .member_warning,
+#contents .join_base_wrap .file_upload_sec { display:flex; justify-content:space-between; flex-wrap:wrap; width:100%; }
+#contents .join_base_wrap .member_address .address_postcode input[name="zonecode"],
+#contents .join_base_wrap .member_address .address_postcode input[name="comZonecode"],
+.join_base_wrap :is(.base_info_sec,.addition_info_sec) table input[type="text"]#email,
+.join_base_wrap .file_upload_sec label { width:calc(100% - 112px); }
+.join_base_wrap .base_info_sec .member_email select { width:102px; height:48px; padding:0 0 0 12px; color: #fff; font-size: 14px; font-weight: 400; border-radius: 5px; border: 1px solid var(--basic-color, #121212); background: var(--basic-color, #121212) url("../img/common/select_arr_w.png") no-repeat right 8px top 50%; background-size: 14px auto; }
+#contents .join_base_wrap .file_upload_sec .btn_upload_box { width:102px; padding:0; }
+#wrap .join_base_wrap .base_info_sec .member_email .chosen-container .chosen-single,
+#contents .join_base_wrap .member_address .address_postcode .btn_post_search,
+#contents .join_base_wrap .file_upload_sec .btn_upload_box .btn_upload { width:102px; height:48px; margin:0; color:#fff; font-size:14px; font-weight:400; background:var(--basic-color, #121212); border-radius:5px; border:1px solid var(--basic-color, #121212); box-sizing:border-box; box-shadow:none; }
+#wrap .join_base_wrap .member_birthday .member_warning select { width:100px !important; }
+#wrap .join_base_wrap .member_birthday .member_warning select#birthYear { width:120px !important; }
+.member_warning .chosen-container-single .chosen-single div b { right:10px; background:url("../img/common/select_arr_w.png") no-repeat 50%; background-size:14px auto; }
+.member_warning .chosen-container-active.chosen-with-drop .chosen-single div b {}
+/* 사업자등록증 첨부 */
+#contents .join_base_wrap .file_upload_sec .btn_upload_box .file { position:absolute; top:0; left:0; right:auto; width:100%; height:100%; }
+#contents .join_base_wrap .file_upload_sec > div:not(.btn_upload_box) { width:100%; margin:0 0 10px; }
+#contents .join_base_wrap .file_upload_sec > div:not(.btn_upload_box) a { font-size:15px; text-decoration:underline; }
+#contents .join_base_wrap .file_upload_sec > div:not(.btn_upload_box) a + input { vertical-align:-2px; width:15px; height:15px; }
+#contents .join_base_wrap .file_upload_sec > div:not(.btn_upload_box) a + input + label { font-size:15px; }
+#contents .join_base_wrap .file_upload_sec .link_file_down { }
+/* 부가정보 */
+.addition_info_sec table .hobby_list li { width:50%; }
+.addition_info_sec textarea { width:100%; border-radius:5px; }
+/* 비밀번호 변경 버튼 */
+.join_base_wrap .member_password .btn_common_box { display:flex; gap:10px; }
+.join_base_wrap .member_password .btn_common_box span { display:flex; width:102px; height:48px; margin:0; }
+.join_base_wrap .member_password .btn_common_box .btn_gray_list a { display:flex; align-items:center; justify-content:center; width:100%; height:100%; padding:0; background:#F5F5F5; border-radius:5px; box-sizing:border-box; }
+.join_base_wrap .member_password .btn_common_box .btn_gray_list a em { padding:0; background:none; }
+.join_base_wrap .member_pw_change dt { vertical-align:middle; padding:0 0 5px; color:var(--basic-color, #121212); font-size:14px; font-weight:400; }
+
+/* 가입완료 */
+.body-join-ok .member_wrap { max-width:360px; width:100%; margin:0 auto; }
+.body-join-ok .member_cont { padding:0; border:0; border-top:1px solid var(--basic-color, #121212); }
+.body-join-ok .join_ok_box .join_ok_tit { padding:88px 0 0; background:url("../img/common/join_complete_icon.png") no-repeat 50% 32px; }
+.body-join-ok .join_ok_box .join_ok_tit .complete { padding:0; color:var(--basic-color, #121212); font-size:18px; font-weight:300; line-height:1; letter-spacing:0; }
+.body-join-ok .join_ok_box .join_ok_tit .complete strong { font-weight:600; }
+.body-join-ok .join_ok_box .join_ok_tit p { padding:12px 0 32px; color:#757575; font-size:14px; font-weight:300; line-height:1.4; letter-spacing:0; }
+.body-join-ok .join_ok_box .join_ok_tit p span { color:#757575; font-weight:300; }
+.body-join-ok .join_ok_box .btn_member_sec { border-top:0; }
+.body-join-ok .join_ok_box .btn_member_sec ul { display:flex; gap:10px; margin:0; }
+.body-join-ok .join_ok_box .btn_member_sec ul li { flex:1; margin:0; }
+.body-join-ok .join_ok_box .btn_member_sec ul li button { width:100%; }
+
+
+/*========================================================================
+마이페이지
+========================================================================*/
+/* 좌측 메뉴 */
+.side_cont .sub_menu_box h2 { padding:0; margin:0 0 32px; color:var(--basic-color, #121212); font-size:24px; font-weight:600; line-height:1; border:0; }
+.side_cont .sub_menu_box .sub_menu_mypage { margin:0; }
+.side_cont .sub_menu_box .sub_menu_mypage > li { margin:32px 0 0; padding:0; color:#000; font-size:20px; font-weight:600; line-height:1; background:none; }
+.side_cont .sub_menu_box .sub_menu_mypage > li:first-child { margin:0; }
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 { margin:20px 0 0; }
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 li { padding:0; margin:14px 0 0; }
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 li:first-child { margin:0; }
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 a { padding:0; color:#9E9E9E; font-size:14px; font-weight:400; line-height:1; text-indent:0; }
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 a.active,
+.side_cont .sub_menu_box .sub_menu_mypage .sub_depth1 a:hover { background:none; }
+
+/* info */
+.mypage_top_info { display:flex; align-items:center; width:100%; min-height:180px; background:#F5F5F5; border:0; border-radius:20px; }
+.mypage_top_txt { display:flex; align-items:center; width:400px; padding:0 0 0 68px; text-align:left; background:none; box-sizing:border-box; }
+.mypage_top_txt .grade_txt p { color:var(--basic-color, #121212); font-size:20px; font-weight:300; line-height:1.4; }
+.mypage_top_txt .grade_txt p span { font-weight:700; }
+.mypage_top_txt .grade_txt .btn_layer { margin:18px 0 0; }
+.mypage_top_txt .grade_txt .btn_layer .btn_gray_small { padding:6px 15px; color:#fff; font-size:14px; font-weight:400; background:#424242; border:0; border-radius:50px; }
+.mypage_top_txt .grade_txt .btn_layer .btn_gray_small em { padding:0; background:none; }
+.mypage_top_wallet { display:flex; align-items:center; width:calc(100% - 400px); background:none; }
+.mypage_top_wallet ul { display:flex; align-items:center; padding:0; box-sizing:border-box; }
+.mypage_top_wallet ul li { flex:1; display:flex; flex-direction:column; position:relative; width:auto; border-color:#E0E0E0; }
+.mypage_top_wallet li span { padding:0; color:var(--basic-color, #121212); font-size:16px; font-weight:600; line-height:1; }
+.mypage_top_wallet li span strong { color:var(--basic-color, #121212); font-size:16px; font-weight:600; }
+.mypage_top_wallet li span:first-child { width:100%; min-height:30px; margin:0 0 10px; background:no-repeat 50%; }
+.mypage_top_wallet li span:first-child img { display:none; }
+.mypage_top_wallet li span a::after { content:""; position:absolute; top:0; left:0; width:100%; height:100%; }
+.mypage_top_wallet li em { padding:0; margin:0 0 10px; color:#616161; font-size:14px; font-weight:400; line-height:1; }
+.mypage_top_wallet li:nth-child(1) span:first-child { background-image:url("../img/common/my_coupon.png"); }
+.mypage_top_wallet li:nth-child(2) span:first-child { background-image:url("../img/common/my_mypage.png"); }
+.mypage_top_wallet li:nth-child(3) span:first-child { background-image:url("../img/common/my_deposit.png"); }
+
+/* 중간 타이틀 */
+.mypage_zone_tit { padding:0 0 17px; margin:64px 0 0; font-size:18px; line-height:1; }
+.mypage_lately_goods .mypage_zone_tit { margin-bottom:30px; border-bottom:2px solid var(--basic-color, #121212); }
+.mypage_zone_tit h3 { color:#000; font-size:18px; font-weight:500; line-height:1; }
+.mypage_zone_tit span { padding:0 0 0 15px; color:#757575; font-size:14px; font-weight:300; line-height:1; }
+.mypage_lately_info .btn_board_more { position:absolute; top:4px; right:0; color:var(--Gray_01, #121212); font-size:14px; font-weight:300; line-height:1; }
+
+/* 진행 중인 주문 */
+.mypage_order_info_cont { display:flex; padding:23px 0 0; border:0; border-top:2px solid var(--basic-color, #121212); }
+.mypage_order_info_cont ol { display:flex; width:calc(100% - 192px); padding:5px 40px 0 0; border-right:1px solid #E9E9E9; box-sizing:border-box; }
+.mypage_order_info_cont ol li { display:flex; flex-wrap:wrap; flex-direction:column; align-items:center; width:auto; padding:0; background:none; }
+.mypage_order_info_cont ol li:first-child { padding:0; }
+.mypage_order_info_cont ol li:not(:first-child)::before { content:""; display:inline-flex; width:54px; height:100%; background:url("../img/common/orderstate_arr.png") no-repeat 50% 32px; background-size:12px auto; }
+.mypage_order_info_cont ol li strong { display:flex; align-items:center; justify-content:center; width:78px; height:78px; padding:0; color:var(--basic-color, #121212); font-size:38px; font-weight:500; line-height:1; background:#EEE; border-radius:50%; }
+.mypage_order_info_cont .active strong { background:#EEE; background-size:100% 100%; }
+.mypage_order_info_cont ol li b { order:2; padding:17px 0 0; color:var(--basic-color, #121212); font-size:14px; font-weight:400; line-height:1; }
+/* 취소, 교환, 반품 */
+.mypage_order_info_cont .order_case_list { width:192px; padding:0 0 0 40px; text-align:right; box-sizing:border-box; }
+.mypage_order_info_cont .order_case_list ul { width:100%; }
+.mypage_order_info_cont .order_case_list ul li { display:flex; justify-content:space-between; padding:15px 0; color:#757575; font-size:15px; line-height:1; border-top:1px dashed #E0E0E0; }
+.mypage_order_info_cont .order_case_list ul li b { font-weight:300; }
+.mypage_order_info_cont .order_case_list ul li::after { content:":"; display:inline-flex; font-size:16px; }
+.mypage_order_info_cont .order_case_list ul li span { order:2; color:#424242; font-size:15px; font-weight:300; line-height:1; }
+.mypage_order_info_cont .order_case_list ul li:nth-child(1) { padding-top:0; }
+.mypage_order_info_cont .order_case_list ul li:nth-child(3) { padding-bottom:0; }
+
+/* 최근 주문 정보 */
+.mypage_table_type table {}
+.mypage_table_type th { padding:16px 0; color:#000; font-size:14px; font-weight:300; line-height:1; background:none; border-top:2px solid var(--basic-color, #121212); border-bottom:1px solid #E0E0E0; }
+.mypage_table_type td { padding:23px 0; color:var(--basic-color, #121212); font-size:14px; font-weight:300; border-bottom:1px solid #E0E0E0; }
+.mypage_table_type .row_line td { border:0; border-bottom:1px solid #E0E0E0; }
+.mypage_table_type table td.order_day_num { font-size:12px; font-weight:300; line-height:1.3; border-right:0; }
+.mypage_table_type .order_num_link { color:#E81824; font-weight:300; border-bottom:1px solid #E81824; }
+.mypage_table_type .pick_add_cont .pick_add_img { width:90px; }
+.mypage_table_type .pick_add_cont .pick_add_img img { border:1px solid #E0E0E0; }
+.mypage_table_type .pick_add_cont .pick_add_info { padding:0 0 0 17px; box-sizing:border-box; }
+.mypage_table_type .pick_add_cont .pick_add_info em { color:var(--basic-color, #121212); font-size:14px; font-weight:400; line-height:1; }
+.mypage_table_type .pick_add_cont .text_type_cont { padding:11px 0 0; color:#757575; font-size:12px; font-weight:300; line-height:1; }
+.mypage_table_type td > strong { color:var(--basic-color, #121212); font-size:14px; font-weight:500; }
+.mypage_table_type td:last-child { }
+
+/* 확인,리뷰 버튼 */
+.btn_buy_ok,
+.btn_buy_ok:hover,
+.btn_review_write,
+.btn_review_write:hover { min-width:90px; height:30px; line-height:28px; padding:0 20px; color:#424242; font-size:14px; font-weight:400; background:none; border:1px solid #616161; border-radius:4px; text-align:center; box-sizing:border-box; }
+.btn_buy_ok em, 
+.btn_review_write em { font-weight:400; }
+
+/* 주문상태 버튼 */
+.mypage_table_type .btn_gray_list .btn_gray_small { min-width:90px; height:30px; line-height:28px; padding:0 20px; color:#616161; font-size:14px; font-weight:400; background:none; border:1px solid #E0E0E0; border-radius:4px; box-sizing:border-box; }
+.mypage_table_type .btn_gray_list .btn_gray_small span { padding:0; background:none; }
+
+/* 최근 본 상품 */
+.mypage_lately_goods .item_money_box .item_sale,
+.mypage_lately_goods .item_icon_box { display:none; }
+.mypage_lately_goods .goods_list_cont ul { width:calc(100% + 26px); margin-left:-13px; }
+.mypage_lately_goods .goods_list_cont ul li { margin:0; }
+.mypage_lately_goods .goods_list_cont ul li .item_cont { padding:0 13px; }

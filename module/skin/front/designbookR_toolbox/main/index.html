@@ -1,0 +1,397 @@
+{*** 쇼핑몰 메인본문 | main/index.php ***}
+{ # header }
+<link type="text/css" rel="stylesheet" href="../_dbook/css/main.css" />
+<script type="text/javascript" src="../_dbook/js/main.js"></script>
+{=includeWidget('proc/_populate.html', 'sno', '100')}
+
+<div id="main">
+	<!-- main-visual -->
+	<div class="main-visual">
+		<div class="mask-item">
+			<div class="visual-slider">
+				<div class="visual-inner pc-view">
+					{=includeWidget('proc/_slider_banner.html', 'bannerCode', '511517418', 'swiper', 'true')}
+				</div>
+				<div class="visual-inner mo-view">
+					{=includeWidget('proc/_slider_banner.html', 'bannerCode', '3255796316', 'swiper', 'true')}
+				</div>
+			</div>
+			<ul class="slider-nav" style="display:none;">
+				<!-- 슬라이드 개수와 동일하게 사용해야함 -->
+				<li>
+					<div class="visual-title">
+						<h3>
+							딸깍딸깍,<br/>
+							손이 자꾸 가는 키링
+						</h3>
+						<p>
+							1구부터 4구까지 다양한 옵션으로<br/>
+							제작할 수 있는 키캡 키링!
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="visual-title">
+						<h3>
+							쏙, 한 손에<br/>
+							들어오는 귀여움
+						</h3>
+						<p>
+							15cm사이즈로<br/>
+							제작되는 커스텀 봉제인형
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="visual-title">
+						<h3>
+							상상한 그대로!<br/>
+							전체 커스텀 응원봉
+						</h3>
+						<p>
+							원하시는 디자인을 상담을 통해<br/>
+							꼼꼼하게 설계하는 원스톱 제작.
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="visual-title">
+						<h3>
+							전 기종 OK!<br/>
+							지금 바로 제작 가능
+						</h3>
+						<p>
+							단단한 하드 케이스,<br/>
+							원하는 디자인으로 맞춤 제작
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="visual-title">
+						<h3>
+							구성부터 포장까지<br/>
+							간편한 키트 제작
+						</h3>
+						<p>
+							원하시는 상품 구성으로<br/>
+							패키지 제작이 가능합니다.
+						</p>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!--// main-visual -->
+	<div class="main-wrap">
+		<div class="main-box">
+			<div class="main-inner">
+				<div class="main-quick-menu">
+					<div class="main-title path-motion_ltr">
+						<h3><span>한눈에 보는 카테고리</span></h3>
+					</div>
+					<ul >
+						<!--{ @dataBanner('1740788772',true) }-->
+						<li class="_transYS">
+							<a href="{.bannerLink}" target="{.bannerTarget}">
+								<span class="w100"><img src="{.bannerImageUrl}"></span>
+								<p>{.bannerImageAlt}</p>
+							</a>
+						</li>
+						<!--{ / }-->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="main-box2">
+			<div class="main-inner">
+				<div class="recommend-prd">
+					<div class="main-title path-motion_ltr">
+						<h3><span>업종별 추천제품</span><a href="#none">더보기</a></h3>
+					</div>
+					<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '10', 'swiper', true )}<!-- 메인 상품 노출 list_07.html 5탭 탭진열형 4*2 상품명,정가,판매가 -->
+				</div>
+			</div>
+		</div>
+		<div class="main-box3">
+			<div class="interest-prd">
+	 			<div class="main-inner">
+					<div class="main-title">
+						<h3 class="fadeIn"><span>요즘 주목하는 제품</span></h3>
+						<p class="fadeIn ani2">트렌드한 제품을 만나보세요.</p>
+					</div>
+					<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '11','swiper', true, 'button', true, 'pagination', true )}<!-- 메인 상품 노출 list_01.html 갤러리형 3*2 상품명,짧은설명,정가,판매가 -->
+				</div>
+			</div>
+		</div>
+		<div class="main-box4">
+			<div class="main-inner">
+				<div class="wide-bn">
+					<!--{ @dataBanner('3072649366',true) }-->
+						<a href="{.bannerLink}" target="{.bannerTarget}" class="pc-view">
+							<span class="w100"><img src="{.bannerImageUrl}"></span>
+							<div class="bn-txt">	
+								<h3>자체 개발 상품 - MD</h3>
+								<p>생각만 하던 상품 제작을 문의해보세요.<br/>
+								기획부터 설계, 생산까지 모두 가능합니다. </p>
+							</div>
+						</a>
+					<!--{ / }-->
+					<!--{ @dataBanner('2852178041',true) }-->
+						<a href="{.bannerLink}" target="{.bannerTarget}" class="mo-view">
+							<span class="w100"><img src="{.bannerImageUrl}"></span>
+							<div class="bn-txt">	
+								<h3>자체 개발<br/> 상품 - MD</h3>
+								<p>생각만 하던 상품<br/>제작을 문의해보세요.</p>
+							</div>
+						</a>
+					<!--{ / }-->
+				</div>
+			</div>
+		</div>
+		<div class="main-box5">
+			<div class="popular-prd">
+ 				<div class="main-inner">
+					<div class="main-title path-motion_ltr">
+						<h3><span>인기상품</span></h3>
+					</div>
+					<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '12','swiper', true , 'button', true )}<!-- 메인 상품 노출 list_01.html 갤러리형 4*2 상품명,정가,판매가 -->
+				</div>
+			</div>
+		</div>
+		<div class="main-box6">
+ 			<div class="main-inner">
+				<div class="brand-prd">
+					<div class="main-title path-motion_ltr">
+						<h3><span>실속 제작 추천</span></h3>
+					</div>
+					<div class="brand-prd-inner">
+						<div class="swiper-pagination"></div>
+						<div class="swiper swiper-container">
+							<div class="swiper-wrapper">
+								<div class="swiper-slide">
+									<div class="brand-prd-box">
+										<div class="bn">
+											<div class="prd-bn">
+												<!--{ @dataBanner('727693531') }--><span>{.tag}</span><!--{ / }-->
+											</div>
+											<div class="txt">
+												<h4>소량 제작</h4>
+												<p>100개부터 제작 가능한 제품</p> 
+												<a href="/goods/goods_list.php?cateCd=030">더보기</a>
+											</div>
+										</div>
+										<div class="prd">
+											<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '13' )}<!-- 메인 상품 노출 list_03.html 리스트그룹형 2*3 상품명,정가,판매가 -->
+										</div>
+									</div>
+								</div>
+								<div class="swiper-slide">
+									<div class="brand-prd-box">
+										<div class="bn">
+											<div class="prd-bn">
+												<!--{ @dataBanner('3877199897') }--><span>{.tag}</span><!--{ / }-->
+											</div>
+											<div class="txt">
+												<h4>가성비 굿즈</h4>
+												<p>1,000원대 굿즈로 저렴하게 제작</p> 
+												<a href="/goods/goods_list.php?cateCd=031">더보기</a>
+											</div>
+										</div>
+										<div class="prd">
+											<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'sno', '14' )}<!-- 메인 상품 노출 list_03.html 리스트그룹형 2*3 상품명,정가,판매가 -->
+										</div>
+									</div>
+								</div>								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div> 
+		</div>
+		<div class="main-box7">
+			<div class="main-support">
+				<div class="main-inner">
+					<div class="main-title path-motion_ltr">
+						<h3><span>사업자몰 고객지원</span><a href="#none">더보기</a></h3>
+					</div>
+					<div class="swiper-container swiper">
+						<div class="swiper-wrapper">
+							<div class="swiper-slide">
+								<!--{ @dataBanner('2765863401', true) }-->
+								<div class="bn">
+									<div class="txt">
+										<h4>빠른 견적 상담</h4>
+										<p>
+											카카오채널을 통해<br />고객님들을 위한 합리적인 가격으로<br />구매상담을 진행해드립니다.
+										</p> 
+									</div>
+									<div class="bn-img">
+										<a href="{.bannerLink}" target="{.bannerTarget}">더보기</a>
+										<span><img src="{.bannerImageUrl}"></span>
+									</div>
+								</div>
+								<!--{ / }-->
+							</div>
+							<div class="swiper-slide">
+								<!--{ @dataBanner('2282795696', true) }-->
+								<div class="bn">
+									<div class="txt">
+										<h4>디자인 시안 요청하기</h4>
+										<p>
+											원하시는 굿즈 아이템 혹은<br />아이디어가 있으시다면<br />시안 작업을 요청해주세요.
+										</p> 
+									</div>
+									<div class="bn-img">
+										<a href="{.bannerLink}" target="{.bannerTarget}">더보기</a>
+										<span><img src="{.bannerImageUrl}"></span>
+									</div>
+								</div>
+								<!--{ / }-->
+							</div>
+							<div class="swiper-slide">
+								<!--{ @dataBanner('487520154', true) }-->
+								<div class="bn">
+									<div class="txt">
+										<h4>제작 프로세스 안내</h4>
+										<p>
+											상담을 통한 제품 기획부터<br />디자인, 제작, 배송까지의 제작 과정을<br />한눈에 확인해보세요.
+										</p> 
+									</div>
+									<div class="bn-img">
+										<a href="{.bannerLink}" target="{.bannerTarget}">더보기</a>
+										<span><img src="{.bannerImageUrl}"></span>
+									</div>
+								</div>
+								<!--{ / }-->
+							</div>
+							<!--<div class="swiper-slide">
+								<!--{ @dataBanner('3739232873', true) }-->
+								<div class="bn">
+									<div class="txt">
+										<h4>사업자몰 배송안내</h4>
+										<p>
+											사업자 회원 전용 무료배송 혜택<br/>
+											오후 3시까지 입금 완료 시<br/> 
+											당일출고(익일수령)
+										</p> 
+									</div>
+									<div class="bn-img">
+										<a href="{.bannerLink}" target="{.bannerTarget}">더보기</a>
+										<span><img src="{.bannerImageUrl}"></span>
+									</div>
+								</div>
+								<!--{ / }-->
+							</div>-->
+						</div> 
+					</div>
+					<div class="swiper-button-next pc-view"></div>
+					<div class="swiper-button-prev pc-view"></div>
+					<div class="swiper-pagination mo-view"></div>
+				</div>
+			</div>
+		</div>
+		<div class="main-box8">
+			<div class="best-prd">
+				<div class="main-inner">
+					<div class="main-title">
+						<div>
+							<h3>팬굿즈</h3>
+							<!--<p>
+								작업자를 위한 뛰어난 내구성<br/>
+								편리하고 안전하게
+							</p>-->
+							<a href="/goods/goods_list.php?cateCd=009">바로가기</a>
+						</div>
+					</div>
+					<div class="right-box">
+						<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'swiper', 'true', 'scrollbar', 'true', 'sno', '15')}<!-- 메인 상품 노출 list_01.html 갤러리형 3*2 상품명,정가,판매가 -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main-box9">
+			<div class="best-prd">
+				<div class="main-inner">
+					<div class="main-title">
+						<div>
+							<h3>사무용품</h3>
+							<!--<p>
+								작업자를 위한 뛰어난 내구성<br/>
+								편리하고 안전하게
+							</p>-->
+							<a href="/goods/goods_list.php?cateCd=010">바로가기</a>
+						</div>
+					</div>
+					<div class="right-box">
+						<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'swiper', 'true', 'scrollbar', 'true', 'sno', '16')}<!-- 메인 상품 노출 list_01.html 갤러리형 3*2 상품명,정가,판매가 -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main-box10">
+			<div class="best-prd">
+				<div class="main-inner">
+					<div class="main-title">
+						<div>
+							<h3>악세서리</h3>
+							<!--<p>
+								작업자를 위한 뛰어난 내구성<br/>
+								편리하고 안전하게
+							</p>-->
+							<a href="/goods/goods_list.php?cateCd=012">바로가기</a>
+						</div>
+					</div>
+					<div class="right-box">
+						<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'swiper', 'true', 'scrollbar', 'true', 'sno', '17')}<!-- 메인 상품 노출 list_01.html 갤러리형 3*2 상품명,정가,판매가 -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main-box11" style="display:none;">
+			<div class="best-prd">
+				<div class="main-inner">
+					<div class="main-title">
+						<div>
+							<h3>산업자재</h3>
+							<p>
+								작업자를 위한 뛰어난 내구성<br/>
+								편리하고 안전하게
+							</p>
+							<a href="#none;">바로가기</a>
+						</div>
+					</div>
+					<div class="right-box">
+						<!-- 메인 상품 노출 -->{=includeWidget('goods/_goods_display_main.html', 'swiper', 'true', 'scrollbar', 'true', 'sno', '257')}<!-- 메인 상품 노출 list_01.html 갤러리형 3*2 상품명,정가,판매가 -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 추천상품 디자인 없음 -->
+{*
+	디자인교과서 스킨제작
+	/_dbook/
+	/outline/_header.html
+	/outline/_share_header.html
+	/outline/header/
+		    /footer/
+			/outside/top_bn.html
+			/side/side_floating.html
+			/scroll/scroll_banner_left.html
+	/main/
+	/goods/goods_view.html
+	/goods/list/list_01.html
+				/list_03.html
+				/list_04.html
+				/list_07.html
+	/proc/_category_all.html
+		 /_category_side.html
+		 /_slider_banner.html - dbook 검색
+	/js/gd_ui.js - dbook 검색
+	   /gd_common.js - dbook 검색
+	/js/smart/css/smart_editor2.css
+	/css/board/board.css
+	/mypage/_order_goods_list.html
+*}
+{ # footer }

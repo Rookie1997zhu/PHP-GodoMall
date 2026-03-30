@@ -1,0 +1,15 @@
+---
+description: GodoMall 组件任务技能路由
+globs: module/Custom/Component/**/*.php
+alwaysApply: false
+---
+
+# Component Skill Routing
+
+- 当前文件属于 `module/Custom/Component/**`。
+- 在分析或修改前，必须先读取：
+  - `.cursor/skills/godomall-existing-patterns/SKILL.md`
+  - `.cursor/skills/godomall-component-patterns/SKILL.md`
+- 控制器应保持薄层，复杂查询、数据组装、扩展表读写优先放组件。
+- 不要为了“更优雅”擅自重写继承结构、复制官方 SQL 或把组件职责搬回控制器。
+- 官方商品等基础数据优先通过 `App::load()` 或项目既有模式获取。

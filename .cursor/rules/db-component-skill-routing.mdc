@@ -1,0 +1,16 @@
+---
+description: GodoMall 数据库封装任务技能路由
+globs: "{module/Custom/Component/Database/**/*.php,module/Custom/Database/**/*.sql}"
+alwaysApply: false
+---
+
+# Database Component Skill Routing
+
+- 当前文件属于 `module/Custom/Component/Database/**` 或 `module/Custom/Database/**/*.sql`。
+- 在分析或修改前，必须先读取：
+  - `.cursor/skills/godomall-existing-patterns/SKILL.md`
+  - `.cursor/skills/godomall-db-extension-patterns/SKILL.md`
+- 不得直接按通用 ORM 习惯重写当前数据库封装。
+- 若涉及扩展字段、扩展表、关联官方表、字符集或 collation，必须优先按项目既有写法处理。
+- 与核心业务表的新增字段需求，默认走 `custom_*` 扩展表，而不是改官方原表。
+- 若为 SQL 安装脚本，需同时考虑建表语义、回滚语义和与现有扩展表命名的一致性。

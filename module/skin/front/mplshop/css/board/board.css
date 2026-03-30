@@ -206,7 +206,7 @@
 .select_item_info .text_type_cont{display:block; padding:3px 0 3px 0; color:#a9a9a9; font-size:11px; line-height:1;}
 
 /* ------------- view 페이지 ------------- */
-.board_view_tit{overflow:hidden; padding:15px 15px 15px 15px; border-top:1px solid #999999; border-bottom:1px solid #dbdbdb; background:#f7f7f7;}
+.board_view_tit{overflow:hidden; padding:15px 15px 15px 15px; border-top:1px solid #999999; border-bottom:1px solid #dbdbdb; background:transparent;}
 .board_view_tit h3{display:inline-block; color:#111111; font-size:14px;}
 .board_view_tit strong{float:right; font-size:14px;}
 
