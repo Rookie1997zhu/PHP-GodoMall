@@ -1,6 +1,6 @@
 ---
 description: GodoMall 控制器任务技能路由
-globs: module/Controller/**/*.php
+globs: "{module/Controller/**/*.php,module/Custom/Controller/**/*.php}"
 alwaysApply: false
 ---
 
@@ -14,6 +14,11 @@ alwaysApply: false
   - 前台覆写官方控制器
   - 前台独立控制器
   - 后台覆写 / 扩展控制器
+- 默认优先参考：
+  - 后台控制器继承 `\Controller\Admin\Controller`
+  - 前台独立控制器继承 `\Controller\Front\Controller`
+  - 覆写官方页面优先继承对应 `\Bundle\Controller\...`
+- 若父类初始化异常，先评估“继承不变 + `try/catch parent::__construct()`”兼容方案，不要直接改成非继承。
 - 不得因通用经验擅自改变：
   - 控制器基类
   - `parent::index()`

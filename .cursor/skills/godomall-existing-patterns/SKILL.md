@@ -17,7 +17,6 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 
 - `.cursor/rules/skill-routing.mdc`
 - `.cursor/rules/controller-skill-routing.mdc`
-- `.cursor/rules/custom-controller-skill-routing.mdc`
 - `.cursor/rules/component-skill-routing.mdc`
 - `.cursor/rules/entry-script-skill-routing.mdc`
 - `.cursor/rules/db-component-skill-routing.mdc`

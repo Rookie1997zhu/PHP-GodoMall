@@ -18,7 +18,6 @@ description: 总结 GodoMall 项目中控制器的既有写法，适用于 modul
 本 Skill 通常由以下规则触发：
 
 - `.cursor/rules/controller-skill-routing.mdc`
-- `.cursor/rules/custom-controller-skill-routing.mdc`
 - `.cursor/rules/skill-routing.mdc`
 
 开始分析前，先读取：
