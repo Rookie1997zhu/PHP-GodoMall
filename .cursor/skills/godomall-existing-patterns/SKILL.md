@@ -292,3 +292,60 @@ GodoMall 新建扩展表时，不要只写 `utf8mb4`；凡是要和旧表做字�
 ## 一句话规则
 
 在这个项目里，优先参考已经验证能运行的旧文件写法；不要为了“更规范”而破坏 GodoMall 现有机制。 
+
+## 前台 JS 外部化约定（官方模板中的自定义脚本）
+
+### 适用场景
+
+当需要在官方模板（如 `goods_view.html`、`order_end.html`）中嵌入自定义 JavaScript 时，**禁止直接将业务逻辑内联写入官方 HTML 文件**。应将自定义 JS 抽取为独立文件放入 `js/custom/` 目录。
+
+### 目录约定
+
+```
+module/skin/front/mplshop/js/custom/
+├── goods_view_custom.js        # goods_view.html 定制功能（状态检查 + 跳转）
+├── order_end_custom.js         # order_end.html 定制图片提交
+└── goods_custom_for_naver.js   # goods_custom.html Naver 外部订单专用
+```
+
+### 全局变量注入模式（必须遵守）
+
+官方模板的 Godomall 模板变量（如 `{=goodsView.goodsNo}`）**无法在外部 JS 文件中使用**。
+
+正确做法：在 HTML 文件中用最小内联脚本声明全局变量，外部 JS 只读取全局变量。
+
+```html
+<!-- 在官方模板中（内联，只做变量声明） -->
+<script type="text/javascript">
+var CUSTOM_GOODS_NO = '{=goodsView.goodsNo}';
+</script>
+<!-- 外部文件引用 -->
+<script type="text/javascript" src="\{=c.PATH_SKIN}js/custom/goods_view_custom.js"></script>
+```
+
+外部 JS 文件中统一通过 `window.CUSTOM_*` 读取：
+
+```javascript
+var goodsNo = window.CUSTOM_GOODS_NO;
+```
+
+### 全局变量命名约定
+
+| 模板文件 | 全局变量 | 模板变量来源 |
+|----------|---------|-------------|
+| `goods_view.html` | `CUSTOM_GOODS_NO` | `{=goodsView.goodsNo}` |
+| `order_end.html` | `CUSTOM_ORDER_NO` | `{orderInfo.orderNo}` |
+
+### 强制规则
+
+1. **禁止**直接在官方 HTML 文件的 `<script>` 块中写超过 5 行的自定义业务逻辑。
+2. **必须**将自定义业务 JS 放入 `js/custom/` 目录。
+3. **必须**通过全局变量中转模板变量，不得在 HTML 里拼接 JS 字符串。
+4. 文件命名：`{页面名}_custom.js`，与官方模板名对应（snake_case）。
+5. 引用路径使用 `\{=c.PATH_SKIN}js/custom/文件名.js`（GodoMall 模板变量路径前缀）。
+
+### 参考文件
+
+- `module/skin/front/mplshop/js/custom/goods_view_custom.js`
+- `module/skin/front/mplshop/js/custom/order_end_custom.js`
+- `module/skin/front/mplshop/js/custom/goods_custom_for_naver.js`

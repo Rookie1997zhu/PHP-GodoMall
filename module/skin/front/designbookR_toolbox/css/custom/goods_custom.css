@@ -1,0 +1,2858 @@
+/* 商品定制页面样式 */
+
+/* Custom fonts used inside the text editor */
+@font-face {
+    font-family: 'Ongleaff Park Dahyeon';
+    src: url("../../_mplshop/font/Ongleaff Park Dahyeon.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Baedal Minjok Jua';
+    src: url("../../_mplshop/font/Baedal Minjok Jua.TTF") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Baegle Fat';
+    src: url("../../_mplshop/font/Baegle Fat.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'PyeongChang Peace';
+    src: url("../../_mplshop/font/PyeongChang Peace.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Hancom MallangMallang';
+    src: url("../../_mplshop/font/Hancom MallangMallang.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Coper Black';
+    src: url("../../_mplshop/font/Coper Black.TTF") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Yeogiotte Jallanchae';
+    src: url("../../_mplshop/font/Yeogiotte Jallanchae.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Pretendard';
+    src: url("../../_mplshop/font/Pretendard.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Baemin Dohyeon';
+    src: url("../../_mplshop/font/Baemin Dohyeon.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'NEXON Lv1 Gothic';
+    src: url("../../_mplshop/font/NEXON Lv1 Gothic.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.custom-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #fff;
+}
+
+/* 左侧定制工作区 */
+.custom-workspace {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e0e0e0;
+    position: relative;
+    overflow: visible;
+}
+
+/* 顶部工具栏 */
+.custom-toolbar {
+    display: flex;
+    align-items: center;
+    padding: 12px 24px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 18px;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 8px;
+    padding-right: 18px;
+    border-right: 1px solid #ddd;
+}
+
+.toolbar-group:last-child {
+    border-right: none;
+}
+
+.tool-btn {
+    width: 56px;
+    height: 56px;
+    border: 1px solid #d9d9d9;
+    background-color: #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+
+.tool-btn:hover:not(:disabled) {
+    background-color: #eef2ff;
+    border-color: #94a3ff;
+    box-shadow: 0 4px 10px rgba(97, 119, 255, 0.25);
+}
+
+.tool-btn:active:not(:disabled) {
+    background-color: #dbe3ff;
+}
+
+.tool-btn:disabled,
+.tool-btn.disabled {
+    cursor: not-allowed;
+    background-color: #fafafa;
+    border-color: #e5e5e5;
+    box-shadow: none;
+}
+
+.tool-icon {
+    width: 56px;
+    height: 56px;
+    display: block;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.tool-btn:disabled .icon-undo { background-image: url("../../_mplshop/images/ToolBoxNew/1.실행 취소_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-undo { background-image: url("../../_mplshop/images/ToolBoxNew/1.실행취소.png"); }
+
+.tool-btn:disabled .icon-redo { background-image: url("../../_mplshop/images/ToolBoxNew/2.다시 실행_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-redo { background-image: url("../../_mplshop/images/ToolBoxNew/2.다시 실행.png"); }
+
+.tool-btn:disabled .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기_1.jpg'); }
+.tool-btn:not(:disabled) .icon-view { background-image: url('../../_mplshop/images/Toolbox/3.보기.jpg'); }
+
+.tool-btn:disabled .icon-delete { background-image: url("../../_mplshop/images/ToolBoxNew/3.삭제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-delete { background-image: url("../../_mplshop/images/ToolBoxNew/3.삭제.png"); }
+
+.tool-btn:disabled .icon-flip-h { background-image: url("../../_mplshop/images/ToolBoxNew/4.좌우 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-h { background-image: url("../../_mplshop/images/ToolBoxNew/4.좌우 반전.png"); }
+
+.tool-btn:disabled .icon-flip-v { background-image: url("../../_mplshop/images/ToolBoxNew/5.상하 반전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-flip-v { background-image: url("../../_mplshop/images/ToolBoxNew/5.상하 반전.png"); }
+
+/* ✅ 90° 회전 */
+.tool-btn:disabled .icon-rotate-90 { background-image: url("../../_mplshop/images/ToolBoxNew/6.회전_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-rotate-90 { background-image: url("../../_mplshop/images/ToolBoxNew/6.회전.png"); }
+
+.tool-btn:disabled .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBoxNew/7.앞으로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-forward { background-image: url("../../_mplshop/images/ToolBoxNew/7.앞으로 이동.png"); }
+
+.tool-btn:disabled .icon-send-backward { background-image: url("../../_mplshop/images/ToolBoxNew/8.뒤로 이동_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-backward { background-image: url("../../_mplshop/images/ToolBoxNew/8.뒤로 이동.png"); }
+
+.tool-btn:disabled .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBoxNew/9.맨 앞으로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-bring-to-front { background-image: url("../../_mplshop/images/ToolBoxNew/9.맨 앞으로.png"); }
+
+.tool-btn:disabled .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBoxNew/10.맨 뒤로_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-send-to-back { background-image: url("../../_mplshop/images/ToolBoxNew/10.맨 뒤로.png"); }
+
+.tool-btn:disabled .icon-group { background-image: url("../../_mplshop/images/ToolBoxNew/11.그룹화_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-group { background-image: url("../../_mplshop/images/ToolBoxNew/11.그룹화.png"); }
+
+.tool-btn:disabled .icon-ungroup { background-image: url("../../_mplshop/images/ToolBoxNew/12.그룹 해제_Disabled.png"); }
+.tool-btn:not(:disabled) .icon-ungroup { background-image: url("../../_mplshop/images/ToolBoxNew/12.그룹 해제.png"); }
+
+/* 检查按钮 */
+.check-button-container {
+    padding: 10px 20px;
+    text-align: center;
+    position: relative; /* ✅ 우측 버튼 absolute 배치용 */
+}
+
+.check-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    vertical-align: middle; /* 与相邻元素垂直对齐 */
+}
+
+.check-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+/* ✅ 디자인 영역 버튼: 블루 배경 + 화이트 텍스트 */
+.check-btn.design-dropdown-toggle {
+    background-color: #007BFF;
+    border-color: #007BFF;
+    color: #fff;
+}
+
+.check-btn.design-dropdown-toggle:hover,
+.check-btn.design-dropdown-toggle:focus-visible {
+    background-color: #007BFF;
+    border-color: #007BFF;
+    color: #fff;
+}
+
+.check-btn.design-dropdown-toggle:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.check-btn.design-dropdown-toggle .design-dropdown-arrow {
+    color: #fff;
+}
+
+/* ✅ 주의사항 버튼: 화이트 배경 + 블루 텍스트 */
+#btnCheck.check-btn {
+    background-color: #fff;
+    border-color: #007BFF;
+    color: #007BFF;
+}
+
+#btnCheck.check-btn:hover,
+#btnCheck.check-btn:focus-visible {
+    background-color: #fff;
+    border-color: #007BFF;
+    color: #007BFF;
+}
+
+#btnCheck.check-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* ✅ 우측: 커스텀 방법 안내 버튼 */
+.custom-guide-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid #C9DAFF;
+    background: #EAF2FF;
+    color: #2F6BFF;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.custom-guide-btn:hover,
+.custom-guide-btn:focus-visible {
+    background: #DDEAFF;
+    border-color: #B7CCFF;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.18);
+}
+
+.custom-guide-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2F6BFF;
+    color: #fff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* ✅ 커스텀 방법 안내 버튼: 원형 ? 스타일 (요청 UI) */
+.custom-guide-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: #2F6BFF;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+
+    box-shadow: 0 2px 8px rgba(47, 107, 255, 0.35);
+}
+
+.custom-guide-btn:hover,
+.custom-guide-btn:focus-visible {
+    background: #2563EB;
+    box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.18), 0 2px 10px rgba(47, 107, 255, 0.45);
+}
+
+.custom-guide-btn .custom-guide-text {
+    display: none;
+}
+
+.custom-guide-btn .custom-guide-icon {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* ✅ 커스텀 방법 안내 모달 콘텐츠 */
+.custom-guide {
+    padding-top: 6px;
+}
+
+.custom-guide-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 26px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #E6E8EB;
+}
+
+.custom-guide-divider {
+    grid-column: 1 / -1;
+    border-top: 1px dashed #C5C8CB;
+    margin: 6px 0;
+}
+
+.custom-guide-card-title {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 16px; /* Bold 16pt */
+    color: #111;
+    margin-bottom: 10px;
+}
+
+.custom-guide-card-media {
+    background: #fff;
+    border: 1px solid #E6E8EB;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.custom-guide-card-media img {
+    width: 50%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ✅ 커스텀 방법 안내: 이미지 스타일 통일(높이/좌측정렬) + 프레임 제거 */
+#customGuideModal .custom-guide-card-media {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    border-radius: 0;
+}
+
+#customGuideModal .custom-guide-card-media img {
+    /* 原尺寸优先：不强制缩放；但当图片过大时按容器缩小，避免溢出 */
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    display: block;
+    margin: 0; /* 좌측 정렬 */
+}
+
+.custom-guide-card-desc {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px; /* Medium 12pt */
+    color: #444;
+    line-height: 1.55;
+    margin-top: 10px;
+}
+
+.custom-guide-footer {
+    margin-top: 14px;
+    background: #F1F3F5;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* 링크를 텍스트 옆으로 붙임 */
+    gap: 12px;
+}
+
+.custom-guide-footer-text {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.custom-guide-footer-link {
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #2F6BFF;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-left: 0;
+}
+
+.custom-guide-footer-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .custom-guide-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ✅ 커스텀 방법 안내: 모달 가로폭 확장 + 문구 단일 라인 */
+#customGuideModal .design-check-content {
+    width: 1200px;
+    max-width: calc(100vw - 40px);
+}
+
+#customGuideModal .custom-guide-card-desc,
+#customGuideModal .custom-guide-footer-text {
+    white-space: nowrap;        /* 줄바꿈 금지 */
+    overflow: hidden;           /* 작은 화면에서 넘치면 숨김 */
+    text-overflow: ellipsis;    /* ... 처리 */
+}
+
+/* ✅ 외부몰 주문: 개인정보 처리방침 동의 + 미리보기 */
+.external-privacy-consent .external-privacy-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #C5C8CB;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.external-privacy-consent .external-privacy-text {
+    color: #C5C8CB;
+}
+
+.external-privacy-consent .external-privacy-link {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    margin-left: 6px;
+    color: #C5C8CB;
+    cursor: pointer;
+    text-decoration: underline;
+    font: inherit;
+}
+
+.external-privacy-preview {
+    margin-top: 10px;
+    background: #EDF0F3;
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 110px;
+    overflow: auto;
+}
+
+.external-privacy-preview-text {
+    margin: 0;
+    white-space: pre-wrap;
+    color: #4D5053;
+    font-size: 9pt;
+    line-height: 1.5;
+}
+
+/* ===== 외부몰 주문: 개인정보 동의 UI 정렬/단일 라인/미리보기 높이/테두리 통일 ===== */
+
+/* 1) checkbox + 文本 同一行、靠在一起、整体居中 */
+#externalOrderModal .external-privacy-consent .external-privacy-label {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#externalOrderModal .external-privacy-consent .external-privacy-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+}
+
+#externalOrderModal .external-privacy-consent .external-privacy-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+/* 2) “보기”按钮单行并贴近文字 */
+#externalOrderModal .external-privacy-consent .external-privacy-link {
+    white-space: nowrap;
+    margin-left: 0;
+}
+
+/* 3) 预览区域高度缩小 1/2（110px -> 55px） */
+#externalOrderModal .external-privacy-preview {
+    max-height: 55px;
+}
+
+/* 4) 연락처 input 与 요청사항 textarea 边框颜色一致 */
+#externalOrderModal input[type="text"],
+#externalOrderModal input[type="email"],
+#externalOrderModal textarea {
+    border: 1px solid #C5C8CB;
+    border-radius: 6px;
+    outline: none;
+}
+
+#externalOrderModal textarea:focus,
+#externalOrderModal input:focus {
+    border-color: #C5C8CB;
+    box-shadow: none;
+}
+
+/* ✅ 개인정보처리방침 팝업: 높이 축소 + 스크롤 */
+#privacyPolicyModal #privacyPolicyModalText {
+    display: block;
+    max-height: 220px; /* 원래보다 약 1/2 높이 */
+    overflow: auto;
+    padding-right: 6px; /* 스크롤바 여백 */
+}
+
+.icon-check {
+    width: 16px;
+    height: 16px;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>');
+    background-size: contain;
+}
+
+/* 전체 디자인 드롭다운 */
+.design-switch-container {
+    padding: 0 20px 10px;
+    text-align: center;
+}
+
+.design-dropdown {
+    display: inline-flex;          /* 与 .check-btn 保持一致，便于整体对齐 */
+    align-items: center;           /* 垂直居中对齐内部按钮 */
+    position: relative;
+    /* 向下扩展 hover 区域，避免鼠标从按钮移动到菜单时中途关闭 */
+    padding-bottom: 10px;
+}
+
+.design-dropdown-toggle {
+    position: relative;
+    padding-right: 30px; /* 预留箭头空间 */
+}
+
+.design-dropdown-arrow {
+    font-size: 10px;
+    margin-left: 4px;
+}
+
+.design-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    margin-top: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 6px 0;
+    display: none;
+    z-index: 50;
+}
+
+.design-dropdown-item {
+    width: 100%;
+    padding: 8px 14px;
+    border: 0;
+    background: #fff;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* ✅ 드롭다운: 미선택 항목 텍스트 색상 */
+.design-dropdown-menu .design-dropdown-item:not(.is-active) {
+    color: #9DA0A3;
+}
+
+.design-dropdown-item:hover {
+    background-color: #f1f3f5;
+}
+
+.design-dropdown-item.is-active {
+    font-weight: 600;
+    background-color: #eef2ff;
+    color: #007BFF;
+}
+
+/* ✅ 드롭다운: 선택된 항목 hover 시 #007BFF */
+.design-dropdown-item.is-active:hover {
+    background-color: #007BFF;
+    color: #fff;
+}
+
+/* hover 时保持展开：鼠标移动到菜单上不会立即收起 */
+.design-dropdown:hover .design-dropdown-menu {
+    display: block;
+}
+
+/* 预览容器 */
+.preview-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: visible;
+    min-height: 800px;
+    /* 确保内容完全居中 */
+    text-align: center;
+}
+
+.preview-header {
+    margin-bottom: 20px;
+}
+
+.preview-header h3 {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+}
+
+.canvas-container {
+    border: none;
+    /* 去除圆角和背景色，只保留纯图片显示 */
+    /* border-radius: 8px; */
+    /* background-color: #ffffff; */
+    background-color: transparent;
+    position: relative;
+    margin: 0 auto;
+    width: 900px;
+    height: 800px;
+    box-sizing: content-box;
+    flex-shrink: 0;
+    /* 确保容器完全居中 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* 添加额外的居中保障 */
+    text-align: center;
+}
+
+/* 商品背景图片 - 尺寸更新为860x860以匹配canvas */
+.product-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 860px;
+    height: 860px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    pointer-events: none;
+    /* 确保背景图片完全居中 */
+    margin: 0;
+    /* 添加额外的居中保障 */
+    box-sizing: border-box;
+}
+
+.product-background img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    /* 去除圆角和阴影效果，只保留纯图片显示 */
+    /* border-radius: 6px; */
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+    pointer-events: none;
+}
+
+#customCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* 注释掉固定尺寸，改为由JavaScript动态设置 */
+    /* width: 400px; */
+    /* height: 400px; */
+    background-color: transparent;
+    /* 去除边框和圆角效果，只保留纯图片显示 */
+    /* border: 1px solid #ccc; */
+    /* border-radius: 6px; */
+    z-index: 10;
+    cursor: default;
+    /* 确保画布完全居中 */
+    margin: 0;
+    padding: 0;
+    /* 添加额外的居中保障 */
+    box-sizing: border-box;
+}
+
+/* Fabric.js 生成的画布元素居中 - 尺寸由JavaScript动态设置 */
+.canvas-container .lower-canvas,
+.canvas-container .upper-canvas {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    /* 注释掉固定尺寸，改为由JavaScript动态设置 */
+    /* width: 400px !important; */
+    /* height: 400px !important; */
+}
+
+
+
+/* 右侧定制选项 */
+.custom-options {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.option-btn {
+    width: 156px;
+    height: 56px;
+    padding: 12px 18px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+    background-color: #f8f9fa;
+    border-color: #007BFF;
+    border-radius: 8px;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.option-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.option-btn:disabled:hover {
+    background-color: #fff;
+    border-color: #ddd;
+    transform: none;
+    box-shadow: none;
+}
+
+.option-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    text-align: right;
+}
+
+.option-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.option-btn:hover:not(:disabled) .option-icon {
+    transform: scale(1.08);
+}
+
+.option-btn:disabled .option-icon {
+    opacity: 0.35;
+}
+
+.layers-panel {
+    width: 156px;
+    margin-top: 0;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: right;
+}
+
+.layers-panel:hover {
+    border-color: #007BFF;
+    border-radius: 8px;
+}
+
+.layers-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.layers-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin-left: auto;
+}
+
+.layers-header-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.layers-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.layer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: #f9fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.layer-item:hover {
+    border-color: #adb5bd;
+    background: #eef2ff;
+}
+
+.layer-item.is-active {
+    border-color: #667eea;
+    background: #e8edff;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.25);
+}
+
+.layer-visibility-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.layer-visibility-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.layer-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: lowercase;
+}
+
+/* 레이어 썸네일 */
+.layer-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.layer-thumb-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.layer-thumb-text {
+    font-size: 11px;
+    color: #333;
+    text-align: center;
+    padding: 2px 4px;
+    line-height: 1.2;
+    word-break: break-all;
+}
+
+.image-controls {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, 0);
+    display: none;
+    padding: 12px 18px;
+    border: 1px solid #d7d7d7;
+    border-radius: 14px;
+    background: #ffffff;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    pointer-events: auto;
+    z-index: 35;
+}
+
+.image-control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: #111;
+    cursor: pointer;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.image-control-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.image-control-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.checkbox-placeholder {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #111;
+    border-radius: 3px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    position: relative;
+}
+
+.image-control-btn.is-active .checkbox-placeholder {
+    background-color: #111;
+    border-color: #111;
+}
+
+.image-control-btn.is-active .checkbox-placeholder::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 6px;
+    height: 10px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: translate(-50%, -55%) rotate(45deg);
+}
+
+.image-control-divider {
+    width: 1px;
+    height: 28px;
+    background: #d0d0d0;
+}
+
+.lock-icon {
+    transition: transform 0.2s ease;
+}
+
+.image-control-btn:hover .lock-icon {
+    transform: scale(1.08);
+}
+
+/* 商品信息区域 */
+.product-info {
+    width: 30%;
+    padding: 30px;
+    background: #ffffff;
+    border-left: 1px solid #e0e0e0;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+/* 商品头部信息 */
+.product-header {
+    margin-bottom: 30px;
+}
+
+.product-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    line-height: 1.3;
+}
+
+.product-price {
+    margin-bottom: 10px;
+}
+
+.price-amount {
+    font-size: 20px;
+    font-weight: 600;
+    color: #e53e3e;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stars {
+    color: #fbbf24;
+    font-size: 16px;
+}
+
+.reviews {
+    color: #666;
+    font-size: 14px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e0e0e0;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #f8f9fa;
+    border-color: #d0d0d0;
+}
+
+.action-btn.favorited {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.action-btn.favorited:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+/* 商品图片显示区域 */
+.product-image-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.product-image {
+    max-width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.product-image img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+}
+
+/* 选项区域 */
+.option-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-label {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+/* 颜色选项 */
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.color-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-option:hover {
+    background-color: #f8f9fa;
+}
+
+.color-option.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.color-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+}
+
+.color-option.selected .color-circle {
+    border-color: #3b82f6;
+}
+
+.color-name {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.color-option.selected .color-name {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+/* 尺寸选择 */
+.size-options {
+    display: flex;
+    gap: 10px;
+}
+
+.size-item {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.size-item:hover {
+    border-color: #adb5bd;
+}
+
+.size-item.active {
+    border-color: #007bff;
+    background-color: #007bff;
+    color: white;
+}
+
+/* 数量选择 */
+.quantity-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.discount-notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #856404;
+}
+
+.close-notice {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #856404;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quantity-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.quantity-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.quantity-btn:disabled {
+    cursor: not-allowed;
+    background-color: #f1f3f5;
+    border-color: #e9ecef;
+    color: #adb5bd;
+}
+
+.quantity-btn:disabled:hover {
+    background-color: #f1f3f5;
+    border-color: #e9ecef;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 36px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.bulk-order-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.bulk-order-btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.min-order {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+/* 추가 옵션 영역 */
+.extra-options-section {
+    margin-top: 16px;
+}
+
+.extra-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.extra-option-item {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
+.extra-option-header {
+    margin-bottom: 6px;
+}
+
+.extra-option-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.extra-option-label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.extra-option-required {
+    display: inline-block;
+    font-size: 11px;
+    color: #c92a2a;
+    border: 1px solid #ffc9c9;
+    background-color: #fff5f5;
+    border-radius: 999px;
+    padding: 2px 6px;
+}
+
+.extra-option-meta {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+.extra-option-desc {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #888;
+}
+
+.extra-option-control {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.extra-option-control-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #444;
+}
+
+.extra-color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.extra-color-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #e0e0e0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.extra-color-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.extra-color-item.active {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.extra-color-item.active::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+/* 订单摘要 */
+.order-summary {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+    margin-top: auto;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.add-to-cart-btn {
+    width: 100%;
+    height: 50px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-to-cart-btn:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   官方选项区域样式（与追加选项统一风格）
+   ======================================== */
+.official-option-section {
+    margin-top: 16px;
+}
+
+.official-option-section.official-option-inline .item_add_option_box {
+    border-top: 1px solid #eaeaea;
+    padding-top: 12px;
+    margin-top: 4px;
+    padding-bottom: 8px;
+}
+
+.official-option-section .item_add_option_box {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.official-option-section .item_add_option_box dl + dl {
+    margin-top: 7px;
+    padding-top: 5px;
+    border-top: none;
+}
+
+.official-option-section .item_add_option_box dl {
+    margin: 0;
+}
+
+.official-option-section .item_add_option_box dt {
+    margin-bottom: 8px;
+}
+
+.official-option-section .official-option-select {
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.official-option-section .official-option-select:hover {
+    border-color: #999;
+}
+
+.official-option-section .official-option-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.official-option-section .official-option-select:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.official-option-section .official-option-select option {
+    padding: 8px;
+}
+
+.official-option-section .official-option-select option:disabled {
+    color: #bbb;
+}
+
+.official-option-section.official-option-inline {
+    padding-bottom: 9px;
+    margin-bottom: 12px;
+}
+
+.official-option-section.official-option-inline + .option-section {
+    padding-top: 6px;
+    border-top: none;
+}
+
+/* 弹窗样式 */
+.pattern-modal, .text-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 90%;
+    max-height: 90%;
+    /* 允许内部绝对定位元素(如字体下拉菜单)溢出弹窗内容区域 */
+    overflow: visible;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    /* 允许字体下拉菜单等子元素溢出弹窗正文区域 */
+    overflow-y: visible;
+}
+
+/* ✅ Pickr 패널 absolute 포지셔닝 기준을 모달 본문으로 고정 */
+#textModal .modal-body {
+    position: relative;
+}
+
+/* ✅ 외부몰 주문 팝업: 스크롤은 팝업 내부에서만 (페이지 스크롤 방지) */
+#externalOrderModal .modal-content {
+    display: flex;
+    flex-direction: column;
+    /* ✅ 원래처럼 세로 중앙 정렬 */
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-height: none;
+    overflow: visible;
+    width: 880px;     /* ✅ 미리보기 영역 추가로 폭 확장 (620 + 260) */
+    max-width: 92vw;  /* ✅ 작은 화면 대응 */
+}
+
+#externalOrderModal .modal-body {
+    /* ✅ 내부 스크롤 완전 제거 */
+    flex: none;
+    max-height: none;
+    overflow: visible;
+}
+
+/* ✅ 외부몰 주문 2페이지 버튼 텍스트 정중앙 정렬 */
+#externalOrderModal #btnExternalOrderPrev,
+#externalOrderModal #btnSendExternalOrder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+}
+
+/* ✅ 외부몰 주문 바디: 왼쪽(이미지 고정) + 구분선 + 오른쪽(페이지 전환) */
+#externalOrderModal .externalOrderBodyLayout {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+#externalOrderModal .externalOrderBodyLeft {
+    flex: 1 1 0;   /* ✅ 좌/우 동일 비율 */
+    min-width: 0;
+    padding-right: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+#externalOrderModal .externalOrderBodyLeft > .text-input-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#externalOrderModal .externalOrderBodyDivider {
+    width: 1px;
+    background: #E9ECEF;
+    align-self: stretch;
+}
+
+#externalOrderModal .externalOrderBodyRight {
+    flex: 1 1 0;   /* ✅ 좌/우 동일 비율 */
+    min-width: 0;
+    padding-left: 12px;
+}
+
+#externalOrderModal #externalOrderImagesPreview {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+}
+
+/* ✅ 첨부 이미지 썸네일: 기본 테두리(미선택) */
+#externalOrderModal #externalOrderImagesPreview .externalOrderThumbItem {
+    border-color: #C8E3FF !important;
+}
+
+/* ✅ 첨부 이미지 썸네일: hover/선택 테두리 */
+#externalOrderModal #externalOrderImagesPreview .externalOrderThumbItem:hover,
+#externalOrderModal #externalOrderImagesPreview .externalOrderThumbItem.is-active {
+    border-color: #007BFF !important;
+}
+
+#externalOrderModal #externalOrderPage1 .externalOrderImagesPanel {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex: 1;
+    height: 100%;
+}
+
+#externalOrderModal #externalOrderPage1 .externalOrderImagePreviewBox {
+    flex: 1;
+    height: 100%;
+    min-height: 280px;
+    border: 1px solid #E9ECEF;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✅ 2페이지: 결제 방법 안내 텍스트/이미지 가로 배치 */
+#externalOrderModal #externalOrderPage2 .paymentGuideRow {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideText {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideList {
+    font-family: Pretendard, sans-serif;
+    font-size: 11px; /* 13px -> 11px (缩小2px) */
+    color: #25282B;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideItem {
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideNum {
+    flex: 0 0 12px; /* 固定编号列宽度：自动换行对齐到文字下（更贴近文字） */
+    font-weight: 700;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideTxt {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideNote {
+    margin-top: 2px; /* 括号句子单独一行 */
+    font-weight: 700;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideImg {
+    /* ✅ 右侧示例图固定较小宽度，避免挤压左侧说明文字 */
+    flex: 0 0 274px; /* 方案A：等比放大，让高度自然 +20px 左右 */
+    max-width: 45%;
+    align-self: flex-start;
+}
+
+#externalOrderModal #externalOrderPage2 .paymentGuideImg > img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* ✅ 窄屏时改为上下排列，避免文字被过度挤压 */
+@media (max-width: 640px) {
+    #externalOrderModal #externalOrderPage2 .paymentGuideRow {
+        flex-direction: column;
+    }
+
+    #externalOrderModal #externalOrderPage2 .paymentGuideImg {
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
+}
+
+#externalOrderModal #externalOrderPage1 .externalOrderImagePreviewEmpty {
+    font-size: 12px;
+    color: #9DA0A3;
+    text-align: center;
+    padding: 10px;
+}
+
+#externalOrderModal #externalOrderPage1 #externalOrderImagePreviewImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ✅ (fix) 이미지 영역이 #externalOrderPage1 밖(왼쪽 고정 영역)으로 이동해도 동일하게 적용 */
+#externalOrderModal .externalOrderImagesPanel {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex: 1;
+    height: 100%;
+}
+
+#externalOrderModal .externalOrderImagePreviewBox {
+    flex: 1;
+    height: 100%;
+    min-height: 280px;
+    border: 1px solid #E9ECEF;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#externalOrderModal .externalOrderImagePreviewEmpty {
+    font-size: 12px;
+    color: #9DA0A3;
+    text-align: center;
+    padding: 10px;
+}
+
+#externalOrderModal #externalOrderImagePreviewImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+/* ✅ 외부몰 주문 1페이지 '다음' 버튼: 컨테이너의 절반 너비 + 2페이지 전송 버튼과 동일 스타일 */
+#externalOrderModal #externalOrderPage1 .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    height: 44px;          /* ✅ 1페이지 버튼 영역 높이 통일 */
+    align-items: center;   /* ✅ 버튼 수직 중앙 정렬 */
+}
+
+/* ✅ 2페이지 버튼 영역도 높이 통일(인라인 flex 스타일 유지) */
+#externalOrderModal #externalOrderPage2 .modal-actions {
+    min-height: 44px;
+    align-items: center;
+}
+
+#externalOrderModal #btnExternalOrderNext {
+    width: calc((100% - 6px) / 2); /* ✅ 2페이지(버튼 2개 + gap:6px) 기준 단일 버튼 폭과 동일 */
+    height: 44px;
+
+    border: 1px solid #007BFF;
+    background: #007BFF;
+    color: #fff;
+    border-radius: 8px;
+
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 18pt;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+}
+
+/* 图案库样式 */
+.pattern-search {
+    margin-bottom: 20px;
+}
+
+.pattern-search input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+.pattern-item {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.pattern-item:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pattern-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.pattern-item .pattern-name {
+    font-size: 12px;
+    color: #666;
+    word-break: break-word;
+}
+
+.pattern-item .pattern-category {
+    font-size: 10px;
+    color: #999;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 无图案提示样式 */
+.no-patterns-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.no-patterns-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.no-patterns-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.no-patterns-hint {
+    font-size: 14px;
+    color: #999;
+    line-height: 1.4;
+}
+
+/* 文字编辑样式 */
+.text-input-group {
+    margin-bottom: 15px;
+}
+
+.text-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.text-input-group input,
+.text-input-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.text-font-picker {
+    position: relative;
+    overflow: visible;
+    z-index: 1100;
+}
+
+ .font-picker-toggle {
+     width: 100%;
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     border: 1px solid #dcdcdc;
+     border-radius: 10px;
+     padding: 10px 14px;
+     background-color: #fff;
+     cursor: pointer;
+     transition: border-color 0.2s ease, box-shadow 0.2s ease;
+ }
+
+ .font-picker-toggle:hover {
+     border-color: #94a3ff;
+     box-shadow: 0 6px 20px rgba(82, 96, 255, 0.15);
+ }
+
+.font-picker-toggle .font-thumb {
+    width: 160px;
+    height: 48px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.font-arrow {
+    font-size: 12px;
+    color: #888;
+}
+
+.font-picker-menu {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #fff;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 100%;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+    max-height: 360px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1200;
+}
+
+.text-font-picker.is-open .font-picker-menu,
+.font-picker-menu.is-open {
+    display: block;
+}
+
+.font-picker-item + .font-picker-item {
+    margin-top: 10px;
+}
+
+.font-picker-btn {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 10px;
+    background-color: #fefefe;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    box-sizing: border-box;
+}
+
+.font-picker-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.font-picker-btn.is-active {
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.6);
+}
+
+.font-picker-btn.font-picker-btn--text {
+    font-weight: 600;
+    color: #333;
+}
+
+.font-picker-img {
+    max-height: 100%;
+    width: auto;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
+}
+
+.font-picker-native {
+    position: absolute;
+    inset: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-cancel,
+.btn-confirm {
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.btn-cancel:hover {
+    background-color: #e9ecef;
+}
+
+.btn-confirm {
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* ==============================
+   텍스트 추가 팝업(#textModal) UI 개선
+   - 입력 그룹 간격 20px
+   - 색상 선택: 전체 박스에 선택 색상 표시
+   - 확인/취소: 좌우 정렬 + 동일 크기 + 무간격
+   ============================== */
+#textModal .text-input-group {
+    margin-bottom: 20px;
+}
+
+#textModal #textColor {
+    /* hidden input (Pickr 사용) */
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* NOTE: 기존 input[type=color] 커스텀용 pseudo 스타일은 Pickr 전환으로 불필요 */
+
+#textModal .modal-actions {
+    display: flex;
+    gap: 6px; /* ✅ 확인/취소 버튼 간격 */
+}
+
+/* ✅ Pickr 버튼(색상 선택 UI) */
+#textModal .text-color-btn{
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+#textModal .text-color-btn:hover{
+    border-color: #94a3ff;
+    box-shadow: 0 6px 20px rgba(82, 96, 255, 0.12);
+}
+
+#textModal .text-color-swatch{
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,.15);
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+#textModal .text-color-label{
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+/* ✅ Pickr 패널: 텍스트 추가(modal) 폭에 맞춰 풀-폭 */
+#textModal .pcr-app{
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+
+    /* ✅ 좌/우 정렬: 기본 마진/변환/오프셋 제거 */
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+}
+
+/* ✅ Pickr interaction 레이아웃: 2줄 구성
+   - 1줄(상단): #000000 입력(pcr-result) + HEXA 타입(pcr-type)
+   - 2줄(하단): 취소(pcr-cancel) + 확인(pcr-save) (간격 6px, 좌/우 정렬)
+*/
+#textModal .pcr-app .pcr-interaction{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ✅ 강제 줄바꿈: (pcr-result + pcr-type) 아래로 (취소 + 확인) 버튼을 항상 내린다 */
+#textModal .pcr-app .pcr-interaction::before{
+    content: "";
+    order: 9;
+    flex: 0 0 100%;
+    height: 0;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-result{
+    order: 1;
+    height: 44px;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-type{
+    order: 2;
+    height: 44px;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 0 0 72px !important;
+    min-width: 72px !important;
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-cancel{
+    order: 10;
+    height: 44px;
+    margin: 0 !important;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;     /* ✅ 두 버튼 한 줄로 균등 배치 */
+    min-width: 0 !important;
+    box-sizing: border-box;
+
+    border: 1px solid #007BFF;
+    background: #fff;
+    color: #007BFF;
+    border-radius: 8px;
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#textModal .pcr-app .pcr-interaction .pcr-save{
+    order: 11;
+    height: 44px;
+    margin: 0 !important;
+    width: auto !important;     /* ✅ override pickr default (e.g. width:100%) */
+    flex: 1 1 0 !important;     /* ✅ 두 버튼 한 줄로 균등 배치 */
+    min-width: 0 !important;
+    box-sizing: border-box;
+
+    border: 1px solid #007BFF;
+    background: #007BFF;
+    color: #fff;
+    border-radius: 8px;
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ✅ Pickr 취소/확인 버튼 크기: 텍스트 추가(modal-actions) 버튼과 동일 */
+#textModal .pcr-app .pcr-interaction .pcr-cancel,
+#textModal .pcr-app .pcr-interaction .pcr-save{
+    padding: 0;
+    font-size: 18pt;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+}
+
+#textModal .modal-actions .btn-cancel,
+#textModal .modal-actions .btn-confirm {
+    flex: 1;
+    height: 44px;
+    padding: 0;
+    border-radius: 8px; /* ✅ 각 버튼 독립 라운드 */
+    box-sizing: border-box;
+
+    /* ✅ 외부몰(이전/주문서 전송) 버튼과 동일 톤 */
+    font-family: Pretendard, sans-serif;
+    font-weight: 700;
+    font-size: 18pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+}
+
+/* gap 적용으로 "붙은 버튼" 스타일은 사용하지 않음 */
+
+#textModal #btnCancelText {
+    border: 1px solid #007BFF;
+    background: #fff;
+    color: #007BFF;
+}
+
+#textModal #btnConfirmText {
+    border: 1px solid #007BFF;
+    background: #007BFF;
+    color: #fff;
+}
+
+/* ✅ 텍스트 추가: 하단 취소 버튼 제거 + 확인 버튼 단독 전체폭(좌/우 정렬) */
+#textModal #btnCancelText{
+    display: none !important;
+}
+
+#textModal .modal-actions{
+    gap: 0;
+}
+
+#textModal #btnConfirmText{
+    flex: 1;
+    width: 100%;
+}
+
+/* ✅ 定制尺寸显示区域样式 */
+.custom-size-section {
+    background-color: #ffffff; /* 与其它 option-section 一致的白色背景 */
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.custom-size-display {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.custom-size-display i {
+    font-size: 20px;
+}
+
+.custom-size-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ✅ 颜色选项样式（增强版） */
+.color-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.color-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid #e0e0e0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.color-item:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-item.active {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.color-item.active::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.color-item.soldout {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.color-item.soldout::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    border: 2px solid rgba(0, 123, 255, 0.8);
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(0,0,0,0) 45%, rgba(0,123,255,0.85) 50%, rgba(0,0,0,0) 55%);
+    pointer-events: none;
+}
+
+
+/* ✅ 尺寸选择区域样式（从 goods_custom.html 移过来） */
+.size-options {
+    margin-top: 10px;
+}
+
+.size-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.size-option:hover {
+    border-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.size-option.selected {
+    border-color: #28a745;
+    background-color: #d4edda;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.size-option.custom-size {
+    border-left: 4px solid #ffc107;
+    background-color: #fff3cd;
+}
+
+.size-option.custom-size:hover {
+    background-color: #ffeaa7;
+}
+
+.size-option input[type="radio"] {
+    margin-right: 12px;
+    transform: scale(1.2);
+}
+
+.size-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+    cursor: pointer;
+}
+
+.size-text {
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.custom-badge {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.no-sizes {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-style: italic;
+    border: 1px dashed #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.size-error {
+    text-align: center;
+    padding: 20px;
+    color: #dc3545;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    background-color: #f8d7da;
+}
+
+.size-error i {
+    margin-right: 8px;
+    color: #dc3545;
+}
+
+.btn-retry {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-retry:hover {
+    background-color: #c82333;
+}
+
+/* 购物车定制图片放大弹窗 */
+.custom_detail_modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.custom_detail_modal .modal_content {
+    position: relative;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.custom_detail_modal .modal_nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.custom_detail_modal .modal_nav.prev {
+    left: 16px;
+}
+
+.custom_detail_modal .modal_nav.next {
+    right: 16px;
+}
+
+.custom_detail_modal .modal_nav:hover {
+    background: rgba(255, 87, 34, 0.85);
+}
+
+.custom_detail_modal .custom_image_zoom img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.custom_detail_modal .close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    background: #ff5722;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.custom_detail_modal .close:hover {
+    background: #e64a19;
+}
+
+.custom-loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.custom-loading-box {
+    background: #ffffff;
+    padding: 26px 36px;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    min-width: 220px;
+}
+
+.custom-loading-spinner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 4px solid #e0e0e0;
+    border-top-color: #1c64f2;
+    animation: custom-loading-spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.custom-loading-text {
+    font-size: 15px;
+    color: #111827;
+}
+
+/* ===== Global Error Modal (globalErrorModal) ===== */
+#globalErrorModal .global-error-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+#globalErrorModal .global-error-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+#globalErrorModal .design-check-body {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+#globalErrorModal #globalErrorText {
+    font-size: 18px;          /* 16px -> 18px */
+    font-weight: 700;         /* bold */
+    line-height: 1.6;
+    color: #25282B;
+    white-space: pre-line;    /* 支持 \n 换行 */
+}
+
+body.custom-editor-processing .preview-container,
+body.custom-editor-processing .custom-options,
+body.custom-editor-processing .custom-toolbar,
+body.custom-editor-processing .check-button-container {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+body.custom-editor-processing .custom-loading-overlay {
+    background: rgba(0, 0, 0, 0.75);
+}
+
+@keyframes custom-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.custom-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 11000;
+    padding: 16px;
+}
+
+.custom-alert-box {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px 32px 24px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+    text-align: center;
+}
+
+.custom-alert-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 12px;
+    display: block;
+}
+
+.custom-alert-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 6px;
+    white-space: nowrap;
+}
+
+.custom-alert-desc {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.4;
+    margin-bottom: 18px;
+    display: none;
+}
+
+.custom-alert-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #1c64f2;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.custom-alert-close:hover {
+    background: #174bcc;
+}
+
+/* 响应式设计 - 仅桌面端 */
+@media (max-width: 1200px) {
+    .custom-container {
+        max-width: 100%;
+    }
+    
+    .product-info {
+        width: 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-container {
+        flex-direction: column;
+    }
+    
+    .product-info {
+        width: 100%;
+        order: -1;
+    }
+    
+    .custom-options {
+        position: static;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 20px;
+        transform: none;
+    }
+    
+    /* 响应式：定制尺寸显示 */
+    .custom-size-display {
+        font-size: 14px;
+    }
+    
+    /* 响应式：颜色选项 */
+    .color-item {
+        width: 35px;
+        height: 35px;
+    }
+    
+    /* 响应式：尺寸选择 */
+    .size-option {
+        padding: 10px;
+        margin-bottom: 8px;
+    }
+
+    .size-label {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .custom-badge {
+        margin-top: 5px;
+        align-self: flex-end;
+    }
+}

@@ -1,5 +1,6 @@
 {*** 상품상세화면 | goods/goods_view.php ***}
 { # header }
+<link rel="stylesheet" type="text/css" href="../css/custom/custom_purchase_button.css">
 <style>
     /* 배송아이콘 관련 추가 영역 */
     .item_delivery_schedule dd > div{position:relative;}
@@ -273,6 +274,10 @@
                 $('.add-goods-mustinfo-title[data-key^="'+$(this).data('key')+'"]').show();
             }
         });
+
+        <!--{ ? goodsView['is_customizable'] == '1' }-->
+        initCustomizationFeatures();
+        <!--{ / }-->
 
         {customReadyScript}
     });
@@ -2227,6 +2232,56 @@
                     </div>
                     <!-- //item_choice_list -->
                     <!--{ / }-->
+                    <!-- 商品定制功能区域 -->
+                    <!--{ ? goodsView['is_customizable'] == '1' }-->
+                    <div class="custom_goods_section">
+                        <div class="custom_header">
+                            <h3>상품 맞춤 제작</h3>
+                            <p>나만의 특별한 상품을 만들어보세요!</p>
+                        </div>
+                        <div class="custom_preview_area">
+                            <div class="preview_container">
+                                <div class="preview_image" id="customPreview">
+                                    <img src="{=goodsView['image']['detail']['src'][0]}" alt="미리보기" id="previewImg">
+                                    <div class="custom_overlay" id="customOverlay"></div>
+                                </div>
+                                <div class="preview_controls">
+                                    <button type="button" class="btn_custom_design" onclick="openCustomDesigner()">디자인 편집기</button>
+                                    <button type="button" class="btn_reset_custom" onclick="resetCustomization()">초기화</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 색상 선택 -->
+                        <div class="custom_options">
+                            <div class="custom_option_row">
+                                <label>색상 선택:</label>
+                                <div class="color_options" id="colorOptions">
+                                    <div class="color_item active" data-color="navy" style="background-color: #1e3a8a;"></div>
+                                    <div class="color_item" data-color="black" style="background-color: #000000;"></div>
+                                    <div class="color_item" data-color="white" style="background-color: #ffffff; border: 1px solid #ddd;"></div>
+                                    <div class="color_item" data-color="red" style="background-color: #dc2626;"></div>
+                                    <div class="color_item" data-color="blue" style="background-color: #2563eb;"></div>
+                                </div>
+                                <span class="selected_color_name" id="selectedColorName">Navy</span>
+                            </div>
+                            <!-- 사이즈 선택 -->
+                            <div class="custom_option_row">
+                                <label>사이즈 선택:</label>
+                                <div class="size_options" id="sizeOptions">
+                                    <div class="size_item active" data-size="4.7x2.8">4.7 x 2.8 inch</div>
+                                    <div class="size_item" data-size="5.5x3.0">5.5 x 3.0 inch</div>
+                                    <div class="size_item" data-size="6.0x4.0">6.0 x 4.0 inch</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 숨겨진 필드 -->
+                        <input type="hidden" id="customizationData" name="customization_data" value="">
+                        <input type="hidden" id="selectedColor" name="selected_color" value="navy">
+                        <input type="hidden" id="selectedSize" name="selected_size" value="4.7x2.8">
+                        <input type="hidden" id="isCustomized" name="is_customized" value="0">
+                    </div>
+                    <!--{ / }-->
+                    <!-- //商品定制功能区域 -->
                     <div class="btn_choice_box">
                         <!--{ ?goodsView['restockUsableFl'] === 'y' && !gGlobal.isFront }-->
                         <button type="button" class="btn_restock_notice_v1 restockSelector">{=__('재입고알림')}</button>
@@ -2235,6 +2290,16 @@
 							<button id="cartBtn" type="button" class="btn_add_cart">{=__('장바구니')}</button>
 							<button type="button" class="btn_add_order">{=__('구매하기')}</button>
 						</div>
+                        <div id="customPurchaseSection" style="display: none;">
+                            <div class="custom_purchase_section">
+                                <button type="button" class="btn_custom_purchase" onclick="goToCustomization('{=goodsView.goodsNo}')">
+                                    <img src="../_mplshop/images/icon/icon_custom_entrance.png" alt="{=__('디자인 아이콘')}">
+                                    {=__('디자인하기')}
+                                </button>
+                                <p class="custom_notice">{=__('이 상품은 직접 디자인이 가능합니다. 나만의 디자인으로 완성해보세요!')}</p>
+                                <p class="custom_test_notice">⚠️ {=__('기능이 테스트 중입니다. 사용하지 마세요. 현재는 기존 방식으로 주문해 주세요.')}</p>
+                            </div>
+                        </div>
 					</div>
 					<!-- //btn_choice_box -->
 					<div class="pay_box">
@@ -2263,11 +2328,21 @@
 					<li class="on"><a href="#detail">{=__('상세정보')}</a></li>
 					<li><a href="#delivery">{=__('상품안내')}</a></li>
 					<li><a href="#reviews">{=__('상품후기')}<strong>({goodsReviewCount+plusReview.info.reviewCount})</strong></a></li>
+					<li><a href="#workGuide">{=__('작업 가이드')}</a></li>
 					<li><a href="#qna">{=__('상품문의')}<strong>({goodsQaCount})</strong></a></li>
 					<!--{ ? relation.relationFl != 'n' }--><li class="pc-view"><a href="#relation">{=__('관련 상품')}</a></li><!--{ / }-->
 				</ul>
 			</div>
 			<!-- //item_goods_tab -->
+			<div id="workGuide" class="tab_content_panel">
+				<div class="work_guide_cont">
+					<div class="work_guide_inner" id="workGuideContainer">
+						<div class="work_guide_empty" id="workGuideEmpty">
+							<span style="color:#999;">{=__('작업 가이드가 없습니다')}</span>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="detail_cont">
 				<h3>{=__('상세정보')}</h3>
 				<div class="detail_explain_box">
@@ -2585,6 +2660,112 @@
 <!--//플러스리뷰 레이어 --><div id="writePop" class="layer_wrap plus_review_edit_layer dn"></div>
 
 <script type="text/javascript" src="\{=c.PATH_SKIN}js/gd_board_goods.js" charset="utf-8"></script>
+<script type="text/javascript">
+var CUSTOM_GOODS_NO = '{=goodsView.goodsNo}';
+</script>
+<script type="text/javascript" src="\{=c.PATH_SKIN}js/custom/goods_view_custom.js"></script>
+
+<!--{ ? goodsView['is_customizable'] == '1' }-->
+<script type="text/javascript">
+function initCustomizationFeatures() {
+    $('.color_item').on('click', function() {
+        $('.color_item').removeClass('active');
+        $(this).addClass('active');
+        var selectedColor = $(this).data('color');
+        $('#selectedColor').val(selectedColor);
+        var colorNames = {
+            'navy': 'Navy',
+            'black': 'Black',
+            'white': 'White',
+            'red': 'Red',
+            'blue': 'Blue'
+        };
+        $('#selectedColorName').text(colorNames[selectedColor]);
+        updatePreview();
+    });
+
+    $('.size_item').on('click', function() {
+        $('.size_item').removeClass('active');
+        $(this).addClass('active');
+        var selectedSize = $(this).data('size');
+        $('#selectedSize').val(selectedSize);
+        updatePreview();
+    });
+
+    $('#cartBtn').off('click').on('click', function(e) {
+        e.preventDefault();
+        var isCustomized = $('#isCustomized').val();
+        var customizationData = $('#customizationData').val();
+        if (isCustomized == '1' && customizationData) {
+            addCustomGoodsToCart();
+        } else {
+            gd_goods_order();
+        }
+        return false;
+    });
+}
+
+function openCustomDesigner() {
+    var designerUrl = '../custom/designer.php?goodsNo=' + goodsNo;
+    window.open(designerUrl, 'customDesigner', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+}
+
+function resetCustomization() {
+    $('#customizationData').val('');
+    $('#isCustomized').val('0');
+    $('#customOverlay').empty();
+    alert('정제가 초기화되었습니다.');
+    updatePreview();
+}
+
+function updatePreview() {
+    var selectedColor = $('#selectedColor').val();
+    var selectedSize = $('#selectedSize').val();
+    console.log('선택된 색상: ' + selectedColor + ', 사이즈: ' + selectedSize);
+}
+
+function addCustomGoodsToCart() {
+    var cartData = {
+        goods_no: goodsNo,
+        quantity: parseInt($('input[name="goodsCnt[]"]').val()) || 1,
+        customization_data: $('#customizationData').val(),
+        selected_color: $('#selectedColor').val(),
+        selected_size: $('#selectedSize').val(),
+        csrf_token: $('input[name="csrf_token"]').val()
+    };
+    $.ajax({
+        url: '../../Custom/Controller/Front/add_to_cart.php',
+        type: 'POST',
+        data: JSON.stringify(cartData),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                alert('커스텀 상품이 장바구니에 추가되었습니다.');
+                if (confirm('장바구니로 이동하시겠습니까?')) {
+                    location.href = response.redirect_url || '../order/cart.php';
+                }
+            } else {
+                alert('오류: ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('장바구니 추가 중 오류가 발생했습니다.');
+            console.error('Error:', error);
+        }
+    });
+}
+
+function receiveCustomizationData(data) {
+    $('#customizationData').val(JSON.stringify(data));
+    $('#isCustomized').val('1');
+    if (data.customImage) {
+        $('#customOverlay').html('<img src="' + data.customImage + '" style="width:100%; height:100%; object-fit:contain;">');
+    }
+    alert('정제 디자인이 적용되었습니다!');
+}
+</script>
+<!--{ / }-->
 
 {=fbGoodsViewScript}
 { # footer }

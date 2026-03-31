@@ -1,6 +1,9 @@
 ---
 description: GodoMall 入口脚本任务技能路由
-globs: "{module/Admin/custom_*.php,module/Admin/custom/**/*.php,module/Custom/Controller/Front/add_to_cart.php}"
+globs:
+  - "module/Admin/custom_*.php"
+  - "module/Admin/custom/**/*.php"
+  - "module/Custom/Controller/Front/add_to_cart.php"
 alwaysApply: false
 ---
 

@@ -1,6 +1,8 @@
 ---
 description: GodoMall 数据库封装任务技能路由
-globs: "{module/Custom/Component/Database/**/*.php,module/Custom/Database/**/*.sql}"
+globs:
+  - "module/Custom/Component/Database/**/*.php"
+  - "module/Custom/Database/**/*.sql"
 alwaysApply: false
 ---
 

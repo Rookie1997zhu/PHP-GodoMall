@@ -1,5 +1,6 @@
 {*** 장바구니 | front/order/cart.php ***}
 { # header }
+<link rel="stylesheet" type="text/css" href="../css/custom/goods_custom.css">
 
 <div class="content_box">
     <div class="order_wrap">
@@ -46,6 +47,9 @@
                                 <col style="width:5%" class="pc-view">  <!-- 수량 -->
                                 <col style="width:10%" class="pc-view"> <!-- 상품금액 -->
                                 <col style="width:13%" class="pc-view"> <!-- 할인/적립 -->
+                                <col style="width:10%" class="pc-view"> <!-- 추가 옵션 -->
+                                <col style="width:8%" class="pc-view"> <!-- 내 디자인 -->
+                                <col style="width:8%" class="pc-view"> <!-- 업로드 이미지 -->
                                 <col style="width:10%" class="pc-view"> <!-- 합계금액 -->
                                 <!--{ ? !gGlobal.isFront }-->
                                 <col style="width:10%"> <!-- 배송비 -->
@@ -63,6 +67,9 @@
                                 <th class="pc-view">{=__('수량')}</th>
                                 <th class="pc-view">{=__('상품금액')}</th>
                                 <th class="pc-view">{=__('할인')}<!--{ ? !gGlobal.isFront }-->/{=__('적립')}<!--{ / }--></th>
+                                <th class="pc-view">추가 옵션</th>
+                                <th class="pc-view">{=__('내 디자인')}</th>
+                                <th class="pc-view">{=__('업로드 이미지')}</th>
                                 <th class="pc-view">{=__('합계금액')}</th>
                                 <!--{ ? !gGlobal.isFront }-->
                                 <th>{=__('배송비')}</th>
@@ -129,6 +136,34 @@
                                             <!--{ / }-->
 
                                             <em><a href="../goods/goods_view.php?goodsNo={=...goodsNo}">{=...goodsNm}</a></em>
+
+                                            <!-- 상품 정제 정보 표시 -->
+                                            <!--{ ? ...is_customized == '1' }-->
+                                            <div class="custom_info_display">
+                                                <div class="custom_badge">
+                                                    <span class="badge_custom">정제 상품</span>
+                                                </div>
+                                                <!--{ ? ...selected_color }-->
+                                                <div class="custom_option_info">
+                                                    <span class="custom_label">색상:</span>
+                                                    <span class="custom_value">{=...selected_color}</span>
+                                                </div>
+                                                <!--{ / }-->
+                                                <!--{ ? ...selected_size }-->
+                                                <div class="custom_option_info">
+                                                    <span class="custom_label">사이즈:</span>
+                                                    <span class="custom_value">{=...selected_size}</span>
+                                                </div>
+                                                <!--{ / }-->
+                                                <!--{ ? ...customization_image_url }-->
+                                                <div class="custom_preview_thumb">
+                                                    <img src="{=...customization_image_url}" alt="정제 미리보기" class="custom_thumb_image">
+                                                    <a href="#" class="btn_view_custom" onclick="viewCustomizationDetail('{=...sno}'); return false;">정제 상세보기</a>
+                                                </div>
+                                                <!--{ / }-->
+                                            </div>
+                                            <!--{ / }-->
+                                            <!-- //상품 정제 정보 표시 -->
 
                                             <!--{ ? ...payLimitFl =='y' && is_array(...payLimit) }-->
                                             <div class="icon_pick_list">
@@ -320,9 +355,19 @@
                                         </ul>
                                     <!--{ / }-->
                                 </td>
-                                <td class="pc-view">
-                                    <strong class="order_sum_txt">{=gd_global_currency_display(...price['goodsPriceSubtotal'])}</strong>
-                                    <p class="add_currency">{=gd_global_add_currency_display(...price['goodsPriceSubtotal'])}</p>
+                                <td class="pc-view extra-option-price-cell js-extra-price-cell" data-cart-sno="{=...sno}">
+                                    <strong class="order_sum_txt js-extra-price-text">-</strong>
+                                    <p class="add_currency js-extra-price-add">-</p>
+                                </td>
+                                <td class="td_customization_image pc-view" data-cart-sno="{=...sno}" data-goods-no="{=...goodsNo}">
+                                    <span class="js-custom-loading" style="color:#999;font-size:11px;">로딩중...</span>
+                                </td>
+                                <td class="td_customer_pattern pc-view" data-cart-sno="{=...sno}">
+                                    <span class="js-pattern-loading" style="color:#999;font-size:11px;">로딩중...</span>
+                                </td>
+                                <td class="pc-view js-cart-total-cell" data-cart-sno="{=...sno}" data-base-total="{=...price['goodsPriceSubtotal']}">
+                                    <strong class="order_sum_txt js-cart-total-text">{=gd_global_currency_display(...price['goodsPriceSubtotal'])}</strong>
+                                    <p class="add_currency js-cart-total-add">{=gd_global_add_currency_display(...price['goodsPriceSubtotal'])}</p>
                                 </td>
                                 <!--{ ? !gGlobal.isFront }-->
                                 <!--{ ? ...goodsDeliveryFl === 'y' }-->
@@ -1241,5 +1286,88 @@
     <!--{ / }-->
 
     //-->
+</script>
+<script type="text/javascript" src="\{=c.PATH_SKIN}js/custom/cart_custom.js"></script>
+{=fbCartScript}
+<script>
+(function ($) {
+    function formatNumber(value) {
+        var amount = parseInt(value, 10) || 0;
+        return amount.toLocaleString('ko-KR');
+    }
+
+    function formatNumberWithUnit(value) {
+        return formatNumber(value) + '원';
+    }
+
+    function updateTotalCell(cartSno) {
+        var $cell = $('.js-cart-total-cell[data-cart-sno="' + cartSno + '"]');
+        if (!$cell.length) {
+            return;
+        }
+        var baseTotal = parseInt($cell.data('baseTotal'), 10) || 0;
+        $cell.attr('data-calculated-total', baseTotal);
+        $cell.find('.js-cart-total-text').text(formatNumberWithUnit(baseTotal));
+    }
+
+    function applyExtraPriceData(extraPriceMap) {
+        $('.js-extra-price-cell').each(function () {
+            var $cell = $(this);
+            var cartSno = $cell.data('cartSno');
+            if (!cartSno) {
+                $cell.find('.js-extra-price-text').text('-');
+                $cell.find('.js-extra-price-add').text('');
+                return;
+            }
+
+            var extraInfo = extraPriceMap[cartSno] || {};
+            var optionLabel = (extraInfo.option_label || '').trim();
+            var colorName = (extraInfo.color_name || '').trim();
+            var displayText = '-';
+
+            if (optionLabel && colorName) {
+                displayText = optionLabel + ' / ' + colorName;
+            } else if (optionLabel) {
+                displayText = optionLabel;
+            } else if (colorName) {
+                displayText = colorName;
+            }
+
+            $cell.find('.js-extra-price-text').text(displayText);
+            $cell.find('.js-extra-price-add').text('');
+            updateTotalCell(cartSno);
+        });
+    }
+
+    $(function () {
+        var cartSnos = [];
+        $('.js-extra-price-cell').each(function () {
+            var sno = $(this).data('cartSno');
+            if (sno && cartSnos.indexOf(sno) === -1) {
+                cartSnos.push(sno);
+            }
+        });
+
+        if (!cartSnos.length) {
+            return;
+        }
+
+        $.ajax({
+            url: '../custom/goods_custom.php?mode=cartExtraPrice',
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ cart_snos: cartSnos })
+        }).done(function (response) {
+            if (response && response.success && response.data) {
+                applyExtraPriceData(response.data);
+            } else {
+                console.warn('추가 옵션 금액 응답이 올바르지 않습니다.', response);
+            }
+        }).fail(function (xhr) {
+            console.warn('추가 옵션 금액 조회 실패', xhr);
+        });
+    });
+})(jQuery);
 </script>
 { # footer }
