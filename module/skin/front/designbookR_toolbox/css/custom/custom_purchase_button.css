@@ -5,6 +5,20 @@
  * 遵循现有设计语言，与原有按钮保持一致性
  */
 
+/* 覆盖 dbook.css 的 .btn_choice_box > div flex 规则，确保定制区块整行同宽 */
+.btn_choice_box #customPurchaseSection {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    clear: both;
+}
+
+.btn_choice_box .custom_purchase_section {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
 /* 정제 구매 섹션 */
 .custom_purchase_section {
     margin: 20px 0;

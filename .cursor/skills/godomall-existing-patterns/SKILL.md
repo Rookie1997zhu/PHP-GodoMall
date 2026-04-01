@@ -1,6 +1,6 @@
 ---
 name: godomall-existing-patterns
-description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的已验证开发写法。用于修改或新增这些目录下的 PHP 控制器、组件、入口脚本时，优先参考仓库现有可运行文件，而不是套用通用 PHP 框架习惯。
+description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的已验证开发写法。用于修改或新增这些目录下的 PHP 控制器、组件、入口脚本时，优先参考当前项目现有可运行文件，而不是套用通用 PHP 框架习惯。涉及模板与前端静态资源时，遵循文内「前端资源约定」（HTML/CSS/JS 解耦）。
 ---
 
 # GodoMall 既有写法优先
@@ -13,6 +13,8 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - `module/Controller/**`
 - `module/Admin/custom_*.php`
 
+## 关联规则与前置阅读
+
 本 Skill 与以下规则配合使用：
 
 - `.cursor/rules/skill-routing.mdc`
@@ -21,20 +23,12 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - `.cursor/rules/entry-script-skill-routing.mdc`
 - `.cursor/rules/db-component-skill-routing.mdc`
 
-典型触发词：
-
-- GodoMall 二次开发
-- 控制器写法
-- 组件写法
-- 后台 API
-- 前台覆写
-- `module/Custom`
-- `module/Controller`
+典型触发词：GodoMall 二次开发、控制器写法、组件写法、后台 API、前台覆写、`module/Custom`、`module/Controller`。
 
 ## 核心原则
 
 1. GodoMall 有独立的类加载、路由、控制器继承和模板数据约定，不能直接套用通用 PHP 框架经验。
-2. 本仓库 `module/Custom`、`module/Controller` 下的很多代码已经过实际联调与实验验证，哪怕局部看起来不够“规范”，只要已验证可运行，就必须纳入参考并作为优先依据。
+2. 当前项目 `module/Custom`、`module/Controller` 下的很多代码已经过实际联调与实验验证，哪怕局部看起来不够“规范”，只要已验证可运行，就必须纳入参考并作为优先依据。
 3. 修改现有逻辑时，先模仿相邻、同模块、同类型的旧文件；只有在明确 bug、需求变化或用户要求时，才调整结构。
 4. 不要为了“更优雅”擅自改动以下关键点：
    - 控制器基类
@@ -44,7 +38,7 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
    - JSON 返回结构
    - 已在线上验证的路由与文件命名对应关系
 
-## 拆分 Skill
+## 子 Skill 指引
 
 当任务范围更明确时，继续优先匹配以下子 Skill：
 
@@ -53,7 +47,7 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - `godomall-entry-script-patterns`：独立入口脚本写法
 - `godomall-db-extension-patterns`：扩展表与数据库写法
 
-## 开发前步骤
+## 开发前检查
 
 1. 先阅读项目规则：
    - `.cursor/rules/godomall.mdc`
@@ -62,17 +56,21 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 3. 优先参考同目录、同业务、同前后台类型的旧实现。
 4. 若发现“通用规范”和“当前项目可运行写法”冲突，以当前项目已验证写法为先。
 
-## 冲突优先级
+## 决策优先级
 
-当不同规则、skill、旧文件结论不一致时，按以下顺序决策：
+当不同规则、Skill、旧文件结论不一致时，按以下顺序决策：
 
-1. 当前仓库同目录、同类型、已验证可运行的旧文件
+1. 当前项目同目录、同类型、已验证可运行的旧文件
 2. `.cursor/rules/godomall.mdc`
 3. `.cursor/rules/custom-backend.mdc`
-4. 当前 skill 与对应专用 skill
+4. 当前 Skill 与对应专用 Skill
 5. 通用 PHP / MVC 最佳实践
 
+编码落地时若仍有冲突，再优先：相邻已验证旧文件 → 上述规则 → 通用实践。
+
 ## 路径职责
+
+**默认落点**：新增二开逻辑优先放在 **`module/Custom`**，其下以 **`Controller`**（定制控制器）与 **`Component`**（可复用业务与数据层）分工；**`module/Controller`** 专用于与官方同 namespace、路径对齐的**覆写/扩展**。目录名须与仓库一致（**`module/Custom`**，勿写成 `module/custom`）。细则见 `.cursor/rules/custom-backend.mdc`「新文件落点（默认约定）」。
 
 ### `module/Controller`
 
@@ -80,9 +78,9 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - 路径与官方控制器保持一致时，通常继承对应 `\Bundle\Controller\...`。
 - 适合做最小覆写：先 `parent::index()`，再补充筛选、字段、模板数据。
 
-参考：
+#### 参考线索
 
-- `module/Controller/Front/Board/ListController.php`
+- 当前项目中同目录、同职责、同前后台类型的前台覆写控制器旧文件
 
 ### `module/Custom/Controller`
 
@@ -91,9 +89,9 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - 前台通常继承 `\Controller\Front\Controller`。
 - 控制器保持薄层，复杂逻辑下放到 `Custom\Component\*`。
 
-参考：
+#### 参考线索
 
-- `module/Custom/Controller/Admin/Custom/CustomGoodsController.php`
+- 当前项目中同目录、同职责的后台定制控制器旧文件
 
 ### `module/Custom/Component`
 
@@ -101,10 +99,10 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - 定制表优先放在组件里处理，不在控制器里堆 SQL。
 - 官方数据优先通过 `\App::load('\\Component\\...')` 获取，定制表再用 `CustomPDO` 补充。
 
-参考：
+#### 参考线索
 
-- `module/Custom/Component/CustomGoods.php`
-- `module/Custom/Component/Database/CustomPDO.php`
+- 当前项目中同业务类型的组件旧文件
+- 当前项目中的数据库封装组件旧文件
 
 ### `module/Admin/custom_*.php`
 
@@ -118,12 +116,12 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 
 - 继承：`extends \Controller\Admin\Controller`
 - 构造函数里先 `parent::__construct()`
-- 再初始化组件，如 `new CustomGoods()`、`new CustomPattern()`
+- 再初始化对应业务组件
 - 后台 POST/AJAX 要保留 CSRF、参数校验、白名单与错误返回结构
 
-参考模式：
+#### 参考线索
 
-- `module/Custom/Controller/Admin/Custom/CustomGoodsController.php`
+- 当前项目中已验证可运行的后台定制控制器
 
 ### 前台控制器
 
@@ -131,10 +129,10 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - 若是覆写官方页，优先继承对应 `\Bundle\Controller\...`
 - `index()` 中如果存在 `mode` / Ajax 分支，要优先分流并 `return`，避免继续渲染 HTML
 
-参考模式：
+#### 参考线索
 
-- `module/Controller/Front/Board/ListController.php`
-- `module/Controller/Front/Custom/GoodsCustomController.php`
+- 当前项目中已验证可运行的前台覆写控制器
+- 当前项目中已验证可运行的前台定制控制器
 
 ## 组件写法
 
@@ -155,9 +153,9 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
    - `setData`
    - 输出 JSON / 页面
 
-参考模式：
+#### 参考线索
 
-- `module/Custom/Component/CustomGoods.php`
+- 当前项目中已验证可运行的同类业务组件
 
 ## 返回与模板数据
 
@@ -171,6 +169,27 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 - 优先对齐现有结构：`success`、`message`、`data`
 - 错误时保持稳定 `code` 或 HTTP 状态
 - 不要因个人习惯改成另一套返回协议
+
+## 前端资源约定
+
+涉及模板（HTML）、样式（CSS）、脚本（JS）时，优先与当前项目既有静态资源组织方式一致，并遵循**结构解耦**：
+
+### 分层原则
+
+- **HTML**：负责结构与语义；避免在模板里堆长段业务逻辑。
+- **CSS**：放在独立样式文件或项目约定的样式目录中；避免在 HTML 里写大块 `<style>` 或大量内联 `style=""`（仅极少数布局微调可例外，且须与相邻页面风格一致）。
+- **JavaScript**：放在独立 `.js` 文件或项目约定的脚本目录中；**避免**在 HTML 里写大块 `<script>...</script>` 业务逻辑（**内联脚本**仅保留项目已普遍使用的引导/兼容片段时，须与现有页面写法一致）。
+
+### 不要这样做
+
+- 把整页交互、数据处理、DOM 操作都写在模板里的 `<script>` 中。
+- 把可复用样式散落在各模板的 `<style>` 或重复的内联样式里。
+- 为图省事新建与现有资源目录、命名、打包方式不一致的另一套路径（除非用户明确要求且同步文档）。
+
+### 落地时
+
+- 新增或修改页面时，先找**同模块、同类型**的模板与静态资源文件，沿用其引用方式（`link` / `script` 引入、模板变量注入等）。
+- 若官方或现有二开页面仍保留历史内联写法，**增量修改以兼容为先**；新写代码仍优先独立 CSS/JS 文件，便于维护与缓存。
 
 ## 注释与命名
 
@@ -187,7 +206,7 @@ description: 总结 GodoMall 项目中 module/Custom 与 module/Controller 的�
 
 ## 数据库排序规则（Collation）补充
 
-### 适用场景
+### 场景范围
 
 - 新建 `custom_*` 扩展表
 - 扩展表字段要与官方旧表做 `JOIN` / `=` 比较
@@ -261,15 +280,6 @@ CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''
 
 GodoMall 新建扩展表时，不要只写 `utf8mb4`；凡是要和旧表做字符串关联的字段，必须优先对齐旧表 `collation`。
 
-## 决策优先级
-
-当出现冲突时，按以下顺序决策：
-
-1. 当前仓库中已验证可运行的相邻旧文件
-2. `.cursor/rules/godomall.mdc`
-3. `.cursor/rules/custom-backend.mdc`
-4. 通用 PHP / MVC 最佳实践
-
 ## 实施要求
 
 开始写代码前，先回答这 4 个问题：
@@ -281,71 +291,14 @@ GodoMall 新建扩展表时，不要只写 `utf8mb4`；凡是要和旧表做字�
 
 如果不能明确回答，先继续读相邻旧文件，不要直接新写一套。
 
-## 参考文件
+## 参考清单
 
-- `module/Custom/Controller/Admin/Custom/CustomGoodsController.php`
-- `module/Custom/Component/CustomGoods.php`
-- `module/Custom/Component/Database/CustomPDO.php`
-- `module/Controller/Front/Board/ListController.php`
-- `module/Controller/Front/Custom/GoodsCustomController.php`
+- 当前项目中同目录、同职责、同数据流、已验证可运行的后台定制控制器
+- 当前项目中同目录、同职责、已验证可运行的业务组件
+- 当前项目中已验证可运行的数据库封装组件
+- 当前项目中同目录、同职责、已验证可运行的前台覆写控制器
+- 当前项目中同目录、同职责、已验证可运行的前台定制控制器
 
 ## 一句话规则
 
 在这个项目里，优先参考已经验证能运行的旧文件写法；不要为了“更规范”而破坏 GodoMall 现有机制。 
-
-## 前台 JS 外部化约定（官方模板中的自定义脚本）
-
-### 适用场景
-
-当需要在官方模板（如 `goods_view.html`、`order_end.html`）中嵌入自定义 JavaScript 时，**禁止直接将业务逻辑内联写入官方 HTML 文件**。应将自定义 JS 抽取为独立文件放入 `js/custom/` 目录。
-
-### 目录约定
-
-```
-module/skin/front/mplshop/js/custom/
-├── goods_view_custom.js        # goods_view.html 定制功能（状态检查 + 跳转）
-├── order_end_custom.js         # order_end.html 定制图片提交
-└── goods_custom_for_naver.js   # goods_custom.html Naver 外部订单专用
-```
-
-### 全局变量注入模式（必须遵守）
-
-官方模板的 Godomall 模板变量（如 `{=goodsView.goodsNo}`）**无法在外部 JS 文件中使用**。
-
-正确做法：在 HTML 文件中用最小内联脚本声明全局变量，外部 JS 只读取全局变量。
-
-```html
-<!-- 在官方模板中（内联，只做变量声明） -->
-<script type="text/javascript">
-var CUSTOM_GOODS_NO = '{=goodsView.goodsNo}';
-</script>
-<!-- 外部文件引用 -->
-<script type="text/javascript" src="\{=c.PATH_SKIN}js/custom/goods_view_custom.js"></script>
-```
-
-外部 JS 文件中统一通过 `window.CUSTOM_*` 读取：
-
-```javascript
-var goodsNo = window.CUSTOM_GOODS_NO;
-```
-
-### 全局变量命名约定
-
-| 模板文件 | 全局变量 | 模板变量来源 |
-|----------|---------|-------------|
-| `goods_view.html` | `CUSTOM_GOODS_NO` | `{=goodsView.goodsNo}` |
-| `order_end.html` | `CUSTOM_ORDER_NO` | `{orderInfo.orderNo}` |
-
-### 强制规则
-
-1. **禁止**直接在官方 HTML 文件的 `<script>` 块中写超过 5 行的自定义业务逻辑。
-2. **必须**将自定义业务 JS 放入 `js/custom/` 目录。
-3. **必须**通过全局变量中转模板变量，不得在 HTML 里拼接 JS 字符串。
-4. 文件命名：`{页面名}_custom.js`，与官方模板名对应（snake_case）。
-5. 引用路径使用 `\{=c.PATH_SKIN}js/custom/文件名.js`（GodoMall 模板变量路径前缀）。
-
-### 参考文件
-
-- `module/skin/front/mplshop/js/custom/goods_view_custom.js`
-- `module/skin/front/mplshop/js/custom/order_end_custom.js`
-- `module/skin/front/mplshop/js/custom/goods_custom_for_naver.js`
