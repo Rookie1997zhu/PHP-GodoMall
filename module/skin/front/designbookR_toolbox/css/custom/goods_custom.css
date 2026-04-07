@@ -465,6 +465,41 @@ body {
     text-decoration: underline;
 }
 
+/* ✅ 커스텀 방법 안내 — 주의사항 */
+.custom-guide-precautions {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+}
+
+.custom-guide-precautions-title {
+    font-family: Pretendard, sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #111;
+    margin: 0 0 10px;
+}
+
+.custom-guide-precautions-list {
+    margin: 0;
+    padding-left: 1.2em;
+    font-family: Pretendard, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.55;
+}
+
+.custom-guide-precautions-list li + li {
+    margin-top: 8px;
+}
+
+#customGuideModal .custom-guide-precautions-list {
+    white-space: normal;
+}
+
 @media (max-width: 640px) {
     .custom-guide-grid {
         grid-template-columns: 1fr;
