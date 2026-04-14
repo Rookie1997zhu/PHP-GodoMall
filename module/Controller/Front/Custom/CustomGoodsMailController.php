@@ -699,6 +699,429 @@ class CustomGoodsMailController extends \Controller\Front\Controller
         return implode("\n", $html);
     }
 
+    /**
+     * 견적문의(request1) 게시판 저장 후 운영 메일 알림.
+     * 실패 시 error_log 만 기록하고 예외를 밖으로 던지지 않는다.
+     *
+     * @param array $req board_ps.php POST
+     * @param array $attachmentMeta 게시글 DB 에서 가져온 첨부 메타 (uploadFileNm, saveFileNm, bdUploadStorage, bdUploadPath)
+     * @return void
+     */
+    public function sendEstimateInquiryNotification(array $req, array $attachmentMeta = [])
+    {
+        try {
+            $basicInfo = gd_policy('basic.info');
+            $mallNm = $basicInfo['mallNm'] ?? 'GodoMall';
+            $fromEmail = 'hello@hellomisterlee.com';
+            $toEmail = 'hello@hellomisterlee.com';
+
+            $writerNm = trim((string)($req['writerNm'] ?? ''));
+            $writerEmail = trim((string)($req['writerEmail'] ?? ''));
+            $writerMobile = trim((string)($req['writerMobile'] ?? ''));
+            $subjectPost = trim((string)($req['subject'] ?? ''));
+            $contents = (string)($req['contents'] ?? '');
+
+            $estimateCompany = trim((string)($req['estimate_company'] ?? ''));
+            $estimateAddr1 = trim((string)($req['estimate_addr1'] ?? ''));
+            $estimateAddr2 = trim((string)($req['estimate_addr2'] ?? ''));
+            $estimateDue = trim((string)($req['estimate_due_date'] ?? ''));
+            $estimateQty = trim((string)($req['estimate_qty'] ?? ''));
+
+            $goodsNos = [];
+            if (!empty($req['goodsNo']) && is_array($req['goodsNo'])) {
+                foreach ($req['goodsNo'] as $g) {
+                    $g = trim((string)$g);
+                    if ($g !== '') {
+                        $goodsNos[] = $g;
+                    }
+                }
+            }
+
+            $mailSubject = $subjectPost !== '' ? $subjectPost : '[견적문의] 알림';
+            $goodsDisplayLines = $this->resolveEstimateGoodsDisplayLines($goodsNos);
+            $bodyHtml = $this->buildEstimateInquiryMailHtml([
+                'mallNm' => $mallNm,
+                'writerNm' => $writerNm,
+                'writerEmail' => $writerEmail,
+                'writerMobile' => $writerMobile,
+                'subject' => $subjectPost,
+                'contents' => $contents,
+                'estimateCompany' => $estimateCompany,
+                'estimateAddr1' => $estimateAddr1,
+                'estimateAddr2' => $estimateAddr2,
+                'estimateDue' => $estimateDue,
+                'estimateQty' => $estimateQty,
+                'goodsDisplayLines' => $goodsDisplayLines,
+            ]);
+
+            $replyTo = null;
+            if ($writerEmail !== '' && filter_var($writerEmail, FILTER_VALIDATE_EMAIL)) {
+                $replyTo = $writerEmail;
+            }
+
+            try {
+                $ridSuffix = bin2hex(random_bytes(4));
+            } catch (\Throwable $ignore) {
+                $ridSuffix = substr(md5(uniqid((string)mt_rand(), true)), 0, 8);
+            }
+            $requestId = 'est_' . date('YmdHis') . '_' . $ridSuffix;
+
+            // 프론트가 FileReader 로 읽어 보낸 base64 첨부 배열을 naver 외부주문과 동일한 방식으로 처리
+            $loadedAttachments = [];
+            if (!empty($attachmentMeta['frontAttachments']) && is_array($attachmentMeta['frontAttachments'])) {
+                try {
+                    $loadedAttachments = $this->normalizeAttachments($attachmentMeta['frontAttachments']);
+                } catch (\Throwable $attErr) {
+                    error_log('[CustomGoodsMailController] normalizeAttachments failed, sending without attachments: ' . $attErr->getMessage());
+                    $loadedAttachments = [];
+                }
+            }
+
+            $sendInfo = $this->sendMailWithAttachments([
+                'toEmail' => $toEmail,
+                'toName' => 'Estimate Receiver',
+                'fromEmail' => $fromEmail,
+                'fromName' => $mallNm,
+                'replyTo' => $replyTo,
+                'subject' => $mailSubject,
+                'html' => $bodyHtml,
+                'attachments' => $loadedAttachments,
+                'requestId' => $requestId,
+            ]);
+            if (empty($sendInfo['success'])) {
+                error_log('[CustomGoodsMailController] sendEstimateInquiryNotification transport failed: ' . json_encode($sendInfo, JSON_UNESCAPED_UNICODE));
+            }
+        } catch (\Throwable $e) {
+            error_log('[CustomGoodsMailController] sendEstimateInquiryNotification: ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        }
+    }
+
+    /**
+     * POST 의 goodsNo[] 에 대응하는 상품명 목록 (메일 표시용). 조회 실패 시 번호로 대체.
+     *
+     * @param array $goodsNos
+     * @return string[]
+     */
+    private function resolveEstimateGoodsDisplayLines(array $goodsNos)
+    {
+        if ($goodsNos === []) {
+            return [];
+        }
+
+        $uniqueIds = [];
+        foreach ($goodsNos as $g) {
+            $n = (int)$g;
+            if ($n > 0) {
+                $uniqueIds[$n] = true;
+            }
+        }
+        $idList = array_keys($uniqueIds);
+
+        $nmByNo = [];
+        if ($idList !== [] && defined('DB_GOODS')) {
+            try {
+                $db = \App::load('DB');
+                $placeholders = implode(',', array_fill(0, count($idList), '?'));
+                $arrBind = [];
+                foreach ($idList as $id) {
+                    $db->bind_param_push($arrBind, 'i', $id);
+                }
+                $sql = 'SELECT goodsNo, goodsNm FROM ' . DB_GOODS . ' WHERE goodsNo IN (' . $placeholders . ')';
+                $rows = $db->query_fetch($sql, $arrBind);
+                if (!is_array($rows)) {
+                    $rows = [];
+                } elseif (isset($rows['goodsNo'])) {
+                    $rows = [$rows];
+                }
+                if ($rows !== []) {
+                    foreach ($rows as $r) {
+                        if (!is_array($r) || !isset($r['goodsNo'])) {
+                            continue;
+                        }
+                        $nmByNo[(int)$r['goodsNo']] = trim((string)($r['goodsNm'] ?? ''));
+                    }
+                }
+            } catch (\Throwable $e) {
+                error_log('[CustomGoodsMailController] resolveEstimateGoodsDisplayLines: ' . $e->getMessage());
+            }
+        }
+
+        $out = [];
+        foreach ($goodsNos as $g) {
+            $n = (int)$g;
+            if ($n <= 0) {
+                continue;
+            }
+            $nm = $nmByNo[$n] ?? '';
+            $out[] = $nm !== '' ? $nm : ('(상품번호 ' . $n . ')');
+        }
+
+        return $out;
+    }
+
+    /**
+     * 게시판 첨부 메타로부터 실제 파일 바이너리를 로드한다 (메일 첨부용).
+     * 총합 10MB(10485760) 초과 시 이후 파일 스킵, 개별 파일 실패 시 건너뛰고 로그.
+     *
+     * @param array $meta ['uploadFileNm','saveFileNm','bdUploadStorage','bdUploadPath']
+     * @return array sendMailWithAttachments 가 기대하는 형식
+     */
+    private function loadBoardAttachments(array $meta)
+    {
+        $maxTotal = 10 * 1024 * 1024; // 10 MB
+        $result = [];
+        $totalSize = 0;
+
+        // OBS 기본 스토리지: boardSno 기반으로 조회된 첨부 목록 처리
+        if (!empty($meta['obsAttachments']) && is_array($meta['obsAttachments'])) {
+            foreach ($meta['obsAttachments'] as $i => $row) {
+                $imageUrl = trim((string)($row['imageUrl'] ?? ''));
+                $saveNm   = trim((string)($row['saveFileNm'] ?? ''));
+                $origName = trim((string)($row['uploadFileNm'] ?? ''));
+
+                // imageUrl 은 OBS 내부 경로(/board/bdId/sno/file.jpg)이므로
+                // getObjectUrl() 로 CDN URL 로 변환해야 file_get_contents/curl 로 접근 가능
+                $fetchUrl = '';
+                if (class_exists('\\Framework\\ObjectStorage\\Service\\ImageUploadService')) {
+                    if ($imageUrl !== '') {
+                        $fetchUrl = (string)\Framework\ObjectStorage\Service\ImageUploadService::getObjectUrl($imageUrl);
+                    }
+                    if ($fetchUrl === '' && $saveNm !== '') {
+                        $fetchUrl = (string)\Framework\ObjectStorage\Service\ImageUploadService::getObjectUrl($saveNm);
+                    }
+                }
+                // getObjectUrl 을 사용할 수 없는 경우 직접 URL 로 시도
+                if ($fetchUrl === '') {
+                    $fetchUrl = $imageUrl !== '' ? $imageUrl : $saveNm;
+                }
+                if ($fetchUrl === '') {
+                    error_log('[CustomGoodsMailController] loadBoardAttachments OBS: no url idx=' . $i . ' imageUrl=' . $imageUrl . ' save=' . $saveNm);
+                    continue;
+                }
+
+                try {
+                    $content = $this->fetchUrlContent($fetchUrl);
+                    if (!is_string($content) || $content === '') {
+                        error_log('[CustomGoodsMailController] loadBoardAttachments OBS: empty content idx=' . $i . ' url=' . $fetchUrl);
+                        continue;
+                    }
+                    $fileSize = strlen($content);
+                    if ($totalSize + $fileSize > $maxTotal) {
+                        error_log('[CustomGoodsMailController] loadBoardAttachments OBS: 10MB limit reached at idx=' . $i);
+                        break;
+                    }
+                    $totalSize += $fileSize;
+
+                    $nameBase = $origName !== '' ? $origName : $saveNm;
+                    $ext      = strtolower(pathinfo($nameBase, PATHINFO_EXTENSION));
+                    $filename = $origName !== '' ? $origName : ('attachment_' . $i . ($ext !== '' ? '.' . $ext : '.bin'));
+
+                    $result[] = [
+                        'content'     => $content,
+                        'contentType' => $this->guessContentTypeByExtension($ext),
+                        'filename'    => $filename,
+                    ];
+                } catch (\Throwable $e) {
+                    error_log('[CustomGoodsMailController] loadBoardAttachments OBS error idx=' . $i . ': ' . $e->getMessage());
+                }
+            }
+            return $result;
+        }
+
+        // 로컬/FTP 스토리지: 게시판 테이블의 saveFileNm 기반 처리
+        $uploadNames = explode(defined('STR_DIVISION') ? STR_DIVISION : '|', (string)($meta['uploadFileNm'] ?? ''));
+        $saveNames = explode(defined('STR_DIVISION') ? STR_DIVISION : '|', (string)($meta['saveFileNm'] ?? ''));
+        $storageName = (string)($meta['bdUploadStorage'] ?? '');
+        $uploadPath = (string)($meta['bdUploadPath'] ?? '');
+
+        $count = min(count($uploadNames), count($saveNames));
+        if ($count === 0 || ($count === 1 && trim($saveNames[0]) === '')) {
+            return [];
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $origName = trim($uploadNames[$i] ?? '');
+            $saveName = trim($saveNames[$i] ?? '');
+            if ($saveName === '') {
+                continue;
+            }
+
+            try {
+                $content = null;
+
+                if ($storageName === 'obs') {
+                    if (class_exists('\\Framework\\ObjectStorage\\Service\\ImageUploadService')) {
+                        $obsUrl = (string)\Framework\ObjectStorage\Service\ImageUploadService::getObjectUrl($saveName);
+                        if ($obsUrl !== '') {
+                            $content = $this->fetchUrlContent($obsUrl);
+                        }
+                    }
+                } else {
+                    $storage = \Component\Storage\Storage::disk(
+                        \Component\Storage\Storage::PATH_CODE_BOARD,
+                        $storageName !== '' ? $storageName : 'local'
+                    );
+                    $realPath = $storage->getRealPath($uploadPath . $saveName);
+                    if ($realPath && @is_file($realPath) && @is_readable($realPath)) {
+                        $content = @file_get_contents($realPath);
+                    }
+                }
+
+                if (!is_string($content) || $content === '') {
+                    error_log('[CustomGoodsMailController] loadBoardAttachments: empty/unreadable file idx=' . $i . ' save=' . $saveName);
+                    continue;
+                }
+
+                $fileSize = strlen($content);
+                if ($totalSize + $fileSize > $maxTotal) {
+                    error_log('[CustomGoodsMailController] loadBoardAttachments: 10MB limit reached, skipping remaining files from idx=' . $i);
+                    break;
+                }
+                $totalSize += $fileSize;
+
+                $ext = strtolower(pathinfo($origName !== '' ? $origName : $saveName, PATHINFO_EXTENSION));
+                $contentType = $this->guessContentTypeByExtension($ext);
+                $filename = $origName !== '' ? $origName : ('attachment_' . $i . '.' . ($ext !== '' ? $ext : 'bin'));
+
+                $result[] = [
+                    'content' => $content,
+                    'contentType' => $contentType,
+                    'filename' => $filename,
+                ];
+            } catch (\Throwable $e) {
+                error_log('[CustomGoodsMailController] loadBoardAttachments file error idx=' . $i . ': ' . $e->getMessage());
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * HTTP URL 로부터 파일 바이너리를 가져온다.
+     * file_get_contents 를 먼저 시도하고, allow_url_fopen 이 꺼져 있거나 실패하면 curl 로 재시도한다.
+     *
+     * @param string $url
+     * @return string|null
+     */
+    private function fetchUrlContent($url)
+    {
+        if ($url === '') {
+            return null;
+        }
+
+        // 1차 시도: file_get_contents (allow_url_fopen = On 환경)
+        if (ini_get('allow_url_fopen')) {
+            $ctx = stream_context_create(['http' => ['timeout' => 15, 'ignore_errors' => true]]);
+            $content = @file_get_contents($url, false, $ctx);
+            if (is_string($content) && $content !== '') {
+                return $content;
+            }
+        }
+
+        // 2차 시도: curl
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_MAXREDIRS      => 5,
+                CURLOPT_TIMEOUT        => 15,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+            ]);
+            $content = curl_exec($ch);
+            $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlErr  = curl_error($ch);
+            curl_close($ch);
+            if ($curlErr !== '') {
+                error_log('[CustomGoodsMailController] fetchUrlContent curl error: ' . $curlErr . ' url=' . $url);
+            }
+            if (is_string($content) && $content !== '' && $httpCode >= 200 && $httpCode < 300) {
+                return $content;
+            }
+        }
+
+        return null;
+    }
+
+    private function guessContentTypeByExtension($ext)
+    {
+        $map = [
+            'png' => 'image/png',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'gif' => 'image/gif',
+            'svg' => 'image/svg+xml',
+            'bmp' => 'image/bmp',
+            'tif' => 'image/tiff',
+            'tiff' => 'image/tiff',
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            'txt' => 'text/plain',
+            'csv' => 'text/csv',
+            'hwp' => 'application/x-hwp',
+        ];
+
+        return $map[$ext] ?? 'application/octet-stream';
+    }
+
+    private function buildEstimateInquiryMailHtml(array $p)
+    {
+        $esc = function ($v) {
+            return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+        };
+
+        $contentsSafe = $this->sanitizeEstimateBoardHtml((string)($p['contents'] ?? ''));
+        $goodsLines = isset($p['goodsDisplayLines']) && is_array($p['goodsDisplayLines']) ? $p['goodsDisplayLines'] : [];
+        $goodsStr = !empty($goodsLines) ? implode(', ', array_map($esc, $goodsLines)) : '-';
+
+        $html = [];
+        $html[] = '<html><head><meta charset="utf-8"></head><body>';
+        $html[] = '<h2>견적문의 알림</h2>';
+        $html[] = '<p>쇼핑몰: ' . $esc($p['mallNm'] ?? '') . '</p>';
+        $html[] = '<hr>';
+        $html[] = '<table style="border-collapse:collapse;width:100%;font-size:13px;">';
+        $html[] = '<tbody>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;width:160px;">작성자</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['writerNm'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">이메일</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['writerEmail'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">연락처</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['writerMobile'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">업체명</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['estimateCompany'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">납품 주소</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc(trim(($p['estimateAddr1'] ?? '') . ' ' . ($p['estimateAddr2'] ?? ''))) . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">희망 납기일</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['estimateDue'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">주문 수량</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['estimateQty'] ?? '') . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">상품명</th><td style="padding:8px;border:1px solid #e9ecef;">' . $goodsStr . '</td></tr>';
+        $html[] = '<tr><th style="text-align:left;padding:8px;border:1px solid #e9ecef;background:#f8f9fa;">게시글 제목</th><td style="padding:8px;border:1px solid #e9ecef;">' . $esc($p['subject'] ?? '') . '</td></tr>';
+        $html[] = '</tbody></table>';
+        $html[] = '<h3 style="margin-top:18px;">문의 본문</h3>';
+        $html[] = '<div style="border:1px solid #e9ecef;border-radius:6px;padding:12px;font-size:13px;line-height:1.6;">' . ($contentsSafe !== '' ? $contentsSafe : '<p>-</p>') . '</div>';
+        $html[] = '<p style="margin-top:18px;color:#666;font-size:12px;">본 메일은 견적문의 게시판(request1) 신규 글 등록 시 자동 발송되었습니다. 첨부파일은 메일에 포함되지 않습니다.</p>';
+        $html[] = '</body></html>';
+
+        return implode("\n", $html);
+    }
+
+    /**
+     * 게시판 에디터 HTML 을 메일 본문용으로 제한적으로 정제
+     */
+    private function sanitizeEstimateBoardHtml($html)
+    {
+        $allowed = '<p><br><br/><strong><b><em><i><u><span><div><ul><ol><li><a><img><h1><h2><h3><h4><blockquote><table><tbody><thead><tr><th><td><hr><colgroup><col><font>';
+        $clean = strip_tags((string)$html, $allowed);
+        $clean = preg_replace('/<\s*script[^>]*>.*?<\s*\/\s*script\s*>/is', '', $clean);
+        $clean = preg_replace('/<\s*style[^>]*>.*?<\s*\/\s*style\s*>/is', '', $clean);
+        $clean = preg_replace('/\son[a-z]+\s*=\s*(".*?"|\'.*?\'|[^\s>]+)/i', '', $clean);
+        $clean = preg_replace('/javascript\s*:/i', '', $clean);
+
+        return $clean;
+    }
+
     private function sanitizeCustomInfoHtml($html)
     {
         // 허용 태그: 기본 표 + 간단한 레이아웃(div/span/p) + 줄바꿈

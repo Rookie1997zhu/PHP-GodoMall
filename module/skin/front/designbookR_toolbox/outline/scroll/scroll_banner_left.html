@@ -4,7 +4,11 @@
 <div class="scroll-list">
 	<ul>
 		<li>
-			<a href="../board/list.php?bdId=qa">
+			<!--{ ? gd_is_login() }-->
+			<a href="../board/list.php?bdId=request1&mypageFl=y">
+			<!--{ : }-->
+			<a href="../member/login.php?returnUrl={=urlencode('/board/list.php?bdId=request1&mypageFl=y')}">
+			<!--{ / }-->
 				<span><img src="../../_dbook/img/side_bar_icon1.png"></span>
 				<p>견적문의</p>
 			</a>

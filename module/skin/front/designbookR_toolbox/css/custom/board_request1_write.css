@@ -1,0 +1,93 @@
+/* 견적문의(request1) 작성 전용 */
+.board_request1_write {
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.board_request1_write .board_request1_write th .req {
+    color: #c00;
+    font-weight: 700;
+}
+
+.board_request1_title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #222;
+}
+
+.board_request1_grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 140px 1fr;
+    gap: 0.65rem 1rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.board_request1_grid .br1-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.board_request1_grid .br1-label .req {
+    color: #c00;
+    margin-left: 2px;
+}
+
+.board_request1_grid .br1-full {
+    grid-column: 2 / -1;
+}
+
+.board_request1_grid .br1-span2 {
+    grid-column: span 2;
+}
+
+.board_request1_grid input[type="text"],
+.board_request1_grid input[type="password"],
+.board_request1_grid select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.55rem;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+
+.board_request1_row_block {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+}
+
+.board_request1_write .board_goods_select {
+    margin-top: 0.35rem;
+}
+
+.board_request1_write .write_editor {
+    margin-top: 0.5rem;
+}
+
+.board_request1_write .board_write_table {
+    width: 100%;
+}
+
+.board_request1_write .capcha {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .board_request1_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .board_request1_grid .br1-label {
+        margin-top: 0.35rem;
+    }
+
+    .board_request1_grid .br1-full,
+    .board_request1_grid .br1-span2 {
+        grid-column: 1 / -1;
+    }
+}

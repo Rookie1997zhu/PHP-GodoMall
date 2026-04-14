@@ -18,6 +18,258 @@
             <!--{ ? oldPassword}--><input type="hidden" name="oldPassword" value="{=oldPassword}"><!--{/}-->
 
             <div class="board_zone_write">
+                <!--{ ? bdWrite.cfg.bdId == 'request1' }-->
+                <link type="text/css" rel="stylesheet" href="{=setBrowserCache('../../../css/custom/board_request1_write.css')}" />
+                <div class="board_write_box board_request1_write">
+                    <input type="hidden" name="subject" id="request1Subject" value="{=gd_isset(bdWrite.data.subject)}"/>
+                    <input type="hidden" name="request1_attachments_json" id="request1AttachmentsJson" value=""/>
+                    <h2 class="board_request1_title">{=__('견적문의')}</h2>
+                    <table class="board_write_table">
+                        <colgroup>
+                            <col style="width:15%" />
+                            <col style="width:85%" />
+                        </colgroup>
+                        <tbody>
+                        <!--{? bdWrite.cfg.bdCategoryFl == 'y'}-->
+                        <tr>
+                            <th scope="row">{=__('말머리')}</th>
+                            <td>
+                                <div class="category_select">
+                                    {=gd_select_box('category', 'category', bdWrite.cfg.arrCategory, null, gd_isset(bdWrite.data.category), bdWrite.cfg.bdCategoryTitle, 'style="width:127px;"','tune')}
+                                </div>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <tr>
+                            <th scope="row"><span class="req">*</span> {=__('작성자')}</th>
+                            <td>
+                                <!--{? req.mode == 'modify' || gd_is_login()  }-->
+                                <span class="board_request1_writer_display">{=gd_isset(bdWrite.data.writerNm)}</span>
+                                <!--{:}-->
+                                <input type="text" class="text" name="writerNm" value="{=gd_isset(bdWrite.data.writerNm)}"/>
+                                <!--{/}-->
+                            </td>
+                        </tr>
+                        <!--{?!gd_isset(bdWrite.data.memNo) && !oldPassword}-->
+                        <tr>
+                            <th scope="row">{=__('비밀번호')}</th>
+                            <td><input type="password" class="text" name="writerPw"/></td>
+                        </tr>
+                        <!--{/}-->
+                        <tr>
+                            <th scope="row"><span class="req">*</span> {=__('업체명')}</th>
+                            <td><input type="text" class="text" name="estimate_company" value="" maxlength="200" title="{=__('업체명')}"/></td>
+                        </tr>
+                        <!--{? bdWrite.cfg.bdMobileFl == 'y'}-->
+                        <tr>
+                            <th scope="row"><span class="req">*</span> {=__('연락처')}</th>
+                            <td><input type="text" id="time" class="write_title" name="writerMobile" value="{=gd_isset(bdWrite.data.writerMobile)}" placeholder="- {=__('-없이 입력하세요')}"
+                                       autocomplete="off"/></td>
+                        </tr>
+                        <!--{/}-->
+                        <!--{? bdWrite.cfg.bdEmailFl == 'y' }-->
+                        <tr>
+                            <th scope="row">{=__('이메일')}</th>
+                            <td>
+                                <input type="text" name="writerEmail" value="{=gd_isset(bdWrite.data.writerEmail)}"/>
+                                <select id="emailDomain" name="emailDomain" class="email_select">
+                                    <!--{@ emailDomain}-->
+                                    <option value="{.key_}">{.value_}</option>
+                                    <!--{/}-->
+                                </select>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <tr>
+                            <th scope="row">{=__('납품 주소')}</th>
+                            <td>
+                                <input type="text" class="text" name="estimate_addr1" value="" maxlength="255" placeholder="{=__('주소')}" style="width:100%;max-width:420px;margin-bottom:6px;box-sizing:border-box;"/>
+                                <input type="text" class="text" name="estimate_addr2" value="" maxlength="255" placeholder="{=__('상세 주소')}" style="width:100%;max-width:420px;box-sizing:border-box;"/>
+                            </td>
+                        </tr>
+                        <!--{ ? bdWrite.data.canWriteGoodsSelect == 'y' }-->
+                        <tr class="board_request1_need_goods">
+                            <th scope="row"><span class="req">*</span> {=__('상품 선택')}</th>
+                            <td>
+                                <div class="board_goods_select">
+                                    <!--{ ? !bdWrite.data.goodsNo }-->
+                                    <span class="js_selected_info_text">{=__('선택된 상품이 없습니다.')}</span>
+                                    <!--{/}-->
+                                    <a href="#addGoodsLayer" title="{=__('찾아보기')}" class="btn_goods_select btn_open_layer"> {=__('상품 선택')} </a>
+                                    <div id="selectGoodsBox">
+                                        <!--{ ? bdWrite.data.goodsNo }-->
+                                        <div class="goods_select_item js_select_item">
+                                            <span class="select_item_img">
+                                                <input type="hidden" name="goodsNo[]" value="{bdWrite.data.goodsNo}"/>
+                                                <a href="../goods/goods_view.php?goodsNo={bdWrite.data.goodsNo}" target="_blank">
+                                                    <img src="{bdWrite.data.goodsData.goodsImageSrc}" height="80" width="80" alt="{bdWrite.data.goodsData.goodsNm}">
+                                                </a>
+                                            </span>
+                                            <span class="select_item_info">
+                                                <em>{bdWrite.data.goodsData.goodsNm}</em>
+                                                <strong>{=gd_global_currency_symbol()}{=gd_global_money_format(bdWrite.data.goodsData.goodsPrice)}{=gd_global_currency_string()}</strong>
+                                                <button type="button" class="btn_goods_item_del js_select_remove"><img src="../../../img/common/btn/btn_goods_del.png" alt="{=__('선택 상품 삭제')}"></button>
+                                            </span>
+                                        </div>
+                                        <!--{/}-->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <!--{ ? bdWrite.data.canWriteOrderSelect == 'y'  }-->
+                        <tr>
+                            <th scope="row">{=__('주문 내역')}</th>
+                            <td>
+                                <div class="board_goods_select">
+                                    <!--{ ?!bdWrite.data.extraData.arrOrderGoodsData}-->
+                                    <span class="js_selected_info_text">{=__('선택된 주문이 없습니다.')}</span>
+                                    <!--{/}-->
+                                    <a href="#addOrderLayer" title="{=__('찾아보기')}" class="btn_goods_select btn_open_layer"> {=__('주문 내역')} </a>
+                                    <div id="selectOrderBox">
+                                        <!--{ @ bdWrite.data.extraData.arrOrderGoodsData}-->
+                                        <div class="goods_select_item js_select_item">
+                                            <span class="select_item_img">
+                                                <input type="hidden" name="orderGoodsNo[]" value="{.sno}"/>
+                                                <a href="../goods/goods_view.php?goodsNo={.goodsNo}" target="_blank">
+                                                    <img src="{.goodsImageSrc}" alt="{.goodsNm}">
+                                                </a>
+                                            </span>
+                                            <span class="select_item_info">
+                                                <em>{.goodsNm}</em>
+                                                <div>{.optionName}</div>
+                                                <strong>{=gd_global_currency_symbol()}{=gd_global_money_format(.totalGoodsPrice)}{=gd_global_currency_string()}</strong>
+                                                <button type="button" class="btn_goods_item_del js_select_remove"><img src="../../../img/common/btn/btn_goods_del.png" alt="{=__('선택 상품 삭제')}"></button>
+                                            </span>
+                                        </div>
+                                        <!--{/}-->
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <!--{? bdWrite.cfg.bdGoodsPtFl == 'y'}-->
+                        <tr>
+                            <th scope="row">{=__('평가')}</th>
+                            <td>
+                                <div class="form_element">
+                                    <ul class="rating_star_list">
+                                        <!--{@ range(5,1)}-->
+                                        <li>
+                                            <label for="rating{.value_}" class="choice_s <!--{ ? bdWrite.data.goodsPt == .value_ }-->on<!--{/}-->">
+                                                <span class="rating_star">
+                                                    <span style="width:{.value_*20}%;">{=__('별')}{.value_}</span>
+                                                </span>
+                                            </label>
+                                            <input type="radio" name="goodsPt" value="{.value_}" id="rating{.value_}" name="rating"
+                                            <!--{ ? bdWrite.data.goodsPt == .value_ }-->checked<!--{/}-->/>
+                                        </li>
+                                        <!--{/}-->
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <tr>
+                            <th scope="row">{=__('희망 납기일')}</th>
+                            <td><input type="text" class="text" name="estimate_due_date" value="" maxlength="120" title="{=__('희망 납기일')}"/></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">{=__('주문 수량')}</th>
+                            <td><input type="text" class="text" name="estimate_qty" value="" maxlength="120" title="{=__('주문 수량')}"/></td>
+                        </tr>
+                        <!--{? bdWrite.cfg.bdLinkFl == 'y' }-->
+                        <tr>
+                            <th scope="row">{=__('링크')}</th>
+                            <td><input type="text" name="urlLink" value="{=gd_isset(bdWrite.data.urlLink)}"/></td>
+                        </tr>
+                        <!--{/}-->
+                        <tr>
+                            <th scope="row">{=__('문의 사항')}</th>
+                            <td class="write_editor">
+                                <div class="form_element">
+                                    <!--{? bdWrite.cfg.bdSecretFl : '1'}-->
+                                    <input type="checkbox" id="secret1" name="isSecret" value="y" checked/>
+                                    <label class="check_s on" for="secret1">{=__('비밀글')}</label>
+                                    <!--{: '2'}-->
+                                    <!--{: '3'}-->
+                                    <em>{=__('해당글은 비밀글로만 작성이 됩니다.')}</em>
+                                    <!--{:}-->
+                                        <!--{? req.mode == 'reply' && gd_isset(bdWrite.data.isSecret) == 'y'}-->
+                                        <input type="hidden"  name="isSecret" value="y"/> {=__('해당글은 비밀글로만 작성이 됩니다.')}
+                                        <!--{:}-->
+                                        <input type="checkbox" id="secret2" name="isSecret" value="y" <!--{? gd_isset(bdWrite.data.isSecret) == 'y'}-->checked
+                                        <!--{/}--> />
+                                        <label for="secret2" class="check_s <!--{? gd_isset(bdWrite.data.isSecret) == 'y'}-->on<!--{/}-->">{=__('비밀글')}</label>
+                                        <!--{/}-->
+                                    <!--{/}-->
+                                </div>
+                                <textarea id="editor" name="contents" style="width:100%; min-width:510px;" cols="30" rows="10">{=bdWrite.data.contents}</textarea>
+                            </td>
+                        </tr>
+                        <!--{? bdWrite.cfg.bdUploadFl == 'y'}-->
+                        <tr>
+                            <th scope="row">{=__('첨부파일')}</th>
+                            <td id="uploadBox">
+
+                                <!--{ @ bdWrite.data.uploadFileNm }-->
+                                <div class="file_upload_sec">
+                                    <div class="form_element">
+                                        <a href="../board/download.php?bdId={req.bdId}&sno={req.sno}&fid={.index_}" class="link_file_down">{=.value_}</a>
+                                        <input type="checkbox" id="delFile{=.index_+1}" name="delFile[{=.index_}]" value="y"/>
+                                        <label for="delFile{=.index_+1}" class="check_s">{=__('삭제')}</label>
+                                    </div>
+                                    <label for="attach{=.index_+1}">
+                                        <input type="text" class="file_text" title="{=__('파일 첨부하기')}" readonly="readonly"/>
+                                    </label>
+                                    <div class="btn_upload_box">
+                                        <button type="button" class="btn_upload" title="{=__('찾아보기')}"><em>{=__('찾아보기')}</em></button>
+                                        <input type="file" id="attach{=.index_+1}" name="upfiles[]" class="file" title="{=__('찾아보기')}"/>
+                                    </div>
+                                </div>
+                                <!--{/}-->
+
+                                <div class="file_upload_sec">
+                                    <label for="attach">
+                                        <input type="text" class="file_text" title="{=__('파일 첨부하기')}" readonly="readonly"/>
+                                    </label>
+                                    <div class="btn_upload_box">
+                                        <button type="button" class="btn_upload" title="{=__('찾아보기')}"><em>{=__('찾아보기')}</em></button>
+                                        <input type="file" id="attach" name="upfiles[]" class="file" title="{=__('찾아보기')}"/>
+                                        <span class="btn_gray_list"><button type="button" id="addUploadBtn" class="btn_gray_big"><span>+ {=__('추가')}</span></button></span>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        <!--{? bdWrite.cfg.bdSpamBoardFl&2 }-->
+                        <tr>
+                            <th scope="row">{=__('자동등록방지')}</th>
+                            <td>
+                                <div class="capcha">
+                                    <div class="capcha_img">
+                                        <img src="./captcha.php" align="absmiddle" id="captchaImg" alt="{=__('자동등록방지 이미지')}"/>
+                                    </div>
+                                    <div class="capcha_txt">
+                                        <p>{=__('보이는 순서대로 %s숫자 및 문자를 모두 입력해 주세요.', '<br/>')}</p>
+                                        <input type="text" class="text captcha" name="captchaKey" maxlength="5"
+                                               onKeyUp="javascript:this.value=this.value.toUpperCase();" onfocus="this.select()" label="{=__('자동등록방지문자')}"/>
+                                        <span class="btn_gray_list">
+                                            <button type="button" class="btn_gray_small" onclick="gd_reload_captcha()">
+                                                <span><img src="img/icon/icon_reset.png" alt="{=__('이미지 새로고침')}"> {=__('이미지 새로고침')}</span>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!--{/}-->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- //board_write_box request1 -->
+                <!--{ : }-->
                 <div class="board_write_box">
                     <table class="board_write_table">
                         <colgroup>
@@ -165,7 +417,7 @@
                         </tr>
                         <!--{/}-->
                         <tr>
-                            <th scope="row">{=__('제목')}</td>
+                            <th scope="row">{=__('제목')}</th>
                             <td><input type="text" name="subject" value="{=gd_isset(bdWrite.data.subject)}"/></td>
                         </tr>
                         <tr>
@@ -253,6 +505,7 @@
                     </table>
                 </div>
                 <!-- //board_write_box -->
+                <!--{ / }-->
                 <!--{? bdWrite.cfg.bdPrivateYN == "y"}-->
                 <div class="board_write_agree">
                     <div class="board_commen_agree">
@@ -300,6 +553,9 @@
     gd_select_email_domain('writerEmail');
 </script>
 <script type="text/javascript" src="\{=c.PATH_SKIN}js/gd_board_write.js" charset="utf-8"></script>
+<!--{ ? bdWrite.cfg.bdId == 'request1' }-->
+<script type="text/javascript" src="\{=c.PATH_SKIN}js/custom/board_request1_write.js" charset="utf-8"></script>
+<!--{ / }-->
 <script type="text/template" class="template">
     <div class="file_upload_sec">
         <label for="attach<%=idx%>">

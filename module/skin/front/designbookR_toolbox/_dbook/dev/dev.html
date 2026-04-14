@@ -5,8 +5,13 @@
 ========================================================================-->
 <div id="skinPath" class="dn" data-skin-path="<!--{c.PATH_SKIN}-->"></div>
 
+<script>
+window.__DBOOK_IS_LOGIN__ = <!--{ ? gd_is_login() }-->true<!--{ : }-->false<!--{ / }-->;
+window.__DBOOK_QA_ESTIMATE_RETURN__ = '/board/list.php?bdId=request1&mypageFl=y';
+</script>
 <script src="./config.js"></script>
 <script src="./common.js" defer></script>
+<script src="./qa_estimate_login_gate.js" defer></script>
 
 <!-- 상품상세 -->
 <script src="./goods/goods_view.js" defer></script>

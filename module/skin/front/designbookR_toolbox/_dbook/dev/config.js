@@ -105,7 +105,7 @@ const DBK_CONFIG = {
 
 					{
 						메뉴명 : `견적문의`,
-						링크 : `/board/list.php?bdId=qa `,
+						링크 : `/board/list.php?bdId=request1&mypageFl=y`,
 						타겟 : `_self`,
 					}, 
 
